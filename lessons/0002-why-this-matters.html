@@ -39,9 +39,35 @@ to false = zero                from zero = false
 
 <p>We will move a whole <em>structure with its proofs</em>, not just a value. Package "a type equipped with an idempotent operation" as a record:</p>
 <pre><code>Meet A = record {
-  op   : A -> A -> A ,
-  idem : (x : A) -> op x x = x
+  op   : A -> A -> A ,          -- (1) DATA:  a binary operation
+  idem : (x : A) -> op x x = x  -- (2) PROOF: that op is idempotent
 }</code></pre>
+
+<h3>Reading <span class="tt">Meet</span>: a property written as a type</h3>
+<p>
+This is worth slowing down on, because it is the idea you flagged: we are treating a <em>property</em> as a <em>type</em>. <span class="tt">Meet A</span> is itself a type. Not a number or a boolean, but a <strong>record</strong>, a bundle of fields, whose inhabitants are structures-carrying-evidence. Read its two fields:
+</p>
+<ul>
+  <li><strong>Field 1, <span class="tt">op</span>, is data.</strong> Its type is <span class="tt">A -> A -> A</span>, a binary operation on <span class="tt">A</span>. Nothing exotic, ordinary programming.</li>
+  <li><strong>Field 2, <span class="tt">idem</span>, is a proof.</strong> Look only at its type: <span class="tt">(x : A) -> op x x = x</span>. Under propositions-as-types, that <em>type</em> is the proposition "for every <span class="tt">x</span>, <span class="tt">op x x</span> equals <span class="tt">x</span>." The <span class="tt">(x : A) -> …</span> part is the "for all," and the identity type <span class="tt">op x x = x</span> is the claim. An inhabitant of that type <em>is</em> a proof of it.</li>
+</ul>
+
+<div class="key">
+  <span class="label">Propositions as types, in one line</span>
+  A proposition is a type; a proof of it is an inhabitant of that type. "For all <span class="tt">x</span>, <span class="tt">P x</span>" is the function type <span class="tt">(x : A) -> P x</span>: feed it any <span class="tt">x</span> and it hands back a proof of <span class="tt">P x</span>. So <span class="tt">idem</span> is a function that, given any <span class="tt">x</span>, returns a path witnessing <span class="tt">op x x = x</span>.
+</div>
+
+<p>
+So a value of type <span class="tt">Meet A</span> is literally "<em>an operation, together with a proof that it is idempotent</em>," packed into one object. The type <span class="tt">Meet A</span> is the <strong>specification</strong> ("a type equipped with an idempotent operation"); an inhabitant is a <strong>witness</strong> that meets it. That is why, below, <span class="tt">boolMeet</span> has two entries: the operation <span class="tt">and</span>, and the proof <span class="tt">andIdem</span> that it is idempotent.
+</p>
+
+<div class="aside">
+  <strong>Why the two fields must live together.</strong> The type of <span class="tt">idem</span> mentions <span class="tt">op</span>: the proof is <em>about that specific operation</em>. A record whose later fields depend on the values of earlier ones is a <em>dependent</em> record (a Σ-type). That dependency is the point. It welds the operation and its proof into one object, so that when we move it, they move together.
+</div>
+
+<p>
+And that is what makes the payoff work. <span class="tt">Meet</span> is a <em>type family</em>, <span class="tt">Meet : Type -> Type</span>: give it a type, get back the type of "that type with an idempotent op." <span class="tt">transport</span> runs along any type family, so a path <span class="tt">Bool = Binary</span> lets it carry a <span class="tt">Meet Bool</span> to a <span class="tt">Meet Binary</span> in one step, dragging the proof along. Writing "the property we want" as a type family is exactly what makes it transportable.
+</p>
 
 <p>Now do the real work, once, on <span class="tt">Bool</span>:</p>
 <pre><code>and : Bool -> Bool -> Bool

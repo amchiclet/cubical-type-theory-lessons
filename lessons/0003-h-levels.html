@@ -1,0 +1,134 @@
+<meta charset="utf-8">
+<title>Lesson 3 — h-levels: How Tall Is the Tower?</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 3</span>
+  <span><a href="0002-why-this-matters.html">◀ Lesson 2</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>h-levels: How Tall Is the Tower?</h1>
+<p class="subtitle">Lesson 1 said the path tower can climb forever. Most types stop early. h-levels are the ruler that says how far up a type stays interesting before it goes trivial.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  Given a type, you can name which rung it sits on, say what that buys you, and explain why the universe of sets sits exactly one rung <em>above</em> the sets it contains. This is the vocabulary every HoTT proof leans on: "assume <span class="tt">A</span> is a set," "<span class="tt">P</span> is a proposition."
+</div>
+
+<h2>The ladder, from the bottom</h2>
+<p>Each rung is defined by how trivial its equality is. Read these as "how much structure is left."</p>
+
+<pre><code>-- Rung 0: contractible. One point, and everything equals it.
+isContr A = Σ (c : A). (x : A) -> c = x
+
+-- Rung 1: proposition. At most one point: any two are equal.
+isProp  A = (x y : A) -> x = y
+
+-- Rung 2: set. Equality is trivial: any two paths are equal.
+isSet   A = (x y : A) -> isProp (x = y)
+
+-- Rung 3: groupoid. Paths can differ, but 2-paths are trivial.
+isGpd   A = (x y : A) -> isSet  (x = y)</code></pre>
+
+<p>Notice the pattern: <em>each rung says "all my identity types sit one rung lower."</em> That is the whole definition, stated once:</p>
+
+<pre><code>hLevel 0       A = isContr A
+hLevel (suc n) A = (x y : A) -> hLevel n (x = y)</code></pre>
+
+<p>So proposition is <span class="tt">hLevel 1</span>, set is <span class="tt">hLevel 2</span>, groupoid is <span class="tt">hLevel 3</span>, and it continues. To go up one rung, look at the identity types and check they are one rung simpler.</p>
+
+<div class="aside">
+  <strong>A numbering warning for when you read the book.</strong> This lesson uses the Agda/1Lab convention: contractible = 0, prop = 1, set = 2. The <em>HoTT Book</em> shifts everything down by two, so contractible is a <span class="tt">(-2)</span>-type, prop is <span class="tt">(-1)</span>, set is a <span class="tt">0</span>-type. Same ladder, different zero. Do not let the offset trip you up.
+</div>
+
+<h2>Where the types you know sit</h2>
+<table>
+  <thead><tr><th>Rung</th><th>Name</th><th>What it means</th><th>Examples</th></tr></thead>
+  <tbody>
+    <tr><td>0</td><td>contractible</td><td>exactly one point, up to a path</td><td>the unit type <span class="tt">⊤</span>, any singleton</td></tr>
+    <tr><td>1</td><td>proposition</td><td>at most one point (any two equal)</td><td>the empty type <span class="tt">⊥</span>, <span class="tt">n ≤ m</span></td></tr>
+    <tr><td>2</td><td>set</td><td>equality is trivial (UIP holds here)</td><td><span class="tt">Bool</span>, <span class="tt">Binary</span>, <span class="tt">ℕ</span>, <span class="tt">ℤ</span></td></tr>
+    <tr><td>3</td><td>groupoid</td><td>paths can differ, 2-paths trivial</td><td>the universe of sets</td></tr>
+    <tr><td>…</td><td>…</td><td>…</td><td>higher spaces, most types</td></tr>
+  </tbody>
+</table>
+
+<div class="aside">
+  Levels are <strong>cumulative</strong>: a type at rung <span class="tt">n</span> is also at every rung above it. A set is trivially a groupoid too. The rung of a type is the <em>lowest</em> one it satisfies.
+</div>
+
+<h2>Anchor 1: "set" is where the maths you know lives</h2>
+<p>
+A set is a type whose equality is a mere proposition: given two elements, there is at most one path between them, so equality is a plain yes/no fact again. That is exactly the assumption you were carrying in ordinary type theory without naming it. So the slogan from earlier lands precisely:
+</p>
+<div class="key">
+  <span class="label">UIP, restated</span>
+  <strong>UIP (every equality proof is unique) is the assumption that every type is a set.</strong> It caps the whole ladder at rung 2. HoTT drops that cap, which is why the tower can be taller.
+</div>
+
+<h2>Anchor 2: the universe sits one rung up</h2>
+<p>
+Here is the loop back to <a href="0002-why-this-matters.html">Lesson 2</a>. <span class="tt">Bool</span> is a set: its two points have no interesting paths, and <span class="tt">true = false</span> is empty. But the <em>universe</em> that contains <span class="tt">Bool</span> is not a set. Under univalence, <span class="tt">Bool =<sub>𝒰</sub> Bool</span> has two distinct points (<span class="tt">refl</span> and <span class="tt">ua not</span>), so the universe's equality is not a proposition. The universe of sets is a <strong>groupoid</strong>, rung 3.
+</p>
+<div class="key">
+  <span class="label">The pattern to keep</span>
+  Going "up a type" often means going "up a rung." The elements of <span class="tt">Bool</span> live at rung 2; <span class="tt">Bool</span> itself, as an element of the universe, lives one level higher. That climb is exactly the ∞-groupoid tower from Lesson 1, now with a ruler on it.
+</div>
+
+<h2>Why bother classifying? What each rung buys you</h2>
+<p>
+The rung tells you how much you have to <em>do</em>. The cleanest payoff is at rung 1:
+</p>
+<pre><code>-- If you have shown A is a proposition, equalities come for free:
+pf : isProp A
+-- then for ANY x y : A,   pf x y : x = y     -- no path to construct
+
+-- If A is only a set (or worse), you must build the path yourself,
+-- because there can be genuinely different elements to tell apart.</code></pre>
+<p>
+So "<span class="tt">A</span> is a proposition" means you never worry about <em>which</em> proof of <span class="tt">A</span> you hold: any two are equal, so proofs are irrelevant. "<span class="tt">A</span> is a set" means you can reason with plain equality and forget higher paths. The h-level is a budget: it tells you the most path structure a type can carry, so you only ever carry that much. That is why HoTT proofs open with "assume <span class="tt">A</span> is a set" or "since <span class="tt">P</span> is a prop" and everything downstream gets simpler.
+</p>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="C">
+  <p class="q">What does it mean for a type to be a <em>set</em> (rung 2)?</p>
+  <button class="opt" data-key="A">it holds only a single point inside</button>
+  <button class="opt" data-key="B">any two of its points are equal</button>
+  <button class="opt" data-key="C">any two paths between points are equal</button>
+  <button class="opt" data-key="D">it cannot contain any paths at all</button>
+  <div class="explain">A set has trivial equality: for any two points, all paths between them are equal, so its identity types are propositions. Points can still be distinct; it is the <em>paths</em> that collapse.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Why is the universe of sets a groupoid rather than a set?</p>
+  <button class="opt" data-key="A">because every type inside it is finite</button>
+  <button class="opt" data-key="B">because some type equalities have distinct proofs</button>
+  <button class="opt" data-key="C">because sets can never be compared directly</button>
+  <button class="opt" data-key="D">because the empty type has no elements</button>
+  <div class="explain">Univalence gives <span class="tt">Bool = Bool</span> two distinct inhabitants (<span class="tt">refl</span> and <span class="tt">ua not</span>), so the universe's equality is not a proposition. Its identity types are sets, which puts the universe itself one rung higher.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">A colleague asks: "What is an h-level, and why does it matter that Bool is a set but the universe is a groupoid?" Answer in three sentences.</p>
+  <div class="answer">
+    An h-level measures how far up a type's path tower stays non-trivial before every higher path collapses: contractible, then proposition, then set, then groupoid, and up. Bool is a set because its points are distinct but their equality is trivial, whereas the universe is a groupoid because univalence gives type-equalities like <span class="tt">Bool = Bool</span> genuinely different proofs, so its equality is not trivial. It matters because the rung is a budget: knowing a type is a proposition or a set tells you how little path structure you must track, which is exactly what makes proofs manageable.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  Egbert Rijke, <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>, the chapters on contractible types, propositions, and sets. For the same material with the book's <span class="tt">(-2)</span>-based numbering, see Chapter 3 ("Sets and logic") of the <a href="https://homotopytypetheory.org/book/">HoTT Book</a>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads from here: "show me why <span class="tt">n ≤ m</span> is a proposition," "what does it mean to <em>truncate</em> a type down to a lower rung," or "how do I actually prove <span class="tt">Bool</span> is a set." Any of these is a strong next step.
+</div>
+
+<div class="nav-links">
+  <span><a href="0002-why-this-matters.html">◀ Lesson 2 — Why This Matters</a></span>
+  <span>Next up: <em>Lesson 4 — the two equalities</em></span>
+</div>

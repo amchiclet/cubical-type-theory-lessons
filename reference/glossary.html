@@ -37,22 +37,23 @@
 <table>
   <thead><tr><th>Term</th><th>Means</th><th>Lesson</th></tr></thead>
   <tbody>
-    <tr><td><strong>h-level / truncation</strong></td><td>How tall a type's path-tower is: contractible &lt; proposition &lt; set &lt; groupoid &lt; …</td><td>0002 (planned)</td></tr>
-    <tr><td><strong>UIP</strong> (uniqueness of identity proofs) / <strong>axiom K</strong></td><td>Any two proofs of <span class="tt">a = b</span> are themselves equal. Equivalently: <em>every type is a set</em>. HoTT drops it — it contradicts univalence.</td><td>0002 (planned)</td></tr>
-    <tr><td><strong>Judgmental equality</strong> <span class="tt">a ≡ b</span></td><td>Sameness the typechecker decides by computation. Distinct from propositional equality <span class="tt">a = b</span> (a type of proofs).</td><td>0003 (planned)</td></tr>
-    <tr><td><strong>Intensional vs extensional TT</strong></td><td>Intensional: <span class="tt">≡</span> and <span class="tt">=</span> stay separate, typechecking decidable. Extensional: equality reflection collapses them (implies UIP, undecidable). HoTT is intensional.</td><td>0003 (planned)</td></tr>
-    <tr><td><strong>Function extensionality (funext)</strong></td><td>If <span class="tt">f x = g x</span> for all x, then <span class="tt">f = g</span>. Not provable in bare HoTT; an axiom or a consequence of univalence; a computing theorem in cubical.</td><td>0007 (planned)</td></tr>
-    <tr><td><strong>Proposition (mere)</strong></td><td>A type with at most one point up to a path: any two proofs are equal. "Truth value."</td><td>0002 (planned)</td></tr>
-    <tr><td><strong>Set (0-type)</strong></td><td>A type whose paths are trivial: equality is a mere proposition. Ordinary maths lives here.</td><td>0002 (planned)</td></tr>
-    <tr><td><strong>ap</strong></td><td>Apply a function to a path: <span class="tt">f</span> sends a path <span class="tt">a = b</span> to a path <span class="tt">f a = f b</span>. Functoriality.</td><td>0003 (planned)</td></tr>
-    <tr><td><strong>transport</strong></td><td>Move a point along a path in the base to the fibre over the other end. Substitution, made spatial.</td><td>0003 (planned)</td></tr>
-    <tr><td><strong>Path induction (J)</strong></td><td>To prove something about all paths, it suffices to prove it for <span class="tt">refl</span>.</td><td>0003 (planned)</td></tr>
-    <tr><td><strong>Equivalence</strong> <span class="tt">A ≃ B</span></td><td>A function with a well-behaved inverse; the right notion of "same" for types.</td><td>0004 (planned)</td></tr>
-    <tr><td><strong>Univalence</strong></td><td>Identity of types is equivalence of types: <span class="tt">(A =<sub>𝒰</sub> B) ≃ (A ≃ B)</span>.</td><td>0002, 0005 (planned)</td></tr>
+    <tr><td><strong>h-level / truncation</strong></td><td>How tall a type's path-tower is: contractible &lt; proposition &lt; set &lt; groupoid &lt; …</td><td>0003</td></tr>
+    <tr><td><strong>UIP</strong> (uniqueness of identity proofs) / <strong>axiom K</strong></td><td>Any two proofs of <span class="tt">a = b</span> are themselves equal. Equivalently: <em>every type is a set</em>. HoTT drops it, since it contradicts univalence.</td><td>0003</td></tr>
+    <tr><td><strong>Judgmental equality</strong> <span class="tt">a ≡ b</span></td><td>Sameness the typechecker decides by computation. Distinct from propositional equality <span class="tt">a = b</span> (a type of proofs).</td><td>0004 (planned)</td></tr>
+    <tr><td><strong>Intensional vs extensional TT</strong></td><td>Intensional: <span class="tt">≡</span> and <span class="tt">=</span> stay separate, typechecking decidable. Extensional: equality reflection collapses them (implies UIP, undecidable). HoTT is intensional.</td><td>0004 (planned)</td></tr>
+    <tr><td><strong>Function extensionality (funext)</strong></td><td>If <span class="tt">f x = g x</span> for all x, then <span class="tt">f = g</span>. Not provable in bare HoTT; an axiom or a consequence of univalence; a computing theorem in cubical.</td><td>0009 (planned)</td></tr>
+    <tr><td><strong>Proposition (mere)</strong></td><td>A type with at most one point up to a path: any two proofs are equal. "Truth value."</td><td>0003</td></tr>
+    <tr><td><strong>Set (0-type)</strong></td><td>A type whose paths are trivial: equality is a mere proposition. Ordinary maths lives here.</td><td>0003</td></tr>
+    <tr><td><strong>Contractible</strong></td><td>A type with exactly one point up to a path: a centre <span class="tt">c</span> and a path <span class="tt">c = x</span> for every <span class="tt">x</span>. The bottom rung.</td><td>0003</td></tr>
+    <tr><td><strong>ap</strong></td><td>Apply a function to a path: <span class="tt">f</span> sends a path <span class="tt">a = b</span> to a path <span class="tt">f a = f b</span>. Functoriality.</td><td>0005 (planned)</td></tr>
+    <tr><td><strong>transport</strong></td><td>Move a point along a path in the base to the fibre over the other end. Substitution, made spatial.</td><td>0005 (planned)</td></tr>
+    <tr><td><strong>Path induction (J)</strong></td><td>To prove something about all paths, it suffices to prove it for <span class="tt">refl</span>.</td><td>0005 (planned)</td></tr>
+    <tr><td><strong>Equivalence</strong> <span class="tt">A ≃ B</span></td><td>A function with a well-behaved inverse; the right notion of "same" for types.</td><td>0006 (planned)</td></tr>
+    <tr><td><strong>Univalence</strong></td><td>Identity of types is equivalence of types: <span class="tt">(A =<sub>𝒰</sub> B) ≃ (A ≃ B)</span>.</td><td>0002, 0007 (planned)</td></tr>
     <tr><td><strong>Representation independence</strong></td><td>No property can distinguish equivalent types, so a proof about one representation transfers to any equivalent one. False without univalence; a theorem with it.</td><td>0002</td></tr>
-    <tr><td><strong>Interval</strong> <span class="tt">I</span></td><td>Cubical's primitive "line" with ends <span class="tt">i0</span>, <span class="tt">i1</span>. A path is a function <span class="tt">I → A</span>.</td><td>0007 (planned)</td></tr>
-    <tr><td><strong>hcomp / transport (Kan ops)</strong></td><td>Cubical operations that let you compose and move paths; make everything compute.</td><td>0008 (planned)</td></tr>
-    <tr><td><strong>Glue</strong></td><td>The cubical construction that turns an equivalence into a path, making univalence a theorem.</td><td>0008 (planned)</td></tr>
+    <tr><td><strong>Interval</strong> <span class="tt">I</span></td><td>Cubical's primitive "line" with ends <span class="tt">i0</span>, <span class="tt">i1</span>. A path is a function <span class="tt">I → A</span>.</td><td>0010 (planned)</td></tr>
+    <tr><td><strong>hcomp / transport (Kan ops)</strong></td><td>Cubical operations that let you compose and move paths; make everything compute.</td><td>0011 (planned)</td></tr>
+    <tr><td><strong>Glue</strong></td><td>The cubical construction that turns an equivalence into a path, making univalence a theorem.</td><td>0011 (planned)</td></tr>
   </tbody>
 </table>
 

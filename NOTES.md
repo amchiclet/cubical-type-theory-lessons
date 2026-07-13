@@ -16,7 +16,7 @@
 ## Course arc (planned; revise as we go)
 1. ✅ Types as spaces — identity type = path, refl = constant path, the tower of higher paths → ∞-groupoid. [0001]
 2. ✅ **Why HoTT/CTT matters — the payoff "trailer"** [0002]. Built around the Bool/Binary worked example (transport a bundle for free vs re-proving by hand; the "no path" wall; unprovable representation independence). Engine (transport) / fuel (univalence) / catch (computes only in cubical). Pairs with a later "feature" lesson (#12).
-3. h-levels: contractible → prop → set → groupoid → … Fold in UIP = "every type is a set" (axiom K) and why HoTT drops it.
+3. ✅ **h-levels** [0003]: contractible → prop → set → groupoid → … The recursive definition (each rung = all identity types one rung lower). Folded in UIP = "every type is a set," the Agda-vs-book numbering caveat, and the "Bool is a set, the universe is a groupoid" loop back to [0002]. What each rung buys (props give free equalities / proof irrelevance; sets give plain equality).
 4. Two equalities & the setting: judgmental (≡) vs propositional (=); intensional vs extensional TT; equality reflection; why HoTT sits on *intensional* TT.
 5. Path algebra in practice: ap (functoriality), transport, path induction (J).
 6. Equivalence: what makes a function an equivalence (and why "iso" needs care).
