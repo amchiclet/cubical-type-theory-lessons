@@ -1,0 +1,38 @@
+# Working notes (teacher scratchpad)
+
+## Learner profile (as of 2026-07-03)
+- Knows ordinary dependent type theory well.
+- Proof assistants: has *read* Agda/Coq/Lean, has not *written* proofs. → Code snippets OK as illustration, never required.
+- Topology: "vague memory" — has heard of continuous deformation, not much more. → Build the spatial picture; don't assume paths/homotopy/π₁.
+- Category theory: knows the basics. → Groupoid, functor, "structure-preserving" framing is a fast path. Use it.
+
+## Teaching preferences (from global user CLAUDE.md — apply to lessons too)
+- Plain language. No em-dashes. Never the word "load-bearing." Short sentences, simple words.
+- Be a sparring partner: when the learner proposes a framing, push back before agreeing.
+- Lead with the single strongest point; don't spray broad-and-shallow.
+- Acknowledge uncertainty literally ("I'm guessing" / "I don't know").
+- **Preferred explanatory mode (confirmed 2026-07-05): concrete before/after worked examples in spelled-out pseudocode, that make the world *without* the concept explicit.** The Bool/Binary univalence example (transport a bundle for free vs re-proving every law by hand, with the "no path exists" wall and the unprovable representation-independence principle) is the template. Offer this flavour by default when introducing a new concept; a made-up/pseudocode language is fine to avoid syntax distraction.
+
+## Course arc (planned; revise as we go)
+1. ✅ Types as spaces — identity type = path, refl = constant path, the tower of higher paths → ∞-groupoid. [0001]
+2. ✅ **Why HoTT/CTT matters — the payoff "trailer"** [0002]. Built around the Bool/Binary worked example (transport a bundle for free vs re-proving by hand; the "no path" wall; unprovable representation independence). Engine (transport) / fuel (univalence) / catch (computes only in cubical). Pairs with a later "feature" lesson (#12).
+3. h-levels: contractible → prop → set → groupoid → … Fold in UIP = "every type is a set" (axiom K) and why HoTT drops it.
+4. Two equalities & the setting: judgmental (≡) vs propositional (=); intensional vs extensional TT; equality reflection; why HoTT sits on *intensional* TT.
+5. Path algebra in practice: ap (functoriality), transport, path induction (J).
+6. Equivalence: what makes a function an equivalence (and why "iso" needs care).
+7. Univalence: (A ≃ B) ≃ (A = B). Statement, intuition, why it's an axiom in book-HoTT. Representation independence / transport-across-≃ payoff. Generalizes propositional extensionality.
+8. **Higher inductive types (HITs):** constructors for paths, not just points. Quotients without setoid hell, the circle, truncations. (Half the motivation from #2 gets paid off here.)
+9. Function extensionality + "axioms don't compute" (canonicity breaks; transport along ua / funext gets stuck). THE motivator for cubical.
+10. Cubical fix: the interval I, paths as functions I → A, funext for free (a one-liner that runs).
+11. Kan operations (transport/hcomp) and Glue → univalence becomes a theorem that computes.
+12. **Feature payoff lesson:** the #2 payoffs now running in cubical — verified programs across representations, quotient types, structure identity principle — proofs that actually normalize.
+
+Confirmed learner interests to honour:
+- (2026-07-03) intensional/extensional distinction + extensionality principles (funext) explicit → #4, #9. See [[learning-records/0002-extensionality-interest]].
+- (2026-07-05) wants a "why this matters / what programs it enables" motivation grounding → trailer #2 + feature #12, and HITs #8 added. See [[learning-records/0004-motivation-first]].
+
+## Lesson design reminders
+- One tangible win per lesson. Keep inside working memory.
+- Retrieval practice (recall before reveal), space & interleave across sessions.
+- Quiz answers: equal length, no formatting tells.
+- Every lesson: primary source + "ask your teacher" reminder + cross-links.

@@ -1,0 +1,61 @@
+<meta charset="utf-8">
+<title>Glossary — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory</span>
+  <span><a href="../lessons/0001-types-as-spaces.html">Lessons</a> · Glossary</span>
+</header>
+
+<h1>Glossary</h1>
+<p class="subtitle">One line per term. The canonical vocabulary for this course — every lesson uses these words in exactly this sense. "Lesson" marks where the term is first taught.</p>
+
+<div class="aside">
+  Reading guide: the left column is the <em>type theory</em> word; the "means" column gives the <em>spatial</em> reading. Learning to switch fluently between the two columns is most of what "understanding HoTT" is.
+</div>
+
+<h2>The core dictionary</h2>
+<table>
+  <thead><tr><th>Term</th><th>Means</th><th>Lesson</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Type</strong></td><td>Behaves as a <em>space up to homotopy</em>, equivalently an <span class="tt">∞</span>-groupoid (see below). Its inhabitants are points; it also carries all the higher path structure. "Space" is the intuition; "∞-groupoid" is what is precisely there.</td><td>0001</td></tr>
+    <tr><td><strong>Space</strong> (as used here)</td><td>A topology word, used in HoTT by <em>interpretation</em>, not definition. A type carries no point-set "nearness," only paths. Precisely it is a <strong>homotopy type</strong> = a space viewed only up to continuous deformation.</td><td>0001</td></tr>
+    <tr><td><strong>Homotopy type / homotopy hypothesis</strong></td><td>A homotopy type is a space up to deformation. Grothendieck's homotopy hypothesis: homotopy types <em>are</em> ∞-groupoids. So "type = space" and "type = ∞-groupoid" say the same thing.</td><td>0001</td></tr>
+    <tr><td><strong>Synthetic vs analytic</strong></td><td>Analytic (classical topology): build spaces from points + nearness, <em>derive</em> paths, then forget nearness. Synthetic (HoTT): paths are <em>primitive</em>; there is no underlying nearness to forget. Cubical is a synthetic, computational take.</td><td>0001</td></tr>
+    <tr><td><strong>Term / element</strong> <span class="tt">a : A</span></td><td>A point of the space <span class="tt">A</span>.</td><td>0001</td></tr>
+    <tr><td><strong>Identity type</strong> <span class="tt">a =<sub>A</sub> b</span></td><td>The <em>space of paths</em> from point <span class="tt">a</span> to point <span class="tt">b</span>. Its own points are proofs that a equals b.</td><td>0001</td></tr>
+    <tr><td><strong>Identification / path</strong> <span class="tt">p : a =<sub>A</sub> b</span></td><td>One specific way a and b are equal; a path from a to b.</td><td>0001</td></tr>
+    <tr><td><strong>refl</strong></td><td>The constant path that stays at a point; the canonical proof <span class="tt">a =<sub>A</sub> a</span>.</td><td>0001</td></tr>
+    <tr><td><strong>Higher path</strong></td><td>A path between paths (<span class="tt">p =<sub>a=b</sub> q</span>), and paths between those, forever.</td><td>0001</td></tr>
+    <tr><td><strong>Homotopy</strong></td><td>A continuous deformation of one path (or function) into another; a higher path.</td><td>0001</td></tr>
+    <tr><td><strong>Groupoid</strong></td><td>Points + invertible arrows between them, with composition, inverses, identities. A category where every arrow is iso.</td><td>0001</td></tr>
+    <tr><td><strong>∞-groupoid</strong></td><td>Points, paths, paths-between-paths, … all the way up. The full structure every type has.</td><td>0001</td></tr>
+  </tbody>
+</table>
+
+<h2>Coming in later lessons</h2>
+<table>
+  <thead><tr><th>Term</th><th>Means</th><th>Lesson</th></tr></thead>
+  <tbody>
+    <tr><td><strong>h-level / truncation</strong></td><td>How tall a type's path-tower is: contractible &lt; proposition &lt; set &lt; groupoid &lt; …</td><td>0002 (planned)</td></tr>
+    <tr><td><strong>UIP</strong> (uniqueness of identity proofs) / <strong>axiom K</strong></td><td>Any two proofs of <span class="tt">a = b</span> are themselves equal. Equivalently: <em>every type is a set</em>. HoTT drops it — it contradicts univalence.</td><td>0002 (planned)</td></tr>
+    <tr><td><strong>Judgmental equality</strong> <span class="tt">a ≡ b</span></td><td>Sameness the typechecker decides by computation. Distinct from propositional equality <span class="tt">a = b</span> (a type of proofs).</td><td>0003 (planned)</td></tr>
+    <tr><td><strong>Intensional vs extensional TT</strong></td><td>Intensional: <span class="tt">≡</span> and <span class="tt">=</span> stay separate, typechecking decidable. Extensional: equality reflection collapses them (implies UIP, undecidable). HoTT is intensional.</td><td>0003 (planned)</td></tr>
+    <tr><td><strong>Function extensionality (funext)</strong></td><td>If <span class="tt">f x = g x</span> for all x, then <span class="tt">f = g</span>. Not provable in bare HoTT; an axiom or a consequence of univalence; a computing theorem in cubical.</td><td>0007 (planned)</td></tr>
+    <tr><td><strong>Proposition (mere)</strong></td><td>A type with at most one point up to a path: any two proofs are equal. "Truth value."</td><td>0002 (planned)</td></tr>
+    <tr><td><strong>Set (0-type)</strong></td><td>A type whose paths are trivial: equality is a mere proposition. Ordinary maths lives here.</td><td>0002 (planned)</td></tr>
+    <tr><td><strong>ap</strong></td><td>Apply a function to a path: <span class="tt">f</span> sends a path <span class="tt">a = b</span> to a path <span class="tt">f a = f b</span>. Functoriality.</td><td>0003 (planned)</td></tr>
+    <tr><td><strong>transport</strong></td><td>Move a point along a path in the base to the fibre over the other end. Substitution, made spatial.</td><td>0003 (planned)</td></tr>
+    <tr><td><strong>Path induction (J)</strong></td><td>To prove something about all paths, it suffices to prove it for <span class="tt">refl</span>.</td><td>0003 (planned)</td></tr>
+    <tr><td><strong>Equivalence</strong> <span class="tt">A ≃ B</span></td><td>A function with a well-behaved inverse; the right notion of "same" for types.</td><td>0004 (planned)</td></tr>
+    <tr><td><strong>Univalence</strong></td><td>Identity of types is equivalence of types: <span class="tt">(A =<sub>𝒰</sub> B) ≃ (A ≃ B)</span>.</td><td>0002, 0005 (planned)</td></tr>
+    <tr><td><strong>Representation independence</strong></td><td>No property can distinguish equivalent types, so a proof about one representation transfers to any equivalent one. False without univalence; a theorem with it.</td><td>0002</td></tr>
+    <tr><td><strong>Interval</strong> <span class="tt">I</span></td><td>Cubical's primitive "line" with ends <span class="tt">i0</span>, <span class="tt">i1</span>. A path is a function <span class="tt">I → A</span>.</td><td>0007 (planned)</td></tr>
+    <tr><td><strong>hcomp / transport (Kan ops)</strong></td><td>Cubical operations that let you compose and move paths; make everything compute.</td><td>0008 (planned)</td></tr>
+    <tr><td><strong>Glue</strong></td><td>The cubical construction that turns an equivalence into a path, making univalence a theorem.</td><td>0008 (planned)</td></tr>
+  </tbody>
+</table>
+
+<div class="teacher">
+  <strong>This is a living document.</strong> As lessons land, the "planned" rows become real. If a word shows up in a proof you're reading and it isn't here, ask your teacher to add it.
+</div>

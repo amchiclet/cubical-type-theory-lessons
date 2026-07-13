@@ -1,0 +1,181 @@
+<meta charset="utf-8">
+<title>Lesson 2 — Why This Matters: The Payoff</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 2</span>
+  <span><a href="0001-types-as-spaces.html">◀ Lesson 1</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Why This Matters: The Payoff</h1>
+<p class="subtitle">One worked example, in two worlds. What univalence buys you, and what it costs to live without it.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can explain, on a concrete example, the single sentence at the centre of this whole subject: <em>prove a property once, then move it across an equivalence for free</em>. And you can say precisely what the world without univalence has to do instead.
+</div>
+
+<h2>The one-sentence thesis</h2>
+<p>Three parts, and it helps to keep them separate:</p>
+<table>
+  <thead><tr><th>Part</th><th>What it is</th><th>New?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Engine</strong></td><td><span class="tt">transport</span>: given a path <span class="tt">A = B</span> and a proof <span class="tt">P(A)</span>, get <span class="tt">P(B)</span>. Uniform over every predicate, via path induction.</td><td>Old. Plain type theory already has this.</td></tr>
+    <tr><td><strong>Fuel</strong></td><td><strong>Univalence</strong>: turn an equivalence <span class="tt">A ≃ B</span> into a path <span class="tt">A = B</span>. Ordinary type theory has almost no way to prove two types equal.</td><td>New. This is the HoTT move.</td></tr>
+    <tr><td><strong>Catch</strong></td><td>In book-HoTT univalence is an axiom with no computation rule, so the transported result gets stuck. Cubical makes it compute.</td><td>The reason cubical exists.</td></tr>
+  </tbody>
+</table>
+
+<h2>The example: <span class="tt">Bool</span> and <span class="tt">Binary</span></h2>
+<p>Two types that are obviously the same shape, just relabelled.</p>
+<pre><code>type Bool   = true | false
+type Binary = zero | one
+
+to   : Bool -> Binary          from : Binary -> Bool
+to true  = one                 from one  = true
+to false = zero                from zero = false
+-- to and from are inverse, so we have an equivalence  e : Bool ≃ Binary</code></pre>
+
+<p>We will move a whole <em>structure with its proofs</em>, not just a value. Package "a type equipped with an idempotent operation" as a record:</p>
+<pre><code>Meet A = record {
+  op   : A -> A -> A ,
+  idem : (x : A) -> op x x = x
+}</code></pre>
+
+<p>Now do the real work, once, on <span class="tt">Bool</span>:</p>
+<pre><code>and : Bool -> Bool -> Bool
+and true  y = y
+and false _ = false
+
+andIdem : (x : Bool) -> and x x = x     -- proved by checking both cases
+andIdem true  = refl
+andIdem false = refl
+
+boolMeet : Meet Bool
+boolMeet = record { op = and , idem = andIdem }</code></pre>
+
+<h2>World A — with univalence</h2>
+<p>Univalence turns the equivalence into a path <span class="tt">p : Bool = Binary</span>. Then one line hands you the whole structure on <span class="tt">Binary</span>, proof included:</p>
+<pre><code>p : Bool = Binary
+p = ua e                                -- univalence: equivalence ⟶ path
+
+binaryMeet : Meet Binary
+binaryMeet = transport Meet p boolMeet  -- one line. no new proofs.</code></pre>
+<p>What you get, unfolded:</p>
+<pre><code>binaryMeet.op a b = to (and (from a) (from b))
+   -- e.g.  binaryMeet.op one one = to (and true true) = to true = one
+
+binaryMeet.idem : (a : Binary) -> binaryMeet.op a a = a
+   -- ^ this PROOF was handed to you, for free. You never touched Binary's cases.</code></pre>
+<p>
+The <span class="tt">idem</span> field is the property you got <strong>for free</strong>. Transport relabels every <span class="tt">Bool</span>-slot in the record by the equivalence (inputs via <span class="tt">from</span>, outputs via <span class="tt">to</span>) and carries the proof along the same relabelling. Add ten more laws to <span class="tt">Meet</span> and it is still one <span class="tt">transport</span>.
+</p>
+
+<h2>World B — without univalence</h2>
+<p>Here is the world you already know, spelled out, because the contrast is the whole point.</p>
+
+<h3>The wall</h3>
+<p>
+There is no path <span class="tt">Bool = Binary</span> you can construct. <span class="tt">refl</span> only gives <span class="tt">Bool = Bool</span>; nothing builds a path between two <em>distinct</em> types. So <span class="tt">transport Meet p boolMeet</span> is unwritable: there is no <span class="tt">p</span>. All you have is the equivalence as plain function data, plus the round-trip laws, which are paths <em>inside</em> the types, not between them:
+</p>
+<pre><code>toFrom : (a : Binary) -> to (from a) = a     -- a path inside Binary
+fromTo : (x : Bool)   -> from (to x) = x     -- a path inside Bool</code></pre>
+
+<h3>So you build it by hand, and re-prove every law</h3>
+<pre><code>andB : Binary -> Binary -> Binary
+andB a b = to (and (from a) (from b))
+
+-- re-prove idempotence for Binary. Two ways, both fresh work:
+
+-- option A: redo the case analysis on Binary's constructors
+andBIdem : (a : Binary) -> andB a a = a
+andBIdem one  = refl
+andBIdem zero = refl
+
+-- option B: port it through the equivalence, by hand
+andBIdem a =
+    andB a a
+  = to (and (from a) (from a))    -- unfold andB
+  = to (from a)                   -- by  ap to (andIdem (from a))
+  = a                             -- by  toFrom a</code></pre>
+<p>
+Option B <em>is</em> transport done by hand: push into <span class="tt">Bool</span> with <span class="tt">from</span>, use the <span class="tt">Bool</span> proof, come back with <span class="tt">to</span>, tidy up with the round-trip law. It works. But it is bespoke for this one law, and you write another like it for every law and every representation. N laws times M representations, none reused. Univalence does this once, generically, for the whole bundle.
+</p>
+
+<h3>The deepest gap: one principle is not merely inconvenient, it is unprovable</h3>
+<p>"Any property of <span class="tt">Bool</span> is a property of <span class="tt">Binary</span>" fails as a theorem without univalence. A predicate that separates them:</p>
+<pre><code>P : Type -> Type
+P A = (A = Bool)          -- "A is equal to Bool"
+
+pBool : P Bool
+pBool = refl              -- holds trivially
+
+-- P Binary = (Binary = Bool) has NO inhabitant without univalence.
+-- So P Bool holds and P Binary does not: P tells the two types apart.</code></pre>
+<p>
+So <strong>representation independence</strong> ("no property distinguishes equivalent types") is <em>false</em> in the old world. Univalence is exactly the axiom that flips it: it makes <span class="tt">Binary = Bool</span> inhabited, so that predicate stops separating them, and <span class="tt">P Bool → P Binary</span> becomes provable for <em>every</em> <span class="tt">P</span> at once. That is the thing no amount of by-hand porting can give you, because it is a statement about all predicates uniformly.
+</p>
+
+<h2>The scorecard</h2>
+<table>
+  <thead><tr><th></th><th>Without univalence</th><th>With univalence</th></tr></thead>
+  <tbody>
+    <tr><td>A path <span class="tt">Bool = Binary</span></td><td>cannot be constructed</td><td><span class="tt">ua e</span>, from the equivalence</td></tr>
+    <tr><td>Port one law</td><td>a fresh hand proof</td><td>falls out of one <span class="tt">transport</span></td></tr>
+    <tr><td>Port a 20-law bundle</td><td>20 hand proofs</td><td>still one <span class="tt">transport</span></td></tr>
+    <tr><td>"Every property transfers"</td><td>not provable</td><td>a theorem, for all <span class="tt">P</span></td></tr>
+    <tr><td>Does the result compute</td><td>—</td><td>yes in cubical, stuck in book-HoTT</td></tr>
+  </tbody>
+</table>
+
+<div class="aside">
+  <strong>The framing that ties it together.</strong> Mathematicians already treat isomorphic structures as interchangeable and move theorems between them freely. But in ordinary type theory that is an informal habit living <em>outside</em> the system. Univalence pulls it <em>inside</em> as a uniform, one-line operation, and cubical makes that operation actually run.
+</div>
+
+<div class="aside">
+  <strong>Two IOUs</strong>, tagged honestly, to be earned in later lessons: (1) <em>quotient types without setoid hell</em> (rationals, multisets, syntax up to renaming) come from <a href="../reference/glossary.html">higher inductive types</a>; (2) <em>function extensionality</em> (equal-if-pointwise-equal) is another axiom in book-HoTT that cubical makes compute. Both are the same story as above: a payoff that only truly pays off once it computes.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="A">
+  <p class="q">In the example, what does univalence supply that plain type theory cannot?</p>
+  <button class="opt" data-key="A">a path between the two distinct types</button>
+  <button class="opt" data-key="B">a function sending each true to false</button>
+  <button class="opt" data-key="C">a proof that both types are finite</button>
+  <button class="opt" data-key="D">a way to run binary code faster</button>
+  <div class="explain">Transport is the old engine; it just needs a path. Univalence is the new fuel: it produces the path <span class="tt">Bool = Binary</span> from the equivalence.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Without univalence, the principle "every property transfers" is:</p>
+  <button class="opt" data-key="A">provable if you port each property manually</button>
+  <button class="opt" data-key="B">unprovable, because a predicate separates them</button>
+  <button class="opt" data-key="C">true for finite types such as this one</button>
+  <button class="opt" data-key="D">the same thing as assuming the axiom K</button>
+  <div class="explain">The predicate <span class="tt">P A = (A = Bool)</span> holds for Bool but not for Binary without univalence, so the general principle simply is not derivable. Univalence is what flips it to a theorem.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain to a colleague what the Bool/Binary example shows about univalence, and what it costs to live without it. Three sentences.</p>
+  <div class="answer">
+    Univalence turns the equivalence <span class="tt">Bool ≃ Binary</span> into a real equality <span class="tt">Bool = Binary</span>, so a single transport carries any structure and its proofs across for free, no matter how many laws it has. Without univalence there is no such path, so you re-prove every law by hand for each representation, and the general principle "every property transfers" is not even provable, because the predicate "<span class="tt">= Bool</span>" separates the two types. Cubical supplies the last piece: it makes that transport actually compute instead of getting stuck.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  <a href="https://bartoszmilewski.com/2026/03/10/the-axiom-of-univalence/">Bartosz Milewski, <em>The Axiom of Univalence</em></a> — an intuition-first take from a programmer's angle, the same "identify equivalent types" idea. For the precise statement and the "no predicate distinguishes isomorphic types" framing, see <a href="https://ncatlab.org/nlab/show/univalence+axiom">univalence axiom (nLab)</a>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads from here: "show me the same before/after for function extensionality," "what exactly breaks when the axiom does not compute," or "how do higher inductive types give quotients for free." Any of these is a strong next step.
+</div>
+
+<div class="nav-links">
+  <span><a href="0001-types-as-spaces.html">◀ Lesson 1 — Types are Spaces</a></span>
+  <span>Next up: <em>Lesson 3 — h-levels: how tall is the tower?</em></span>
+</div>

@@ -1,0 +1,168 @@
+<meta charset="utf-8">
+<title>Lesson 1 — Types are Spaces</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 1</span>
+  <span><a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Types are Spaces</h1>
+<p class="subtitle">The one reframe that makes all of HoTT (and cubical) readable: an equality proof is a <em>path</em>, and a type is the <em>space</em> those paths live in.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  After this you can read the sentence <em>"types are ∞-groupoids and equalities are paths"</em> and unpack every word. That sentence is the lens for everything else: univalence, transport, the cubical interval. Get it now and the rest is variations on it.
+</div>
+
+<h2>Start from what you already know</h2>
+<p>
+In ordinary dependent type theory you already have the <strong>identity type</strong>. For <span class="tt">a b : A</span> there is a type
+<span class="tt">a =<sub>A</sub> b</span> (often written <span class="tt">Id<sub>A</sub>(a,b)</span>), and it has one constructor, <span class="tt">refl : a =<sub>A</sub> a</span>.
+</p>
+<p>
+The habit from ordinary type theory is to treat <span class="tt">a =<sub>A</sub> b</span> as a yes/no thing: either it is inhabited (a equals b) or it is not. HoTT makes exactly one move, and everything follows from it:
+</p>
+
+<div class="key">
+  <span class="label">The move</span>
+  Take the identity type seriously as a type. It can have <em>many</em> different inhabitants, and those inhabitants can themselves be related by further identity types. Stop reading <span class="tt">a =<sub>A</sub> b</span> as a fact. Read it as a <em>space of ways</em> that a and b are equal.
+</div>
+
+<h2>The dictionary</h2>
+<p>
+Once you make that move, a translation appears between type theory and geometry. This table is the heart of the lesson. Everything in the course is you learning to read fluently in both columns at once.
+</p>
+
+<table>
+  <thead><tr><th>Type theory</th><th>Geometry / space</th></tr></thead>
+  <tbody>
+    <tr><td>a type <span class="tt">A</span></td><td>a space</td></tr>
+    <tr><td>an element <span class="tt">a : A</span></td><td>a point in the space</td></tr>
+    <tr><td>a proof <span class="tt">p : a =<sub>A</sub> b</span></td><td>a <strong>path</strong> from point a to point b</td></tr>
+    <tr><td><span class="tt">refl : a =<sub>A</sub> a</span></td><td>the path that stays put (constant path)</td></tr>
+    <tr><td>a proof <span class="tt">a =<sub>A</sub> b</span> is <em>impossible</em></td><td>no path connects a and b (different components)</td></tr>
+    <tr><td>a proof <span class="tt">r : p =<sub>(a=b)</sub> q</span></td><td>a path <em>between the two paths</em> p and q</td></tr>
+  </tbody>
+</table>
+
+<figure>
+<svg viewBox="0 0 460 210" role="img" aria-label="A blob-shaped space A with two points a and b, two paths p and q between them, and a shaded region showing a higher path between p and q.">
+  <path d="M30,110 C20,40 120,20 230,30 C360,42 445,60 430,120 C420,180 300,200 190,190 C70,180 40,180 30,110 Z"
+        fill="#f6f6ee" stroke="#d8d8cf" stroke-width="1.5"/>
+  <!-- higher-path shaded lens between p and q -->
+  <path d="M150,120 C210,70 270,70 320,110 C270,150 210,150 150,120 Z"
+        fill="#fbeee9" stroke="none" opacity="0.9"/>
+  <!-- path p (upper) -->
+  <path d="M150,120 C210,72 270,72 320,110" fill="none" stroke="#7a1705" stroke-width="2.2"/>
+  <!-- path q (lower) -->
+  <path d="M150,120 C210,150 270,150 320,110" fill="none" stroke="#7a1705" stroke-width="2.2" stroke-dasharray="5 4"/>
+  <!-- points -->
+  <circle cx="150" cy="120" r="5" fill="#111110"/>
+  <circle cx="320" cy="110" r="5" fill="#111110"/>
+  <text x="132" y="126" font-family="Palatino, Georgia, serif" font-style="italic" font-size="18">a</text>
+  <text x="330" y="115" font-family="Palatino, Georgia, serif" font-style="italic" font-size="18">b</text>
+  <text x="228" y="80" font-family="Palatino, Georgia, serif" font-style="italic" font-size="16" fill="#7a1705">p</text>
+  <text x="228" y="158" font-family="Palatino, Georgia, serif" font-style="italic" font-size="16" fill="#7a1705">q</text>
+  <text x="243" y="118" font-family="Palatino, Georgia, serif" font-style="italic" font-size="15" fill="#7a1705">r</text>
+  <text x="60" y="55" font-family="Palatino, Georgia, serif" font-style="italic" font-size="20">A</text>
+</svg>
+<figcaption>Space <em>A</em>. Points <em>a</em> and <em>b</em>. Two paths <em>p</em> (solid) and <em>q</em> (dashed) between them, and a higher path <em>r</em> (the shaded region) deforming one into the other.</figcaption>
+</figure>
+
+<h2>The tower does not stop</h2>
+<p>
+Here is the part that feels strange at first, then becomes the whole point. Since <span class="tt">a =<sub>A</sub> b</span> is itself a type, and it has two elements <span class="tt">p</span> and <span class="tt">q</span>, we can ask about <em>its</em> identity type: <span class="tt">p =<sub>(a=b)</sub> q</span>. That is a path between paths. And it too is a type, so it has its own paths, and so on without end.
+</p>
+<p>
+So a single type quietly contains an infinite tower:
+</p>
+<ul>
+  <li>points (its elements),</li>
+  <li>paths between points,</li>
+  <li>paths between paths,</li>
+  <li>paths between paths between paths, forever.</li>
+</ul>
+<p>
+A path between paths is what a topologist calls a <strong>homotopy</strong>: a continuous way to slide one path onto the other. That is where the "homotopy" in Homotopy Type Theory comes from. The name is not decoration. The identity type <em>is</em> the space of paths, with all its higher structure.
+</p>
+
+<h2>Why "∞-groupoid" (this is where your category theory pays off)</h2>
+<p>
+Paths behave like the arrows of a groupoid, and you already know what that is: a category in which every arrow is invertible.
+</p>
+<table>
+  <thead><tr><th>Groupoid law</th><th>Path operation</th><th>Proved by</th></tr></thead>
+  <tbody>
+    <tr><td>identity arrow</td><td><span class="tt">refl : a = a</span></td><td>the constant path</td></tr>
+    <tr><td>inverse</td><td><span class="tt">p⁻¹ : b = a</span></td><td>walk the path backwards (symmetry)</td></tr>
+    <tr><td>composition</td><td><span class="tt">p · q : a = c</span></td><td>concatenate paths (transitivity)</td></tr>
+  </tbody>
+</table>
+<p>
+So every type is at least a groupoid: points as objects, paths as invertible arrows. The catch, and the reason for the "∞", is that the groupoid laws (like <span class="tt">p · refl = p</span>, or associativity) do not hold on the nose. They hold <em>up to a higher path</em>. And those higher paths satisfy their own laws only up to even higher paths. A structure where the laws hold up to arrows, all the way up, is an <strong>∞-groupoid</strong>.
+</p>
+
+<div class="key">
+  <span class="label">The sentence, unpacked</span>
+  "Types are ∞-groupoids and equalities are paths" now reads as: every type is a space carrying points, paths, and higher paths without end; a proof that two things are equal is a path between them; and the algebra of those paths (compose, invert, identity) is the algebra of a groupoid, holding up to higher paths forever.
+</div>
+
+<div class="aside">
+  A fair objection: "but in the type theory I know, any two proofs of <span class="tt">a = b</span> are themselves equal. Isn't the tower trivial?" That extra assumption is called <em>uniqueness of identity proofs</em> (UIP), or axiom K. HoTT deliberately drops it. Without K the tower can be genuinely non-trivial, and that is what lets types model real spaces like the circle. When a type theory keeps K, every type is forced down to a "set" with a boring tower. We will make "how tall is the tower" precise next lesson.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory before clicking. The click gives you immediate feedback.</p>
+
+<div class="quiz" data-answer="C">
+  <p class="q">In the space reading, what is an element <span class="tt">p : a =<sub>A</sub> b</span>?</p>
+  <button class="opt" data-key="A">a proof that the type A is not empty at all</button>
+  <button class="opt" data-key="B">a function taking any point a onto point b</button>
+  <button class="opt" data-key="C">a path connecting the point a to point b</button>
+  <button class="opt" data-key="D">a subset of A that contains a and b</button>
+  <div class="explain">A path from a to b. The identity type <span class="tt">a =<sub>A</sub> b</span> is the space of such paths, and p is one point of it.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Why does the phrase say "∞-groupoid" rather than just "groupoid"?</p>
+  <button class="opt" data-key="A">because groupoids cannot ever have invertible arrows in them</button>
+  <button class="opt" data-key="B">because the groupoid laws hold only up to higher paths, forever</button>
+  <button class="opt" data-key="C">because a type can hold infinitely many distinct points inside</button>
+  <button class="opt" data-key="D">because composition of two paths is not defined in a type</button>
+  <div class="explain">Paths compose, invert, and have identities, but the laws (unit, associativity) hold up to a higher path, whose laws hold up to still higher paths. That endless tower is the "∞".</div>
+</div>
+
+<div class="quiz" data-answer="A">
+  <p class="q">What does dropping axiom K (uniqueness of identity proofs) buy you?</p>
+  <button class="opt" data-key="A">the path tower can be non-trivial, so types model real spaces</button>
+  <button class="opt" data-key="B">every type is forced to become a mere truth value now</button>
+  <button class="opt" data-key="C">the identity type stops existing inside the theory at all</button>
+  <button class="opt" data-key="D">function types can no longer be formed between two types</button>
+  <div class="explain">K collapses every higher path, making all towers boring. Dropping it lets <span class="tt">a = b</span> have several distinct, unequal proofs, which is what encodes genuine spatial structure (like the circle's loop).</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<p>The real test of the mission. Speak or write your answer first, then reveal a model answer to compare.</p>
+
+<div class="reveal">
+  <p class="prompt">A colleague who knows type theory asks: "What actually changes when I move from my type theory to HoTT?" Answer in three sentences.</p>
+  <div class="answer">
+    We reinterpret the identity type <span class="tt">a =<sub>A</sub> b</span> as a space of paths rather than a yes/no fact, and we allow it to have many distinct inhabitants. Because that identity type is itself a type, it has its own paths, and we get an endless tower of paths between paths, which is exactly the structure of an ∞-groupoid (or a space). Concretely we drop uniqueness of identity proofs, so equality can carry real structure instead of always being trivial.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  <a href="https://home.sandiego.edu/~shulman/papers/synhott.pdf">Mike Shulman, <em>Homotopy Type Theory: A synthetic approach to higher equalities</em></a> — the first several pages, up through the idea of higher paths. It is prose, almost no symbols, and it makes exactly this reframe from a different angle. If you want the more systematic treatment, start §1.12 and Ch. 2 of the <a href="https://homotopytypetheory.org/book/">HoTT Book</a>, or Rijke's <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good questions to bring back: "Show me a concrete type where the path tower is actually non-trivial." "How is a path <em>between paths</em> not just circular?" "Where does the groupoid law failing 'on the nose' actually bite?" Any of these is a great next thread, and answering them is how the idea sticks.
+</div>
+
+<div class="nav-links">
+  <span></span>
+  <span>Next up: <em>Lesson 2 — h-levels: how tall is the tower?</em> (ask me to build it)</span>
+</div>

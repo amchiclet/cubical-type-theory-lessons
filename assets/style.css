@@ -1,0 +1,262 @@
+/* Shared stylesheet for the Cubical Type Theory course.
+   Tufte-inspired: warm paper, serif body, generous margins, prints cleanly.
+   Every lesson and reference doc links this file so the course reads as one thing. */
+
+:root {
+  --paper:      #fffff8;
+  --ink:        #111110;
+  --ink-soft:   #454542;
+  --rule:       #d8d8cf;
+  --accent:     #7a1705;   /* oxblood, for links & emphasis */
+  --accent-bg:  #fbeee9;
+  --good:       #1a6b3c;
+  --good-bg:    #e8f3ec;
+  --bad:        #9a1b1b;
+  --bad-bg:     #f6e9e9;
+  --code-bg:    #f3f3ea;
+  --maxw:       42rem;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem;
+  max-width: var(--maxw);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1.62;
+  font-kerning: normal;
+}
+
+/* ---- Masthead shared across lessons ---- */
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.6rem;
+  margin-bottom: 2.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.masthead .course { font-weight: 700; }
+.masthead a { color: var(--ink-soft); text-decoration: none; border: none; }
+.masthead a:hover { color: var(--accent); }
+
+/* ---- Headings ---- */
+h1, h2, h3 { line-height: 1.15; font-weight: 700; }
+h1 {
+  font-size: 2.1rem;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+}
+.subtitle {
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+  margin: 0 0 2.6rem;
+}
+h2 {
+  font-size: 1.35rem;
+  margin: 2.8rem 0 0.6rem;
+}
+h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; }
+
+p { margin: 0 0 1.1rem; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(122,23,5,0.28);
+}
+a:hover { border-bottom-color: var(--accent); }
+
+em { font-style: italic; }
+strong { font-weight: 700; }
+
+/* ---- The dictionary / correspondence table (used a lot in this course) ---- */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.4rem 0 1.6rem;
+  font-size: 0.98rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+thead th {
+  border-bottom: 2px solid var(--ink);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+tbody tr:last-child td { border-bottom: none; }
+
+/* ---- Code & math-ish inline ---- */
+code, .tt {
+  font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+pre {
+  background: var(--code-bg);
+  padding: 0.9rem 1.1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  border-left: 3px solid var(--rule);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+
+/* ---- Callouts ---- */
+.note, .key, .aside {
+  margin: 1.6rem 0;
+  padding: 1rem 1.2rem;
+  border-radius: 5px;
+  font-size: 1.02rem;
+}
+.key {
+  background: var(--accent-bg);
+  border-left: 3px solid var(--accent);
+}
+.key .label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.aside {
+  background: #f6f6ee;
+  border-left: 3px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+}
+
+/* ---- Marginal figure captions ---- */
+figure { margin: 1.8rem 0; text-align: center; }
+figure svg { max-width: 100%; height: auto; }
+figcaption {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+}
+
+/* ---- Primary source box ---- */
+.source {
+  margin: 2.4rem 0;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: #fcfcf4;
+  font-size: 0.98rem;
+}
+.source .label {
+  font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-soft); font-weight: 700; display:block; margin-bottom: 0.3rem;
+}
+
+/* ---- Footer / ask-your-teacher reminder ---- */
+.teacher {
+  margin-top: 3.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.98rem;
+  color: var(--ink-soft);
+}
+.teacher strong { color: var(--ink); }
+
+.nav-links {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+/* ---- Quiz widgets (see quiz.js) ---- */
+.quiz, .reveal {
+  margin: 1.8rem 0;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: #fcfcf4;
+}
+.quiz .q, .reveal .prompt {
+  font-weight: 700;
+  margin: 0 0 0.9rem;
+}
+.quiz .opt {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 0.4rem 0;
+  padding: 0.55rem 0.8rem;
+  font: inherit;
+  font-size: 0.98rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.quiz .opt:hover:not(:disabled) { background: var(--code-bg); }
+.quiz .opt:disabled { cursor: default; opacity: 0.95; }
+.quiz .opt.correct { background: var(--good-bg); border-color: var(--good); color: var(--good); font-weight: 700; }
+.quiz .opt.wrong   { background: var(--bad-bg);  border-color: var(--bad);  color: var(--bad); }
+.quiz .explain {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px dashed var(--rule);
+  font-size: 0.96rem;
+  color: var(--ink-soft);
+}
+.reveal-btn {
+  margin-top: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  font: inherit;
+  font-size: 0.9rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.reveal-btn:hover { background: #5f1204; }
+.reveal .answer {
+  margin-top: 0.9rem;
+  padding: 0.8rem 1rem;
+  background: var(--accent-bg);
+  border-radius: 4px;
+  font-size: 0.98rem;
+}
+
+/* ---- Print ---- */
+@media print {
+  body { padding: 0; font-size: 11pt; max-width: none; }
+  .quiz .opt:hover { background: none; }
+  a { border: none; color: var(--ink); }
+  .masthead { border-color: #999; }
+}
+
+@media (max-width: 480px) {
+  body { padding: 2rem 1.1rem 5rem; font-size: 1.05rem; }
+  h1 { font-size: 1.7rem; }
+}
