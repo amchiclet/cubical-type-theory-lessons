@@ -1,0 +1,55 @@
+<meta charset="utf-8">
+<title>Proofs, Dependency, Relevance — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Reference</span>
+  <span><a href="../index.html">Home</a> · <a href="glossary.html">Glossary</a></span>
+</header>
+
+<h1>Proofs, Dependency, Relevance</h1>
+<p class="subtitle">Three ideas that are easy to merge and worth keeping apart. HoTT needs all three, but they are independent knobs.</p>
+
+<table>
+  <thead><tr><th>Idea</th><th>What it says</th><th>Needs the others?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Proofs-as-objects</strong><br>(Curry-Howard)</td><td>A proof is a term; a proposition is a type.</td><td>No. Works with <em>simple</em> types, giving propositional logic only.</td></tr>
+    <tr><td><strong>Dependency</strong><br>(dependent types)</td><td>A type may mention a value (a term). This gives ∀ (Π), ∃ (Σ), and the identity type <span class="tt">a = b</span>.</td><td>Extends Curry-Howard up to predicate logic.</td></tr>
+    <tr><td><strong>Proof relevance</strong></td><td>Two proofs of the same thing may genuinely differ.</td><td>A separate axiom choice. Forced by univalence, killed by UIP.</td></tr>
+  </tbody>
+</table>
+
+<h2>1. Proofs-as-objects (Curry-Howard)</h2>
+<p>
+The idea that a proof is a <em>term</em> and a proposition is a <em>type</em>. It is old and paper-friendly: proof theory already studies proofs (Gentzen's derivations) as objects, and Curry-Howard is the observation that those objects are lambda terms. This works with <em>simple</em> types, and on its own reaches only propositional logic (∧, ∨, →, no quantifiers, no equality). A proof assistant just mechanizes the checking of these proof-terms. Note: mechanical checking does <em>not</em> require this idea; HOL and set-theory provers check proofs that are meta-level derivations, not terms.
+</p>
+
+<h2>2. Dependency (dependent types)</h2>
+<p>
+A dependent type is a type that mentions a value: a family <span class="tt">B : A → Type</span>. Semantically this is just an indexed family of sets, so it lives comfortably on paper and in a proof-irrelevant world (ordinary set theory has it). Its contribution is expressive power: it lifts Curry-Howard from propositional logic to <strong>predicate logic</strong>. <span class="tt">(x : A) → P x</span> is "for all," <span class="tt">Σ (x : A). P x</span> is "there exists," and the identity type <span class="tt">a = b</span> is a dependent type. That last one is why HoTT cannot start without dependency.
+</p>
+
+<div class="key">
+  <span class="label">The point that trips people up</span>
+  The value a type depends on is just a <strong>term</strong>, and under Curry-Howard <strong>proofs are terms too</strong>. So a type can depend on ordinary data (<span class="tt">n</span> in <span class="tt">Vec A n</span>) <em>or</em> on a proof. You usually meet dependency over data first, because indexing over a proof of a plain proposition is vacuous (all proofs are equal, so there is nothing to vary over). HoTT's move is to depend on proofs of <em>equality</em> (paths), which are <em>not</em> vacuous. That is exactly <span class="tt">transport</span>, and it is where dependency finally carries content.
+</div>
+
+<h2>3. Proof relevance</h2>
+<p>
+Whether two proofs of the same statement count as different. This is a <em>separate</em> knob from dependency. Dependent type theory <em>plus UIP</em> makes proofs of a proposition all equal (everything is a set); dependent type theory <em>plus univalence</em> makes proofs of type-equalities genuinely differ. Same dependent types, opposite relevance. So "proofs can be different" is not something dependency gives you; it is a choice you make on top.
+</p>
+
+<h2>What is UIP (the one you keep forgetting)</h2>
+<div class="key">
+  <span class="label">UIP — Uniqueness of Identity Proofs</span>
+  Any two proofs of <span class="tt">a = b</span> are themselves equal. Equivalently: <strong>every type is a set</strong>. It caps the h-level tower at rung 2, and it contradicts univalence: collapsing <span class="tt">ua not</span> and <span class="tt">refl</span> into one proof would force <span class="tt">false = true</span>. Its equivalent form is <em>axiom K</em>; Agda's <span class="tt">--without-K</span> turns it off.
+</div>
+
+<h2>How they stack for HoTT</h2>
+<p>
+You need all three, in order: (1) proofs-as-terms, so equality proofs are objects you can manipulate; (2) dependency, so the identity type <span class="tt">a = b</span> exists at all; then (3) drop UIP, so proofs of equality can differ. Univalence is what <em>forces</em> step 3 by handing type-equalities distinct proofs. See <a href="../lessons/0002-why-this-matters.html">Lesson 2</a> for why that matters and <a href="../lessons/0003-h-levels.html">Lesson 3</a> for the ruler (h-levels) that measures relevance.
+</p>
+
+<div class="teacher">
+  <strong>Ask your teacher</strong> if any axis still blurs into another. The usual slip is treating dependency and relevance as the same thing; they are not.
+</div>

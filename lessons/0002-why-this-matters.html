@@ -69,6 +69,10 @@ So a value of type <span class="tt">Meet A</span> is literally "<em>an operation
 And that is what makes the payoff work. <span class="tt">Meet</span> is a <em>type family</em>, <span class="tt">Meet : Type -> Type</span>: give it a type, get back the type of "that type with an idempotent op." <span class="tt">transport</span> runs along any type family, so a path <span class="tt">Bool = Binary</span> lets it carry a <span class="tt">Meet Bool</span> to a <span class="tt">Meet Binary</span> in one step, dragging the proof along. Writing "the property we want" as a type family is exactly what makes it transportable.
 </p>
 
+<div class="aside">
+  <strong>This is why dependent types are the substrate, and two things not to confuse.</strong> A dependent type is one that mentions a value: the record above (its proof field depends on the operation), and, crucially, the identity type <span class="tt">a = b</span> itself. So without dependent types there is no identity type, hence no paths, transport, or univalence: the whole subject cannot even be stated. They also do one specific job under propositions-as-types: a proof is a term of a type, so the same typechecker that checks your program <em>checks your proofs</em>. That is one guarantee, <strong>checkable</strong>. A different guarantee is <strong>computable</strong>: does that term reduce to a value? Dependent types give you checkable, with or without univalence. The univalence <em>axiom</em> keeps proofs checkable but breaks computable (<span class="tt">transport</span> along it typechecks yet gets stuck), and cubical restores it. So "checked" and "runs" are separate promises, and it is dependent types, not univalence, that buy you the first.
+</div>
+
 <p>Now do the real work, once, on <span class="tt">Bool</span>:</p>
 <pre><code>and : Bool -> Bool -> Bool
 and true  y = y
@@ -168,6 +172,11 @@ So <strong>representation independence</strong> ("no property distinguishes equi
 <div class="aside">
   <strong>Two IOUs</strong>, tagged honestly, to be earned in later lessons: (1) <em>quotient types without setoid hell</em> (rationals, multisets, syntax up to renaming) come from <a href="../reference/glossary.html">higher inductive types</a>; (2) <em>function extensionality</em> (equal-if-pointwise-equal) is another axiom in book-HoTT that cubical makes compute. Both are the same story as above: a payoff that only truly pays off once it computes.
 </div>
+
+<h2>Why this drags in the homotopy view</h2>
+<p>
+You did not choose to picture types as spaces; univalence leaves no choice. Once an equivalence becomes a path, a type equality can have more than one proof: even <span class="tt">Bool = Binary</span> has two, the aligned matching (<span class="tt">true ↔ one</span>) and the swapped one (<span class="tt">true ↔ zero</span>). So equality of types is no longer a yes/no fact. It carries content, that content has its own equalities (are two proofs the same path?), and so on upward. "A thing whose equalities have equalities, all the way up" is exactly a space up to homotopy, an ∞-groupoid, and collapsing that structure back to yes/no is inconsistent: it would force <span class="tt">false = true</span> (see <a href="0003-h-levels.html">Lesson 3</a>). So the homotopy view is not decoration bolted onto type theory. It is the only bookkeeping that can hold what univalence creates. <a href="0001-types-as-spaces.html">Lesson 1</a> sketched the tower; <a href="0003-h-levels.html">Lesson 3</a> measures it.
+</p>
 
 <h2>Check yourself</h2>
 <p>Answer from memory first. The click gives immediate feedback.</p>
