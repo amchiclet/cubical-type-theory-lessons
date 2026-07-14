@@ -137,11 +137,17 @@ P A = (A = Bool)          -- "A is equal to Bool"
 pBool : P Bool
 pBool = refl              -- holds trivially
 
--- P Binary = (Binary = Bool) has NO inhabitant without univalence.
--- So P Bool holds and P Binary does not: P tells the two types apart.</code></pre>
+-- P Binary = (Binary = Bool) cannot be constructed without univalence.
+-- Not provable. And not disprovable either: bare type theory is SILENT
+-- on whether equivalent types are equal. So the proof of P Bool has no
+-- uniform way to become a proof of P Binary.</code></pre>
 <p>
-So <strong>representation independence</strong> ("no property distinguishes equivalent types") is <em>false</em> in the old world. Univalence is exactly the axiom that flips it: it makes <span class="tt">Binary = Bool</span> inhabited, so that predicate stops separating them, and <span class="tt">P Bool → P Binary</span> becomes provable for <em>every</em> <span class="tt">P</span> at once. That is the thing no amount of by-hand porting can give you, because it is a statement about all predicates uniformly.
+So <strong>representation independence</strong> ("no property distinguishes equivalent types") is <em>not provable</em> in the old world. That is subtler than "false": bare type theory neither proves <span class="tt">Binary = Bool</span> nor refutes it, it leaves the question open, like an axiom you have not chosen yet. The honest way to see that the transfer is not a theorem is to exhibit a model of the old theory where the universe is "rigid," <span class="tt">Binary = Bool</span> is empty, and <span class="tt">P Bool → P Binary</span> genuinely fails there. Univalence resolves the open question the other way: it makes <span class="tt">Binary = Bool</span> inhabited, so the predicate stops separating them and <span class="tt">P Bool → P Binary</span> holds for <em>every</em> <span class="tt">P</span> at once. That uniform transfer is the thing no amount of by-hand porting can give you.
 </p>
+
+<div class="aside">
+  <strong>Unprovable is not the same as false.</strong> Constructively, "no inhabitant we can build" (not provable) is weaker than "a proof of the negation" (provably false). You <em>can</em> refute <span class="tt">Bool = ⊥</span>: transport a <span class="tt">true</span> into the empty type and derive a contradiction. You <em>cannot</em> refute <span class="tt">Binary = Bool</span>, because the two really are equivalent, so transport only relabels and never reaches a contradiction. Univalence and "rigid distinctness" are two <em>consistent</em> ways to settle what the bare rules leave open.
+</div>
 
 <h2>The scorecard</h2>
 <table>
