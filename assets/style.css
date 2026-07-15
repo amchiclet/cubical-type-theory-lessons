@@ -3,18 +3,26 @@
    Every lesson and reference doc links this file so the course reads as one thing. */
 
 :root {
-  --paper:      #fffff8;
-  --ink:        #111110;
-  --ink-soft:   #454542;
-  --rule:       #d8d8cf;
-  --accent:     #7a1705;   /* oxblood, for links & emphasis */
-  --accent-bg:  #fbeee9;
-  --good:       #1a6b3c;
-  --good-bg:    #e8f3ec;
-  --bad:        #9a1b1b;
-  --bad-bg:     #f6e9e9;
-  --code-bg:    #f3f3ea;
-  --maxw:       42rem;
+  /* Dark theme is the default (warm dark, the Tufte paper feel inverted).
+     Screen reading is dark; the print block at the bottom resets to light
+     paper so printed lessons stay ink-on-white. */
+  --paper:          #1a1917;   /* warm near-black background */
+  --ink:            #e8e6dc;   /* warm off-white text */
+  --ink-soft:       #a6a49a;
+  --rule:           #38362f;
+  --accent:         #e28c6f;   /* warm terracotta, oxblood lifted for dark */
+  --accent-bg:      #2e1d16;
+  --accent-hover:   #eaa88f;
+  --good:           #7cc99a;
+  --good-bg:        #17271d;
+  --bad:            #e58b8b;
+  --bad-bg:         #2c1817;
+  --code-bg:        #24231d;
+  --panel-bg:       #201f19;   /* source / quiz / reveal cards */
+  --aside-bg:       #201f18;
+  --link-underline: rgba(226,140,111,0.4);
+  --btn-text:       #1a1917;   /* dark text on the terracotta button */
+  --maxw:           42rem;
 }
 
 * { box-sizing: border-box; }
@@ -75,7 +83,7 @@ p { margin: 0 0 1.1rem; }
 a {
   color: var(--accent);
   text-decoration: none;
-  border-bottom: 1px solid rgba(122,23,5,0.28);
+  border-bottom: 1px solid var(--link-underline);
 }
 a:hover { border-bottom-color: var(--accent); }
 
@@ -144,7 +152,7 @@ pre code { background: none; padding: 0; }
   margin-bottom: 0.35rem;
 }
 .aside {
-  background: #f6f6ee;
+  background: var(--aside-bg);
   border-left: 3px solid var(--rule);
   color: var(--ink-soft);
   font-size: 0.96rem;
@@ -166,7 +174,7 @@ figcaption {
   padding: 1rem 1.2rem;
   border: 1px solid var(--rule);
   border-radius: 5px;
-  background: #fcfcf4;
+  background: var(--panel-bg);
   font-size: 0.98rem;
 }
 .source .label {
@@ -197,7 +205,7 @@ figcaption {
   padding: 1.1rem 1.3rem;
   border: 1px solid var(--rule);
   border-radius: 6px;
-  background: #fcfcf4;
+  background: var(--panel-bg);
 }
 .quiz .q, .reveal .prompt {
   font-weight: 700;
@@ -234,12 +242,12 @@ figcaption {
   font: inherit;
   font-size: 0.9rem;
   background: var(--accent);
-  color: #fff;
+  color: var(--btn-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
-.reveal-btn:hover { background: #5f1204; }
+.reveal-btn:hover { background: var(--accent-hover); }
 .reveal .answer {
   margin-top: 0.9rem;
   padding: 0.8rem 1rem;
@@ -250,7 +258,16 @@ figcaption {
 
 /* ---- Print ---- */
 @media print {
-  body { padding: 0; font-size: 11pt; max-width: none; }
+  /* Reset to light paper for print: dark backgrounds waste ink and light
+     text vanishes on paper. Screen stays dark; only print flips. */
+  :root {
+    --paper: #fffff8; --ink: #111110; --ink-soft: #454542; --rule: #d8d8cf;
+    --accent: #7a1705; --accent-bg: #fbeee9; --accent-hover: #5f1204;
+    --good: #1a6b3c; --good-bg: #e8f3ec; --bad: #9a1b1b; --bad-bg: #f6e9e9;
+    --code-bg: #f3f3ea; --panel-bg: #fcfcf4; --aside-bg: #f6f6ee;
+    --link-underline: rgba(122,23,5,0.28); --btn-text: #fffff8;
+  }
+  body { padding: 0; font-size: 11pt; max-width: none; background: #fffff8; color: #111110; }
   .quiz .opt:hover { background: none; }
   a { border: none; color: var(--ink); }
   .masthead { border-color: #999; }

@@ -1,0 +1,140 @@
+<meta charset="utf-8">
+<title>Lesson 4 — The Two Equalities</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 4</span>
+  <span><a href="../index.html">Home</a> · <a href="0003-h-levels.html">◀ Lesson 3</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>The Two Equalities</h1>
+<p class="subtitle">Every proof you will read leans on two different notions of "equal" that look alike and behave nothing alike. This lesson pins down which is which, and why HoTT keeps them apart on purpose.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can say what <span class="tt">≡</span> and <span class="tt">=</span> each mean, point to the one rule that would collapse them, and explain why taking that shortcut would cost you both a working typechecker and univalence. That is why HoTT sits on <em>intensional</em> type theory, and why the rest of this course exists.
+</div>
+
+<h2>One fact, two statuses</h2>
+<p>Take addition on the naturals, defined the usual way by recursion on the first argument:</p>
+
+<pre><code>zero  + m = m
+suc n + m = suc (n + m)</code></pre>
+
+<p>Now look at two facts that are both plainly true, and watch how differently the machine treats them.</p>
+
+<pre><code>-- 0 + n : the term matches the first clause and computes to n.
+--         The typechecker sees they are the same. No proof needed.
+0 + n  ≡  n        -- holds by computation
+
+-- n + 0 : n is a variable, so no clause fires, and the term is stuck.
+--         The checker does NOT see these as the same. You must prove it.
+n + 0  =  n        -- needs a proof, by induction on n</code></pre>
+
+<p>Same mathematical truth, two completely different statuses. The difference is not about the numbers. It is about whether the definition of <span class="tt">+</span> makes the term <em>reduce</em>. That split is the whole subject of this lesson.</p>
+
+<h2>Naming them precisely</h2>
+<p>Following <a href="0003-h-levels.html">the precision we have been keeping</a>, here are the two objects, kept strictly apart:</p>
+
+<table>
+  <thead><tr><th></th><th>Judgmental <span class="tt">a ≡ b</span></th><th>Propositional <span class="tt">a = b</span></th></tr></thead>
+  <tbody>
+    <tr><td><strong>What it is</strong></td><td>A judgment the typechecker makes. Not a type.</td><td>A type. Its inhabitants are proofs, i.e. paths.</td></tr>
+    <tr><td><strong>Who decides it</strong></td><td>The machine, by reducing both sides to normal form.</td><td>You, by building a term with <span class="tt">refl</span>, <span class="tt">J</span>, transport.</td></tr>
+    <tr><td><strong>Can you hold one?</strong></td><td>No. It either holds or it does not; there is no evidence to pass around.</td><td>Yes. A proof <span class="tt">p : a = b</span> is data you can name and use.</td></tr>
+    <tr><td><strong>Other names</strong></td><td>definitional equality, "computes to"</td><td>the identity type, path, identification</td></tr>
+  </tbody>
+</table>
+
+<div class="aside">
+  Shorthand worth memorising: <strong><span class="tt">≡</span> is what the machine already believes; <span class="tt">=</span> is what you can prove.</strong> Everything below is about the gap between those two.
+</div>
+
+<h2>Where they touch</h2>
+<p>They are separate, but not sealed off. Look at the one constructor of the identity type:</p>
+
+<pre><code>refl : a = a</code></pre>
+
+<p>Why is <span class="tt">refl</span> allowed to prove <span class="tt">a = a</span>, and also <span class="tt">0 + n = n</span>? Because the checker first reduces both endpoints, and <span class="tt">0 + n</span> reduces to <span class="tt">n</span>. So <span class="tt">refl</span> typechecks at <span class="tt">0 + n = n</span> for free. The propositional layer is <em>seeded</em> by the judgmental one: whatever the machine already believes, <span class="tt">refl</span> hands you as a proof. Then <span class="tt">J</span> and transport grow that seed into everything else. What <span class="tt">refl</span> cannot reach, like <span class="tt">n + 0 = n</span>, you have to earn by induction.</p>
+
+<h2>The fork: intensional vs extensional</h2>
+<p>There is a tempting rule you could add. It is called <strong>equality reflection</strong>, and it says the two arrows are secretly one:</p>
+
+<pre><code>-- Equality reflection: if you can prove it, the machine believes it.
+if   p : a = b     then     a ≡ b</code></pre>
+
+<p>A type theory with this rule is <strong>extensional</strong>. One without it is <strong>intensional</strong>: there, a proof <span class="tt">p : a = b</span> never upgrades into <span class="tt">a ≡ b</span>. The two stay in their lanes. This one rule is the entire fork in the road.</p>
+
+<p>Extensional looks like a bargain. Function extensionality would come free: prove <span class="tt">f</span> and <span class="tt">g</span> agree everywhere, reflect it, done. So why does HoTT refuse it?</p>
+
+<h2>What the shortcut costs</h2>
+<p>Equality reflection charges two bills, and HoTT can pay neither.</p>
+
+<div class="key">
+  <span class="label">Cost 1: typechecking stops being decidable</span>
+  To check <span class="tt">a ≡ b</span>, the machine now has to know whether <em>some</em> proof <span class="tt">p : a = b</span> exists. Searching for an arbitrary proof is undecidable. So the typechecker can no longer reliably say yes or no. Reduction was mechanical; proof search is not.
+</div>
+
+<div class="key">
+  <span class="label">Cost 2: it forces UIP, which kills univalence</span>
+  Equality reflection implies <a href="0003-h-levels.html">UIP</a>: every type becomes a <em>set</em>, the tower capped at rung 2. But <a href="0002-why-this-matters.html">Lesson 2</a> showed the universe must be a <em>groupoid</em>, because <span class="tt">Bool = Bool</span> has two distinct proofs. A theory that forces UIP cannot host univalence. The shortcut and the payoff are incompatible.
+</div>
+
+<p>So HoTT stays <strong>intensional</strong>. It keeps <span class="tt">≡</span> and <span class="tt">=</span> apart, which keeps typechecking decidable and leaves room for a tall tower. The price is that extensionality is no longer free. You have to add it as real content.</p>
+
+<div class="aside">
+  <strong>A precision point you will care about.</strong> In bare intensional type theory, function extensionality is not <em>false</em>. It is <em>independent</em>: unprovable and unrefutable, consistent to assume either way, exactly the status <a href="0002-why-this-matters.html">representation independence</a> had in Lesson 2. HoTT does not refute the extensional shortcut. It declines the reflection <em>rule</em> and instead earns extensionality as an axiom or a theorem in the propositional layer, where it does no damage to decidability.
+</div>
+
+<h2>Why this is the whole map</h2>
+<p>This fork is the reason the remaining lessons look the way they do. Because HoTT is intensional, it owes you extensionality as separate content:</p>
+<ul>
+  <li><strong>Function extensionality</strong> (Lesson 9): an axiom in book-HoTT. It typechecks but does not compute, so proofs using it get stuck.</li>
+  <li><strong>Univalence</strong> (Lesson 7): also an axiom in book-HoTT, and also stuck for the same reason.</li>
+  <li><strong>Cubical</strong> (Lessons 10 to 11): the <span class="tt">interval</span> makes both of these into theorems that actually reduce. That is the reason cubical exists.</li>
+</ul>
+<p>Hold onto the shape: intensional setting creates a bill, book-HoTT pays it with axioms that do not run, cubical pays it with theorems that do.</p>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">With <span class="tt">+</span> defined by recursion on its first argument, why is <span class="tt">0 + n ≡ n</span> free while <span class="tt">n + 0 = n</span> must be earned?</p>
+  <button class="opt" data-key="A">addition on the naturals is secretly not commutative</button>
+  <button class="opt" data-key="B">only the first term matches a defining clause</button>
+  <button class="opt" data-key="C">propositional equality is a strictly weaker relation here</button>
+  <button class="opt" data-key="D">the checker never reduces terms with free variables</button>
+  <div class="explain"><span class="tt">0 + n</span> matches the clause <span class="tt">zero + m = m</span> and computes to <span class="tt">n</span>, so the machine sees the equality and <span class="tt">refl</span> proves it. In <span class="tt">n + 0</span> the variable <span class="tt">n</span> sits in the recursion slot, no clause fires, the term is stuck, and you must go by induction.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Adding equality reflection (making the theory extensional) has what unavoidable cost?</p>
+  <button class="opt" data-key="A">it makes every proof term much longer overall</button>
+  <button class="opt" data-key="B">it forces UIP and gives up decidable typechecking</button>
+  <button class="opt" data-key="C">it deletes the identity type from the theory</button>
+  <button class="opt" data-key="D">it stops refl from working on most types</button>
+  <div class="explain">Reflection lets you conclude <span class="tt">a ≡ b</span> from any proof <span class="tt">p : a = b</span>, so the checker must search for proofs, which is undecidable. The same rule entails UIP, making every type a set, which contradicts the groupoid universe univalence needs.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">A colleague asks: "Why not just make type theory extensional so function extensionality is free? Why does HoTT insist on keeping <span class="tt">≡</span> and <span class="tt">=</span> apart?" Answer in three sentences.</p>
+  <div class="answer">
+    Judgmental equality <span class="tt">≡</span> is what the typechecker decides by computation, while propositional equality <span class="tt">=</span> is a type of proofs you build; extensional type theory adds equality reflection, which collapses the second into the first. That collapse makes typechecking undecidable, because the machine would have to search for proofs, and it forces UIP, which caps every type at the level of a set. HoTT refuses the shortcut so that typechecking stays decidable and the universe can be a groupoid, which is exactly what univalence needs, and it pays for extensionality separately, first with axioms and later, in cubical, with theorems that compute.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  Egbert Rijke, <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>, the early sections on judgmental versus propositional equality and the identity type. For the deliberate choice of an intensional setting, the <a href="https://homotopytypetheory.org/book/">HoTT Book</a> §1.1 and the identity-type material in §1.12 are the canonical statement.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Strong threads from here: "show me the actual induction that proves <span class="tt">n + 0 = n</span>," "what does equality reflection look like as an inference rule," or "spell out why reflection implies UIP." Push back on me too: if "intensional keeps <span class="tt">≡</span> and <span class="tt">=</span> apart" still feels like a definition without a reason, say so and we will dig until it clicks.
+</div>
+
+<div class="nav-links">
+  <span><a href="0003-h-levels.html">◀ Lesson 3 — h-levels</a></span>
+  <span>Next up: <em>Lesson 5 — path algebra: ap, transport, J</em></span>
+</div>

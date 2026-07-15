@@ -1,0 +1,156 @@
+<meta charset="utf-8">
+<title>Lesson 5 — Path Algebra: ap, transport, and J</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 5</span>
+  <span><a href="../index.html">Home</a> · <a href="0004-two-equalities.html">◀ Lesson 4</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Path Algebra: ap, transport, and J</h1>
+<p class="subtitle">Three moves let you work with paths. Two are easy. The third, path induction, looks impossible until you see what it really says, and it is the engine that computes what "equal" even means.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can state path induction, say <em>why</em> proving the <span class="tt">refl</span> case is enough (it is not "every path is refl"), and watch it do real work: proving <span class="tt">true ≠ false</span> and computing the identity type of a whole structure. You will also see why that engine gets stuck in book-HoTT but runs in cubical.
+</div>
+
+<h2>Two easy moves first</h2>
+<p>You already met the idea of <em>using</em> a path. Two moves cover most of it.</p>
+
+<pre><code>-- ap: a function sends a path to a path. (Functoriality.)
+ap : (f : A -> B) -> (a = a') -> (f a = f a')
+
+-- transport: carry a point of the fibre P a along a path into P a'.
+--            This is the "swapping" you already have a feel for.
+transport : (P : A -> Type) -> (a = a') -> P a -> P a'</code></pre>
+
+<p><span class="tt">ap</span> builds new paths from old ones. <span class="tt">transport</span> moves data across a path. Neither is mysterious. Both, it turns out, are special cases of the third move.</p>
+
+<h2>The move that looks impossible: path induction (J)</h2>
+<p>Here is the rule, based at a point <span class="tt">a</span>:</p>
+
+<pre><code>-- To prove a property C of EVERY endpoint y and EVERY path p : a = y,
+-- it suffices to prove C at the single case (a, refl).
+J : (C : (y : A) -> (a = y) -> Type)
+    -> C a refl
+    -> (y : A) (p : a = y) -> C y p</code></pre>
+
+<p>This should bother you. In <a href="0002-why-this-matters.html">Lesson 2</a> you saw paths that are visibly not <span class="tt">refl</span>: <span class="tt">ua not : Bool = Bool</span> flips the two values. On the circle there is a <span class="tt">loop</span> that goes around. So how can checking <span class="tt">refl</span> alone settle a claim about <em>all</em> paths?</p>
+
+<div class="key">
+  <span class="label">The resolution</span>
+  <strong>J never says "all paths are refl."</strong> Look again: the endpoint <span class="tt">y</span> is <em>free</em>. J ranges over paths with one end pinned at <span class="tt">a</span> and the other end loose, that is, over the space <span class="tt">Σ (y : A). a = y</span>. And that space is <strong>contractible</strong>: its centre is <span class="tt">(a, refl)</span>, and every other point <span class="tt">(y, p)</span> slides back to it. To prove a property of every point in a contractible space (a rung-0 type, <a href="0003-h-levels.html">Lesson 3</a>), proving it at the centre is enough. That is the entire content of J: <em>refl is the centre of the based path space, not the only path in it.</em>
+</div>
+
+<h3>Then why doesn't <span class="tt">ua not</span> break it?</h3>
+<p>Because <span class="tt">ua not</span> is a <em>loop</em>: both of its endpoints are pinned to <span class="tt">Bool</span>. J's contractible space has one <em>free</em> endpoint, so a loop never enters it as a fresh point to flatten. Contractibility does give you <span class="tt">(Bool, refl) = (Bool, ua not)</span> in the total space <span class="tt">Σ (y). Bool = y</span>, but the path witnessing that moves <em>both</em> components: its first part is a nontrivial <span class="tt">Bool = Bool</span>. So the two facts live in different types and never collide:</p>
+
+<pre><code>ua not ≠ refl            -- in  Bool =_U Bool   (endpoints pinned: a real loop)
+(Bool, refl) = (Bool, ua not)   -- in  Σ (y). Bool = y  (endpoint free: holds)</code></pre>
+
+<p>J flattens the free-endpoint space. Loops keep both endpoints pinned, so they stay out of its reach. That is exactly why J is consistent with a universe that is a <a href="0003-h-levels.html">groupoid</a>.</p>
+
+<h2>J at work: what does "equal" mean for a type?</h2>
+<p>Now the payoff. J lets you <em>compute</em> the identity type of a structure. Start with the smallest case, and reconnect to something you asked about: proving things are genuinely <em>different</em>.</p>
+
+<p>Define a family on <span class="tt">Bool</span> that tells the two values apart:</p>
+
+<pre><code>Code : Bool -> Type
+Code true  = Top       -- the one-point type (inhabited)
+Code false = Bottom    -- the empty type</code></pre>
+
+<p>Suppose someone hands you a path <span class="tt">p : true = false</span>. Transport along it:</p>
+
+<pre><code>transport Code p    : Code true -> Code false     -- that is  Top -> Bottom
+transport Code p tt : Bottom                       -- but Bottom is empty!</code></pre>
+
+<p>So <span class="tt">(true = false) -> Bottom</span>, which is exactly <span class="tt">true ≠ false</span>. Notice what happened: <strong>you proved a disequality by swapping.</strong> You transported a distinguishing property along the hypothetical path and hit a contradiction. Disequality, the thing that keeps <span class="tt">Bool</span> from collapsing to a point, turns out to be an application of transport.</p>
+
+<div class="aside">
+  A precision point worth keeping: <span class="tt">¬(a = b)</span> is always a <em>mere proposition</em>, a plain yes/no, even when <span class="tt">a = b</span> is a rich space full of paths. And recall the three statuses from <a href="0004-two-equalities.html">Lesson 4</a>: provable equality, provable disequality, and independent. <span class="tt">true ≠ false</span> is provable; <span class="tt">ua not ≠ refl</span> only becomes true once univalence is in play.
+</div>
+
+<h3>The same trick, run to completion: encode-decode</h3>
+<p>That <span class="tt">Code</span> family was a baby case of a general recipe. Give a two-argument version, and J proves that it <em>is</em> the identity type:</p>
+
+<pre><code>Code : Bool -> Bool -> Type
+Code true  true  = Top      Code false false = Top
+Code true  false = Bottom   Code false true  = Bottom
+
+(x = y)  ≃  Code x y        -- the identity type of Bool, decoded</code></pre>
+
+<p>This is the <strong>encode-decode</strong> method: to find out what a path in a type really is, define a <span class="tt">Code</span> that mirrors the type's structure, then use J to prove the identity type is equivalent to it. The equivalence is built by path induction, because the forward map is "transport the reflexivity witness," exactly the move above.</p>
+
+<h2>The pattern: identity mirrors structure</h2>
+<p>Run this recipe on any structured type and the identity type comes out as a formula in the identity types of its parts:</p>
+
+<pre><code>((a, b) = (a', b'))   ≃   (a = a') × (b = b')            -- pairs
+(f = g)               ≃   (x : A) -> f x = g x            -- functions (funext!)
+((a, p) = (a', p'))   ≃   Σ (q : a = a'). transport q p = p'   -- dependent pairs</code></pre>
+
+<p>You have been reading formulas like these since <a href="0003-h-levels.html">Lesson 3</a> without naming them: <span class="tt">isSet A = (x y : A) -> isProp (x = y)</span> is identity nested inside identity. And the same recipe, run on the circle, is how the next lessons will prove <span class="tt">π₁(S¹) = ℤ</span>: the paths <em>are</em> the integers. Identity stops being only a tool for swapping and becomes an object you compute with.</p>
+
+<h2>Does the engine actually run? HoTT vs cubical</h2>
+<p>The proof principle J is the same in both systems. Whether it <em>computes</em> is not. This is the through-line from <a href="0004-two-equalities.html">Lesson 4</a>: the intensional setting owes you extensionality, and how the bill gets paid decides whether things run.</p>
+
+<table>
+  <thead><tr><th></th><th>book-HoTT</th><th>cubical</th></tr></thead>
+  <tbody>
+    <tr><td><strong>What a path is</strong></td><td>primitive; identity type with J as a black box</td><td>a function <span class="tt">I → A</span> out of the interval</td></tr>
+    <tr><td><strong>J is</strong></td><td>a primitive eliminator</td><td>derived from transport and hcomp</td></tr>
+    <tr><td><strong>J on <span class="tt">refl</span></strong></td><td>reduces to the base case <em>definitionally</em> (<span class="tt">≡</span>)</td><td>equal to the base case only <em>up to a path</em> (<span class="tt">=</span>)</td></tr>
+    <tr><td><strong>J on a <span class="tt">ua</span>/funext path</strong></td><td><strong>stuck</strong>: those are axioms, they do not reduce</td><td><strong>computes</strong>: they are built from the interval, so transport walks along them</td></tr>
+    <tr><td><strong>Canonicity</strong></td><td>breaks once <span class="tt">ua</span>/funext are added</td><td>preserved</td></tr>
+  </tbody>
+</table>
+
+<p>So in book-HoTT, J is justified by the model but only actually <em>fires</em> on the syntactic <span class="tt">refl</span>. Feed it a path from univalence and the term jams. Cubical makes every path a real function transport can traverse, so J runs on all of them. The price: J's own reduction on <span class="tt">refl</span> is now only propositional. That trade is the reason cubical exists.</p>
+
+<div class="aside">
+  Honesty flag: the "only up to a path" behaviour is the CCHM / cubical Agda story. Some Cartesian cubical variants add a regularity condition that recovers a definitional J on <span class="tt">refl</span>. I am confident about CCHM; I would want to check a source before spelling out the regularity details.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Path induction proves a claim about all paths by checking only <span class="tt">refl</span>. Why is that enough?</p>
+  <button class="opt" data-key="A">refl is the sole inhabitant of every identity type</button>
+  <button class="opt" data-key="B">the based path space is contractible with centre refl</button>
+  <button class="opt" data-key="C">all higher paths between paths must collapse to refl</button>
+  <button class="opt" data-key="D">every path can be rewritten as refl by transport</button>
+  <div class="explain">J quantifies over paths with one <em>free</em> endpoint, that is, over <span class="tt">Σ (y). a = y</span>, which is contractible with centre <span class="tt">(a, refl)</span>. Proving the property at the centre of a contractible space suffices. There are plenty of other paths (<span class="tt">ua not</span>, <span class="tt">loop</span>); they are just loops with pinned endpoints, outside the space J ranges over.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">You apply J to a path built from univalence. What happens in book-HoTT versus cubical?</p>
+  <button class="opt" data-key="A">it computes in book-HoTT but gets stuck in cubical</button>
+  <button class="opt" data-key="B">it gets stuck in book-HoTT but computes in cubical</button>
+  <button class="opt" data-key="C">it computes in both since J is primitive everywhere</button>
+  <button class="opt" data-key="D">it gets stuck in both since ua never computes</button>
+  <div class="explain">In book-HoTT J only reduces on the syntactic <span class="tt">refl</span>, and a univalence path is an axiom that does not compute, so J jams. In cubical every path is a function out of the interval and J is derived from transport, so it walks along the univalence path and computes.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain, in three sentences: why proving only the <span class="tt">refl</span> case suffices for path induction, and why that principle still runs on a <span class="tt">ua</span>-path in cubical but not in book-HoTT.</p>
+  <div class="answer">
+    Path induction does not claim every path is <span class="tt">refl</span>; it quantifies over paths with one free endpoint, and that based path space is contractible with centre <span class="tt">(a, refl)</span>, so proving the property at the centre is enough. In book-HoTT, J is a primitive rule that only reduces on the syntactic <span class="tt">refl</span>, so applied to a path from the univalence axiom, which does not compute, it gets stuck. In cubical, every path is a function out of the interval and J is derived from transport, so it walks along the <span class="tt">ua</span>-path and computes, at the cost that J's own reduction on <span class="tt">refl</span> holds only up to a path.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  Egbert Rijke, <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>, the sections on the identity type, the induction principle, and identity systems. For the encode-decode method and identity-type characterizations, the <a href="https://homotopytypetheory.org/book/">HoTT Book</a> §2.12 (coproducts) and §2.13 (the naturals) are the cleanest worked cases.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Strong threads from here: "walk me through the encode-decode equivalence for <span class="tt">Bool</span> step by step," "show me transport and ap as actual instances of J," or "what does the <span class="tt">loop</span> case of <span class="tt">S¹</span> look like before we get to it." Push back too: if "contractible based path space" still feels like a slogan, say so and we will build the contraction by hand.
+</div>
+
+<div class="nav-links">
+  <span><a href="0004-two-equalities.html">◀ Lesson 4 — The Two Equalities</a></span>
+  <span>Next up: <em>Lesson 6 — Equivalence: the right notion of "same"</em></span>
+</div>
