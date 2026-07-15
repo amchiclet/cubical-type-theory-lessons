@@ -33,6 +33,8 @@ Confirmed learner interests to honour:
 - (2026-07-05) wants a "why this matters / what programs it enables" motivation grounding → trailer #2 + feature #12, and HITs #8 added. See [[learning-records/0004-motivation-first]].
 - (2026-07-14) most curious about path induction: "why does refl suffice when there are so many other paths?" + wants the HoTT/CTT difference spelled out → shaped #5 (done). See [[learning-records/0006-path-induction-fascination]].
 - (2026-07-14) probing the full role of identity (uses beyond swapping; proving ¬identity; nested identity formulas) → encode-decode folded into #5; `π₁(S¹)=ℤ` reserved for #8. See [[learning-records/0007-uses-of-identity]].
+- (2026-07-14) wrestling with the ∞-tower and homotopy-vs-identity → shapes #8 and the coherence thread. See [[learning-records/0008-infinity-tower-and-homotopy-vs-identity]].
+- (2026-07-14) **no preference on follow-up lesson order — teacher chooses the sequence.** Decision: fold the "coherence / why associativity is a higher path" thread into #6 (Equivalence) where it first bites, rather than a standalone lesson, keeping the arc order #6 → #7 → ... intact. Loose IOU still applies (may digress when interesting).
 
 ## Lesson design reminders
 - One tangible win per lesson. Keep inside working memory.
