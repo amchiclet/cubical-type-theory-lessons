@@ -73,7 +73,7 @@ if   p : a = b     then     a ≡ b</code></pre>
 
 <div class="key">
   <span class="label">Cost 1: typechecking stops being decidable</span>
-  To check <span class="tt">a ≡ b</span>, the machine now has to know whether <em>some</em> proof <span class="tt">p : a = b</span> exists. Searching for an arbitrary proof is undecidable. So the typechecker can no longer reliably say yes or no. Reduction was mechanical; proof search is not.
+  In intensional type theory the proof is <em>explicit in your term</em>: to use <span class="tt">p : a = b</span> you write a visible <span class="tt">transport p</span>, so the checker never searches, it just reduces. Reflection lets you use <span class="tt">p</span> <em>silently</em>, with no marker in the term. So when the checker hits a spot needing <span class="tt">a ≡ b</span>, nothing tells it which proof justified it, and it must <em>search</em> for one. Proof search is undecidable, so the checker can no longer reliably say yes or no. The evidence you were counting on is real; reflection just stops recording it in the term.
 </div>
 
 <div class="key">
@@ -84,8 +84,39 @@ if   p : a = b     then     a ≡ b</code></pre>
 <p>So HoTT stays <strong>intensional</strong>. It keeps <span class="tt">≡</span> and <span class="tt">=</span> apart, which keeps typechecking decidable and leaves room for a tall tower. The price is that extensionality is no longer free. You have to add it as real content.</p>
 
 <div class="aside">
+  <strong>Two different failures, at two different times. Do not merge them.</strong> "Typechecked" and "computes" are separate promises. <em>Checkable</em> (check-time): can the machine decide the term is well-typed? <em>Computable</em> (run-time): does a closed well-typed term reduce to a value? Equality reflection breaks the first: typechecking becomes undecidable. Adding <span class="tt">univalence as an axiom</span> to intensional type theory keeps the first intact (it stays decidable) but breaks the second: <span class="tt">transport (ua e) true</span> typechecks fine, yet evaluating it gets stuck on the opaque <span class="tt">ua</span> and never reaches <span class="tt">one</span>. So "typechecks" does not imply "runs": the checker only verifies types line up using reduction as far as the rules allow, and an axiom has no reduction rule. Cubical fixes the run-time failure (it gives <span class="tt">ua</span> real reduction rules) while staying intensional, so the check-time guarantee survives.
+</div>
+
+<div class="aside">
   <strong>A precision point you will care about.</strong> In bare intensional type theory, function extensionality is not <em>false</em>. It is <em>independent</em>: unprovable and unrefutable, consistent to assume either way, exactly the status <a href="0002-why-this-matters.html">representation independence</a> had in Lesson 2. HoTT does not refute the extensional shortcut. It declines the reflection <em>rule</em> and instead earns extensionality as an axiom or a theorem in the propositional layer, where it does no damage to decidability.
 </div>
+
+<h2>Seeing it: silent use, and the two failures side by side</h2>
+<p>
+"Using a proof silently" is the move extensional type theory allows and intensional forbids. Take a length-indexed vector, a proof <span class="tt">p : n + 0 = n</span>, and <span class="tt">xs : Vec A (n + 0)</span>. Note <span class="tt">n + 0</span> does not reduce to <span class="tt">n</span> (the variable stalls the recursion), so those two types are not judgmentally equal.
+</p>
+<pre><code>-- ITT: the proof appears in the term, placed at the use site
+f : Vec A (n + 0) -> Vec A n
+f xs = transport (λ m -> Vec A m) p xs   -- explicit;  f xs = xs  is REJECTED
+
+-- ETT: the proof floats in scope and is used silently
+f : Vec A (n + 0) -> Vec A n
+f xs = xs                                -- ACCEPTED;  p is never written</code></pre>
+<p>
+Why can the checker not just look <span class="tt">p</span> up? Because reflection makes <span class="tt">a ≡ b</span> hold when <span class="tt">a = b</span> is <em>provable from</em> the context, not merely <em>present in</em> it. Deciding that, even from a finite list of supplied equations, is the <strong>word problem</strong>, which is undecidable. So the difference between the two <span class="tt">f</span>s is not <em>how much</em> you tell the machine, it is <em>where</em>: ITT makes you place the proof at the use site, so checking stays local and decidable; ETT lets it float and makes the checker reconstruct the placement, which is not.
+</p>
+<p>The two systems fail on <em>opposite</em> axes, and cubical is the corner that keeps both:</p>
+<table>
+  <thead><tr><th></th><th>Decidable typechecking</th><th>Computes (canonicity)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ETT</strong> (equality reflection)</td><td>✗ gives it up</td><td>✓ well-typed terms run</td></tr>
+    <tr><td><strong>ITT + <span class="tt">ua</span> axiom</strong></td><td>✓</td><td>✗ axiom terms get stuck</td></tr>
+    <tr><td><strong>Cubical</strong></td><td>✓</td><td>✓</td></tr>
+  </tbody>
+</table>
+<p>
+The stuck term to keep in mind: <span class="tt">transport (λ X -> X) (ua not) true</span> typechecks with type <span class="tt">Bool</span>, but under the axiom it never reduces to <span class="tt">false</span>, because <span class="tt">ua</span> has no reduction rule. Cubical gives it one, so it runs.
+</p>
 
 <h2>Why this is the whole map</h2>
 <p>This fork is the reason the remaining lessons look the way they do. Because HoTT is intensional, it owes you extensionality as separate content:</p>

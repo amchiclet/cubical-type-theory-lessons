@@ -90,6 +90,25 @@ pf : isProp A
 So "<span class="tt">A</span> is a proposition" means you never worry about <em>which</em> proof of <span class="tt">A</span> you hold: any two are equal, so proofs are irrelevant. "<span class="tt">A</span> is a set" means you can reason with plain equality and forget higher paths. The h-level is a budget: it tells you the most path structure a type can carry, so you only ever carry that much. That is why HoTT proofs open with "assume <span class="tt">A</span> is a set" or "since <span class="tt">P</span> is a prop" and everything downstream gets simpler.
 </p>
 
+<h3>A concrete case where you invoke it</h3>
+<p>
+<span class="tt">pf : isProp A</span> is a <em>function</em>: unfolded it is <span class="tt">(x y : A) → x = y</span>, so you feed it two elements of <span class="tt">A</span> and it hands back a path between them. The everyday place you reach for it is when you are proving two <em>bundles</em> equal and one field is a proof. Take "a natural number that is at most ten":
+</p>
+<pre><code>Bounded = Σ (n : ℕ). (n ≤ 10)   -- a number, plus a proof it is ≤ 10
+
+-- Two bundles, same number, two different-looking proofs:
+--   (7, le1)   and   (7, le2)     where  le1 le2 : 7 ≤ 10
+-- To show (7, le1) = (7, le2) you owe: 7 = 7 (refl) AND le1 = le2.
+-- The second is free, because (7 ≤ 10) is a proposition:
+pf : isProp (7 ≤ 10)
+pf 7-le1 7-le2 : le1 = le2       -- no proof to build; pf produces it</code></pre>
+<p>
+So knowing <span class="tt">≤</span> is a proposition is exactly what lets you treat a bounded number like <em>just its number</em>. The slogan: props are what make <span class="tt">Σ (a : A). P a</span> behave like a <strong>subset</strong> of <span class="tt">A</span> rather than a type carrying extra data, because the proof component is automatically equal.
+</p>
+<div class="aside">
+  <strong>Your "swap in a logic world" instinct has a name.</strong> Getting <span class="tt">A = B</span> between two <em>propositions</em> from the fact that they imply each other (<span class="tt">A ↔ B</span>) is <strong>propositional extensionality</strong>, the rung-1 shadow of univalence. Since <span class="tt">A</span> and <span class="tt">B</span> are props, which proof you have never matters, so you swap one for the other freely. Example: <span class="tt">(n is even) ↔ (n mod 2 = 0)</span>, so the two are equal and anything proved about one transfers. That is <a href="0002-why-this-matters.html">Lesson 2</a>'s whole story, flattened to the case where proofs are irrelevant.
+</div>
+
 <h2>Check yourself</h2>
 <p>Answer from memory first. The click gives immediate feedback.</p>
 
