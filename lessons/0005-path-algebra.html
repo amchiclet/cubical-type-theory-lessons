@@ -44,6 +44,33 @@ J : (C : (y : A) -> (a = y) -> Type)
   <strong>J never says "all paths are refl."</strong> Look again: the endpoint <span class="tt">y</span> is <em>free</em>. J ranges over paths with one end pinned at <span class="tt">a</span> and the other end loose, that is, over the space <span class="tt">Σ (y : A). a = y</span>. And that space is <strong>contractible</strong>: its centre is <span class="tt">(a, refl)</span>, and every other point <span class="tt">(y, p)</span> slides back to it. To prove a property of every point in a contractible space (a rung-0 type, <a href="0003-h-levels.html">Lesson 3</a>), proving it at the centre is enough. That is the entire content of J: <em>refl is the centre of the based path space, not the only path in it.</em>
 </div>
 
+<h3>Another way to see it: count the constructors</h3>
+<p>The same fact from the angle that makes it feel like ordinary induction. Every inductive type gives one proof case per constructor, and a <em>step</em> case appears exactly when a constructor is <em>recursive</em> (takes an earlier copy of itself).</p>
+<pre><code>NAT    two constructors, suc RECURSES          ->  base + STEP
+       0 --suc--> 1 --suc--> 2 --suc--> ...
+       a chain; the step walks  n -> n+1
+
+a = y  one constructor, refl does NOT recurse  ->  base only, NO step
+              • y1
+             /
+   (a,refl) •───── • y2    refl is the lone generator;
+             \             nothing to walk, so no step case
+              • y3</code></pre>
+<p><span class="tt">suc : ℕ → ℕ</span> takes a number, so it is recursive and earns a step case. <span class="tt">refl : a = a</span> takes no path, so it is not recursive and earns none. J is just "the identity type has one constructor, <span class="tt">refl</span>, so handle that one case." Same principle as natural-number induction, fewer constructors.</p>
+
+<h3><span class="tt">ap</span>, <span class="tt">transport</span>, and <span class="tt">sym</span> are all J</h3>
+<p>This is the promise from the top of the lesson, made good. J is the general recursor; the easy moves are J with two blanks filled in: a <strong>motive</strong> (what to produce at the free endpoint <span class="tt">y</span>) and a <strong>refl-case</strong> (the value at the centre).</p>
+<table>
+  <thead><tr><th>you want</th><th>motive: produce at <span class="tt">y</span></th><th>value at <span class="tt">refl</span></th></tr></thead>
+  <tbody>
+    <tr><td><span class="tt">transport</span> (carry <span class="tt">x : P a</span>)</td><td><span class="tt">P y</span></td><td><span class="tt">x</span> itself</td></tr>
+    <tr><td><span class="tt">ap f</span></td><td><span class="tt">f a = f y</span></td><td><span class="tt">refl : f a = f a</span></td></tr>
+    <tr><td><span class="tt">sym</span> (reverse a path)</td><td><span class="tt">y = a</span></td><td><span class="tt">refl : a = a</span></td></tr>
+    <tr><td><strong>J</strong> (general)</td><td>any <span class="tt">C(y, p)</span></td><td>any <span class="tt">d : C(a, refl)</span></td></tr>
+  </tbody>
+</table>
+<p>Read the <span class="tt">ap f</span> row: you tell J "at endpoint <span class="tt">y</span> I want a proof <span class="tt">f a = f y</span>," and "at <span class="tt">refl</span> the answer is <span class="tt">refl</span>." J extends that one choice to every path, handing back <span class="tt">f a = f b</span>. So if you can read J, you have already read <span class="tt">ap</span>, <span class="tt">transport</span>, and <span class="tt">sym</span>: they differ only in those two columns.</p>
+
 <h3>Then why doesn't <span class="tt">ua not</span> break it?</h3>
 <p>Because <span class="tt">ua not</span> is a <em>loop</em>: both of its endpoints are pinned to <span class="tt">Bool</span>. J's contractible space has one <em>free</em> endpoint, so a loop never enters it as a fresh point to flatten. Contractibility does give you <span class="tt">(Bool, refl) = (Bool, ua not)</span> in the total space <span class="tt">Σ (y). Bool = y</span>, but the path witnessing that moves <em>both</em> components: its first part is a nontrivial <span class="tt">Bool = Bool</span>. So the two facts live in different types and never collide:</p>
 
@@ -51,6 +78,18 @@ J : (C : (y : A) -> (a = y) -> Type)
 (Bool, refl) = (Bool, ua not)   -- in  Σ (y). Bool = y  (endpoint free: holds)</code></pre>
 
 <p>J flattens the free-endpoint space. Loops keep both endpoints pinned, so they stay out of its reach. That is exactly why J is consistent with a universe that is a <a href="0003-h-levels.html">groupoid</a>.</p>
+
+<h2>K: the axiom that would pin the endpoint</h2>
+<p>The loop discussion above is the exact hinge for <strong>axiom K</strong> (Streicher), J's stronger cousin. J keeps the endpoint <em>free</em>; K keeps it <em>pinned</em> and still lets you assume the loop is <span class="tt">refl</span>:</p>
+
+<pre><code>J : prove C(y, p) for all y and p : a = y    -- endpoint FREE   (handle (a, refl))
+K : prove C(p)    for all loops  p : a = a    -- endpoint PINNED (handle refl)</code></pre>
+
+<p>Feed K the motive <span class="tt">C(p) := (p = refl)</span>. Its refl-case is <span class="tt">refl = refl</span>, trivially true, so K hands you <span class="tt">p = refl</span> for <em>every</em> loop. That is <a href="0003-h-levels.html">UIP</a>: every type is a set. J cannot do this, because it refuses to pin the endpoint, and that refusal is the entire difference between them.</p>
+
+<div class="aside">
+  So K is not newer or more advanced than J. It is an <em>optional, stronger</em> eliminator, and adding it caps the tower at rung 2. But <span class="tt">ua not : Bool = Bool</span> is a loop that is not <span class="tt">refl</span>, so K is simply false once univalence is in play. J stays; K is declined. That one choice is why HoTT has a tall tower at all.
+</div>
 
 <h2>J at work: what does "equal" mean for a type?</h2>
 <p>Now the payoff. J lets you <em>compute</em> the identity type of a structure. Start with the smallest case, and reconnect to something you asked about: proving things are genuinely <em>different</em>.</p>

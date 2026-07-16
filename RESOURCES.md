@@ -40,6 +40,16 @@ All URLs below were verified live (July 2026). Curated for conceptual understand
 - [HoTTEST Summer School 2022 (YouTube)](https://www.youtube.com/channel/UC-9jDbJ-HegCFuWuam1SfvQ) — most complete free video course. [Materials repo](https://github.com/martinescardo/HoTTEST-Summer-School).
 - [Mörtberg — talks index](https://staff.math.su.se/anders.mortberg/talks.html) — hub of cubical talks & courses.
 
+## Side quests
+
+### Why induction holds: inductive types as initial algebras
+Prompted 2026-07-15 (the "why does J / induction actually hold" question). The frame: an inductive type is the *initial algebra* of a signature functor; the recursor is the unique map out of the initial object; induction is its dependent form.
+- [nLab: initial algebra of an endofunctor](https://ncatlab.org/nlab/show/initial+algebra+of+an+endofunctor) — the core notion, plus **Lambek's lemma** (initial algebra is a fixed point).
+- [nLab: inductive type](https://ncatlab.org/nlab/show/inductive+type) — inductive types as initial algebras of polynomial functors; ties to W-types.
+- [nLab: Knaster–Tarski theorem](https://ncatlab.org/nlab/show/Knaster-Tarski+theorem) — the order-theoretic least-fixed-point result that initial algebras generalize (the "Tarski" hunch).
+- Meijer, Fokkinga, Paterson, *Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire* (1991) — catamorphisms / initial-algebra recursion, the programmer's-eye view. Widely mirrored PDF; search the title.
+- Awodey, *Category Theory* — initial objects and algebras, if a textbook grounding is wanted.
+
 ## Wisdom (Communities)
 
 - [HoTT Zulip](https://hott.zulipchat.com) — the main real-time chat; friendly to both formal and informal/conceptual questions. Use for: "am I understanding univalence right?"-type questions.
