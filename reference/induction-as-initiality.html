@@ -1,0 +1,90 @@
+<meta charset="utf-8">
+<title>Induction as Initiality — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Reference</span>
+  <span><a href="../index.html">Home</a> · <a href="glossary.html">Glossary</a></span>
+</header>
+
+<h1>Induction as Initiality</h1>
+<p class="subtitle">Why induction holds, why J is exactly the right principle (generic but no junk), and why K is junk. A side-quest reference, grounded in the category theory you already know.</p>
+
+<div class="key">
+  <span class="label">The one idea</span>
+  An inductive type is the <strong>initial algebra</strong> of a functor. Its recursor is the <em>unique</em> map out of the initial object, and its induction principle is the dependent form of that same universal property. "Induction holds" and "the eliminator is exactly right" are both just "this is the initial object."
+</div>
+
+<h2>1. Inductive type = initial algebra</h2>
+<p>Bundle a type's constructors into one map. For <span class="tt">ℕ</span>, the constructors <span class="tt">zero</span> and <span class="tt">suc</span> bundle into <span class="tt">[zero, suc] : 1 + ℕ → ℕ</span>. So <span class="tt">ℕ</span> is an <em>algebra</em> for the functor <span class="tt">F(X) = 1 + X</span>. Being <strong>initial</strong> means: for every other algebra <span class="tt">α : F(A) → A</span>, there is exactly one homomorphism out of <span class="tt">ℕ</span>.</p>
+
+<pre><code>      F(ℕ) ──F(h)──▶ F(A)
+       │              │
+ [zero,suc]          α│              h : ℕ → A  exists and is UNIQUE
+       ▼              ▼                 = the recursor / fold
+       ℕ ────h──────▶ A</code></pre>
+
+<p>That unique <span class="tt">h</span> is recursion: you specify the algebra <span class="tt">A</span> (a value for <span class="tt">zero</span>, a step for <span class="tt">suc</span>) and initiality hands you the map. <strong>Induction</strong> is the dependent version: the same universal property in the category of dependent algebras (sections instead of maps).</p>
+
+<table>
+  <thead><tr><th>Concept</th><th>Category-theory name</th></tr></thead>
+  <tbody>
+    <tr><td>the inductive type</td><td>initial <span class="tt">F</span>-algebra <span class="tt">μF</span></td></tr>
+    <tr><td>recursor / fold</td><td>the unique map out of the initial object</td></tr>
+    <tr><td>induction</td><td>dependent (fibred) version of that map</td></tr>
+    <tr><td>"the type is a fixed point of its constructors"</td><td><strong>Lambek's lemma</strong>: <span class="tt">F(μF) ≅ μF</span></td></tr>
+    <tr><td>the order-theory shadow (least fixed point)</td><td><strong>Knaster–Tarski</strong> theorem</td></tr>
+  </tbody>
+</table>
+
+<h2>2. J is that idea, for one constructor</h2>
+<p>The identity family <span class="tt">a = −</span> is the inductive type with a single constructor <span class="tt">refl</span>. Apply the schema "map out by handling each constructor" and you get J: handle the one case, <span class="tt">refl</span>.</p>
+
+<pre><code>NAT    two constructors, suc RECURSES          ->  base + STEP
+a = y  one constructor, refl does NOT recurse  ->  base only (that is J)</code></pre>
+
+<p>A step case appears exactly when a constructor is recursive. <span class="tt">suc</span> takes a <span class="tt">ℕ</span> (recursive); <span class="tt">refl</span> takes no path (not). So J needing only the <span class="tt">refl</span> case is not special pleading, it is the general rule with one constructor. See <a href="../lessons/0005-path-algebra.html">Lesson 5</a>.</p>
+
+<h2>3. Why J is generic but has no junk</h2>
+<p>"Exactly right" splits into the two halves of a universal property:</p>
+<ul>
+  <li><strong>Generic (existence).</strong> J defines a map out of <span class="tt">=</span> for <em>any</em> motive. Nothing is out of reach.</li>
+  <li><strong>No junk (uniqueness).</strong> The map J returns is the <em>unique</em> one extending your <span class="tt">refl</span>-choice, and that uniqueness is provable from J. You pick where <span class="tt">refl</span> goes; everything else is determined, not invented.</li>
+</ul>
+
+<div class="key">
+  <span class="label">The sharp statement: fundamental theorem of identity types</span>
+  A family <span class="tt">R</span> with a point <span class="tt">r : R a</span> satisfies J's induction principle <em>if and only if</em> <span class="tt">R y ≃ (a = y)</span> for all <span class="tt">y</span>. So <strong>"satisfies J" characterizes the identity type up to equivalence.</strong> Anything with J's power <em>is</em> the identity type: J is neither too weak (it defines everything) nor too strong (it is satisfied by the genuine path type). (Rijke, <em>Introduction to Homotopy Type Theory</em>.)
+</div>
+
+<h2>4. J vs K: how we know the junk line</h2>
+<p>The external check is soundness against models. J survives every model where types are genuinely spaces; K, the stronger cousin that pins the endpoint (see <a href="../lessons/0005-path-algebra.html">Lesson 5</a>), does not.</p>
+
+<table>
+  <thead><tr><th>principle</th><th>types are sets</th><th>groupoids</th><th>∞-groupoids / cubical</th></tr></thead>
+  <tbody>
+    <tr><td><strong>J</strong></td><td>✓</td><td>✓</td><td>✓ &nbsp; sound wherever paths are real</td></tr>
+    <tr><td><strong>K</strong> (UIP)</td><td>✓</td><td>✗</td><td>✗ &nbsp; only if the tower is trivial</td></tr>
+  </tbody>
+</table>
+
+<p>The Hofmann–Streicher groupoid model is the proof: J survives it, K dies in it. So K is the concrete example of an eliminator <em>with</em> junk. It asserts more than <span class="tt">refl</span>-being-the-only-constructor licenses, and that surplus is exactly <a href="glossary.html">UIP</a>.</p>
+
+<div class="aside">
+  <strong>The twist worth keeping.</strong> More power in the eliminator does not extend the theory, it <em>shrinks</em> it: K forces every type to be a set. J's restraint is what allows the tall tower (groupoids, the circle, univalence). So J is not "less generic" than K; K is more restrictive on which types may exist. Genericity comes from claiming the minimum.
+</div>
+
+<h2>Is there anything more generic than J?</h2>
+<ul>
+  <li><strong>Upward: yes.</strong> J is one instance of the single schema "the eliminator of an inductive type handles each constructor," i.e. initiality of inductive types (this whole page). That is the genuinely-more-generic thing, and J is it, specialized to <span class="tt">refl</span>.</li>
+  <li><strong>Stronger-for-<span class="tt">=</span>: no (sound one).</strong> J already pins <span class="tt">=</span> down up to equivalence, so no sound principle can determine more. K only <em>looks</em> stronger; it is unsound for real paths.</li>
+</ul>
+
+<div class="source">
+  <span class="label">Where to read further</span>
+  See the <strong>Side quests</strong> section of <span class="tt">RESOURCES.md</span> (in the repo) for the initial-algebra trail: nLab on initial algebras and inductive types, Lambek's lemma, Knaster–Tarski, and the "Bananas, Lenses, Envelopes and Barbed Wire" catamorphism paper. For the fundamental theorem of identity types, Rijke's <em>Introduction to Homotopy Type Theory</em>.
+</div>
+
+<div class="teacher">
+  <strong>Ask your teacher</strong> if you want the initial-algebra square unpacked for a type you care about, or the dependent (induction) version of the universal property spelled out. This can grow into its own lesson whenever you decide to chase it.
+</div>

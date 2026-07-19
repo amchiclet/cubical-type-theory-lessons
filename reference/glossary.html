@@ -33,6 +33,35 @@
   </tbody>
 </table>
 
+<h2>Dependent types, visually</h2>
+<p>A type family stands a type (a <strong>fibre</strong>) over each point of a base. <span class="tt">Σ</span> glues the fibres into one space; <span class="tt">Π</span> is a choice of one point in every fibre.</p>
+
+<pre><code>                fibres  P a  over the base A
+    P a₀   P a₁   P a₂   P a₃
+     ·      ·      ·      ·        the whole collection = TOTAL SPACE  Σ(a).P a
+     ·      ·      ·      ·
+   ──●──────●──────●──────●──  A
+    a₀     a₁     a₂     a₃
+
+element of Σ = ONE dot (a,x)        element of Π = a SECTION (a function)
+     ·      ·      ·      ·              ·      ●      ·      ·
+     ·      ●      ·      ·              ●      ·      ·      ●
+     ·      ·      ·      ·              ·      ·      ●      ·
+   ──●──────●──────●──────●──          ──●──────●──────●──────●──
+     pick a base point + a               one dot in EVERY fibre;
+     point in its fibre                  f : (a) ↦ f a ∈ P a</code></pre>
+
+<table>
+  <thead><tr><th>Term</th><th>Means</th><th>Lesson</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Universe</strong> <span class="tt">Type</span></td><td>A type whose elements are themselves types. <span class="tt">Bool : Type</span>. One level up.</td><td>0005</td></tr>
+    <tr><td><strong>Type family</strong> <span class="tt">P : A → Type</span></td><td>A function returning a <em>type</em> for each element of <span class="tt">A</span>: a fibre over each point. A dependent type.</td><td>0005</td></tr>
+    <tr><td><strong>Fibre</strong></td><td>The type <span class="tt">P a</span> sitting over the point <span class="tt">a</span>. A whole type, not a single element.</td><td>0005</td></tr>
+    <tr><td><strong>Σ / total space</strong> <span class="tt">Σ(a:A). P a</span></td><td>All fibres glued into one space. An element is a <em>pair</em> <span class="tt">(a, x)</span>: a base point plus one point in its fibre. The "exists": witness + evidence.</td><td>0005</td></tr>
+    <tr><td><strong>Π / section</strong> <span class="tt">Π(a:A). P a</span></td><td>A dependent function <span class="tt">f</span> with <span class="tt">f a : P a</span>: one point in every fibre. The "for all". Written <span class="tt">(a:A) → P a</span>.</td><td>0005</td></tr>
+  </tbody>
+</table>
+
 <h2>Coming in later lessons</h2>
 <table>
   <thead><tr><th>Term</th><th>Means</th><th>Lesson</th></tr></thead>

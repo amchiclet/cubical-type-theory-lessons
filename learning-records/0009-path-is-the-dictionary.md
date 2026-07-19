@@ -1,0 +1,7 @@
+# Learner states univalence in own words: "the path IS the dictionary" (2026-07-18)
+
+After the long J / Σ-Π / fibre thread, the learner articulated, unprompted, why swapping `Bool` and `Binary` is safe: the identity carries the proof "this acts like true, this acts like false," so it is fine to swap the types. This is the univalence intuition self-generated.
+
+Sharpening delivered (bank so the univalence lesson stays consistent): the path does not merely *carry* the correspondence as side evidence, it *is* the correspondence. `(Bool = Binary) ≃ (Bool ≃ Binary)`: a type-equality and an equivalence are the same object, so "they are equal" and "here is the translation" have collapsed into one thing. Corollary they now have the pieces for: two equivalences `Bool ≃ Binary` (aligned / swapped) = two distinct paths that transport differently, which is *why* type-identity is proof-relevant and the universe is a groupoid (closes the loop to [[learning-records/0005-unprovable-vs-false]] and the Lesson 2/3 groupoid thread).
+
+Implication for the arc: the motivation goal in [[MISSION.md]] ("state univalence in own words, explain the concept") is essentially met at the intuition level. When Lesson 7 (univalence proper) is built, it can open at a higher altitude: formalize `(A = B) ≃ (A ≃ B)`, the ua/ua-β computation rules, and why it is an axiom in book-HoTT, rather than re-motivating from scratch. The "path = dictionary, transport = read it" picture is the durable mental model to reuse.
