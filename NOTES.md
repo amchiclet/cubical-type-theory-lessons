@@ -24,10 +24,12 @@
 6. Equivalence: what makes a function an equivalence (and why "iso" needs care).
 7. Univalence: (A ≃ B) ≃ (A = B). Statement, intuition, why it's an axiom in book-HoTT. Representation independence / transport-across-≃ payoff. Generalizes propositional extensionality.
 8. **Higher inductive types (HITs):** constructors for paths, not just points. Quotients without setoid hell, the circle, truncations. (Half the motivation from #2 gets paid off here.)
+   - **Design note (learner request 2026-07-20): feature `loop ≠ refl` as the Goldilocks worked example** — non-trivial but one-screen. Build `Cover` by S¹-rec (base↦ℤ, loop↦ua succ), `transport Cover loop = succ`, so if loop=refl then succ=id then 1=0, contradiction. It shows the TWO eliminators cooperating (S¹-induction builds the family; J's tool `transport` reasons about the path) — resolves the J-vs-S¹-elim confusion the learner worked through. Stretch/optional main result: `π₁(S¹)=ℤ` (add the decode direction). Keep difficulty moderate; the learner explicitly wants "non-trivial but not too hard" HIT examples that show J-tools used on HIT paths.
 9. Function extensionality + "axioms don't compute" (canonicity breaks; transport along ua / funext gets stuck). THE motivator for cubical.
 10. Cubical fix: the interval I, paths as functions I → A, funext for free (a one-liner that runs).
 11. Kan operations (transport/hcomp) and Glue → univalence becomes a theorem that computes.
 12. **Feature payoff lesson:** the #2 payoffs now running in cubical — verified programs across representations, quotient types, structure identity principle — proofs that actually normalize.
+13. **(Bonus, post-class) Higher Observational Type Theory** — "third-generation HoTT": univalence/funext by definition via recursion on type formers, no interval. Ties directly to Lesson 5 encode-decode (its definitional Id rules ARE that pattern). Research-stage; frame as a frontier/bonus, not a mature tool. Requested by learner 2026-07-19. Resources in [[RESOURCES.md]] Side quests.
 
 Confirmed learner interests to honour:
 - (2026-07-03) intensional/extensional distinction + extensionality principles (funext) explicit → #4, #9. See [[learning-records/0002-extensionality-interest]].

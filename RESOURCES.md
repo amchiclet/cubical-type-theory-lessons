@@ -50,6 +50,13 @@ Prompted 2026-07-15 (the "why does J / induction actually hold" question). The f
 - Meijer, Fokkinga, Paterson, *Functional Programming with Bananas, Lenses, Envelopes and Barbed Wire* (1991) — catamorphisms / initial-algebra recursion, the programmer's-eye view. Widely mirrored PDF; search the title.
 - Awodey, *Category Theory* — initial objects and algebras, if a textbook grounding is wanted.
 
+### Bonus / frontier: Higher Observational Type Theory (third-generation HoTT)
+The "cubical results without the interval" system (Shulman, Altenkirch, Kaposi, et al.). The identity type is defined by recursion on each type former (Id of pairs = pairs of Ids, Id of functions = pointwise, Id of the universe = equivalence), so univalence and funext hold *by definition* — the Lesson 5 encode-decode pattern promoted to a foundation. Research-stage as of 2025, not a finished tool like cubical Agda. Good bonus-lesson material after the main arc.
+- [higher observational type theory (nLab)](https://ncatlab.org/nlab/show/higher+observational+type+theory) — overview.
+- [Shulman, "Towards Third-Generation HOTT" (slides)](https://www.cmu.edu/dietrich/philosophy/hott/slides/shulman-2022-04-28.pdf) — the book → cubical → observational framing.
+- [Altenkirch, Chamoun, Kaposi, Shulman, "Internal parametricity, without an interval" (POPL 2024)](https://arxiv.org/pdf/2307.06448) — the published fragment.
+- [Shulman, "Towards an Implementation of HOTT"](https://home.sandiego.edu/~shulman/papers/running-hott.pdf) + prototype [Agda implementation (mikeshulman/ohtt)](https://github.com/mikeshulman/ohtt).
+
 ## Wisdom (Communities)
 
 - [HoTT Zulip](https://hott.zulipchat.com) — the main real-time chat; friendly to both formal and informal/conceptual questions. Use for: "am I understanding univalence right?"-type questions.
