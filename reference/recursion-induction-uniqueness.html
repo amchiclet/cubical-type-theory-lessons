@@ -1,0 +1,112 @@
+<meta charset="utf-8">
+<title>Recursion, Induction, and Uniqueness — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Reference</span>
+  <span><a href="../index.html">Home</a> · <a href="glossary.html">Glossary</a></span>
+</header>
+
+<h1>Recursion, Induction, and Uniqueness</h1>
+<p class="subtitle">Why uniqueness is the prize, what breaks without it, the levels it comes in, and how "there exists" gets turned into "for all." A companion to <a href="induction-as-initiality.html">Induction as Initiality</a>.</p>
+
+<div class="key">
+  <span class="label">The through-line</span>
+  <strong>Contractible = unique existence = <span class="tt">∃!</span> = the meaning of the word "the."</strong> Uniqueness buys two things: you can name "<em>the</em> X" (well-defined), and you can define an operation by one canonical case (no choices). When it fails, you are forced to <em>choose</em> — and a choice is exactly what makes things ambiguous, non-canonical, or ill-defined.
+</div>
+
+<h2>1. What uniqueness buys, across mathematics</h2>
+<p>The same phenomenon everywhere: unique existence is what makes "the thing" and lets you define by cases.</p>
+<table>
+  <thead><tr><th>Setting</th><th>Contractible (<span class="tt">∃!</span>) → good</th><th>Not contractible → breaks</th></tr></thead>
+  <tbody>
+    <tr><td>Function vs relation</td><td>each input has one output → a function you can apply</td><td>multivalued → not a function; you must pick an output</td></tr>
+    <tr><td>"The X" (definite description)</td><td><span class="tt">∃! x. P x</span> → "the P" is meaningful</td><td>none or many → "the P" is ill-formed ("the king of France")</td></tr>
+    <tr><td>Recursion on syntax</td><td>unique parse → define eval / subst by recursion</td><td>ambiguous grammar → the recursive definition isn't well-defined (<span class="tt">3-2-1</span>)</td></tr>
+    <tr><td>Matrix inverse</td><td>every <span class="tt">b</span> has one solution to <span class="tt">Ax=b</span> → <span class="tt">A⁻¹</span> exists</td><td>singular → none or many solutions → no inverse</td></tr>
+    <tr><td>Universal property</td><td>unique mediating map → object pinned up to unique iso</td><td>non-unique → fails to characterize the object</td></tr>
+  </tbody>
+</table>
+<p>Two of these are the same mechanism as HoTT's equivalences: a relation is a <em>function</em> when each input's fibre is a singleton, and a <em>bijection</em> when fibres are singletons both ways — that's the contractible-fibres definition of equivalence, and the matrix case (<span class="tt">A</span> invertible ⟺ unique preimage for every <span class="tt">b</span>) is identical.</p>
+
+<h2>2. The levels of uniqueness</h2>
+<p>"Unique" means different things at different places. Keep them apart.</p>
+<table>
+  <thead><tr><th>Level</th><th>What it says</th><th>Where it comes from</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Single-valued</strong> (well-defined)</td><td>one <em>output</em> per input</td><td>every function has it; from unique parse / constructors</td></tr>
+    <tr><td><strong>η / uniqueness of the map</strong></td><td>only <em>one function</em> obeys the given equations</td><td>NOT from bare recursion; needs induction</td></tr>
+    <tr><td><strong>Weakly initial vs initial</strong></td><td>∃ a map out (recursion) vs ∃! a map out (induction)</td><td>the "!" is the η above, categorically</td></tr>
+    <tr><td><strong>Prop-valued property</strong> (e.g. <span class="tt">isEquiv</span>)</td><td>at most one <em>witness</em> that a thing has a property</td><td>contractible fibres; a <a href="glossary.html">mere proposition</a></td></tr>
+  </tbody>
+</table>
+<div class="aside">
+  A function can be perfectly <em>single-valued</em> (Level 1, well-defined) while recursion still can't prove it is the <em>unique</em> solution to its equations (Level 2, η). Example: <span class="tt">f 0 = 0, f(suc n) = f n + 2</span> defines <span class="tt">2n</span> (single-valued, fine), but proving "no other function fits those equations" needs induction. Well-definedness ≠ η.
+</div>
+
+<h2>3. What breaks without uniqueness (the equivalence case)</h2>
+<p>If "is an equivalence" carried data instead of being a proposition, the junk is real. On the circle, certify <span class="tt">id : S¹ → S¹</span> is an iso:</p>
+<pre><code>isIso(id) = Σ(g). (g = id) × (g = id)   -- both conditions say g = id
+          ≃ (id = id) ≃ Π(x:S¹). x = x ≃ ℤ   -- a homotopy id=id winds n times</code></pre>
+<p>So <span class="tt">isIso(id) ≃ ℤ</span>: infinitely many distinct proofs that <span class="tt">id</span> is invertible. Four concrete costs:</p>
+<ul>
+  <li>You can't say "<em>the</em> inverse" — it depends which witness you picked.</li>
+  <li>Coherence tracking — every use carries and must respect the witness (setoid hell, one floor up).</li>
+  <li>An equivalence wouldn't be its function — same <span class="tt">f</span>, different equivalences.</li>
+  <li>Univalence miscounts — <span class="tt">A ≃ A</span> gains a spurious ℤ, can't match <span class="tt">A = A</span>, so <span class="tt">(A=B) ≃ (A≃B)</span> fails.</li>
+</ul>
+<p><strong>The "attack surface" is the identity type.</strong> With a prop: <span class="tt">(f,w₁) = (g,w₂) ⟺ f = g</span> (witnesses auto-agree, drop out). With data: also need <span class="tt">w₁ = w₂</span> — more to prove, more ways to differ. Making it a prop is the same subtype mechanic as <span class="tt">Σ(n). n ≤ 10</span> = "just a number."</p>
+
+<h2>4. Induction, and turning "exists" into "for all"</h2>
+<p>Goal of induction on <span class="tt">P : ℕ → Type</span>: from <span class="tt">base : P 0</span> and <span class="tt">step : (n) → P n → P(suc n)</span>, build a dependent function <span class="tt">(n) → P n</span>. That dependent function is a <strong>section</strong> of a bundle:</p>
+<pre><code>fibres P n over ℕ:            two arrows between E and ℕ:
+   P0  P1  P2  P3                    E
+    ·   ·   ·   ·                 s ↑ │ π
+ ───0───1───2───3── ℕ              │ ▼
+E = Σ(n). P n  (total space)         ℕ
+
+π : E → ℕ,  π(n,x) = n      DOWN. plain function (first projection).
+s : ℕ → E,  π∘s = id        UP. a SECTION — lands in the right fibre.
+                            a section IS a dependent function (n) → P n = the "for all".</code></pre>
+
+<div class="key">
+  <span class="label">The argument: recursion + uniqueness ⟹ induction</span>
+  <pre><code>make E an algebra:   e_zero = (0, base),   e_suc (n,x) = (suc n, step n x)
+recursion:           f : ℕ → E    (unique hom out of the initial algebra ℕ)
+π is a hom, so π∘f : ℕ→ℕ obeys the same equations as id_ℕ
+UNIQUENESS (ℕ initial ⇒ one hom ℕ→ℕ):   π∘f = id
+   ⟹ π(f n) = n ⟹ f n = (n, d n) ⟹ f is a SECTION ⟹ d : (n) → P n  = induction</code></pre>
+</div>
+<p>Why the detour through <span class="tt">E</span>: recursion only builds <em>non-dependent</em> maps <span class="tt">ℕ → X</span>. Packaging the moving target <span class="tt">P</span> into one type <span class="tt">E = Σ(n).P n</span> turns the dependent goal into a non-dependent one recursion can hit; <strong>uniqueness</strong> then forces the map to be a section (no landing in a wrong fibre — "no junk"). In initial-algebra language: <span class="tt">f</span> is the unique hom from the initial algebra into <span class="tt">E</span>, and initiality's uniqueness (one hom <span class="tt">ℕ→ℕ</span>) makes <span class="tt">π∘f = id</span>. See <a href="induction-as-initiality.html">Induction as Initiality</a>.</p>
+
+<h2>5. How the even numbers fail (the safety mechanism)</h2>
+<p>Try induction with <span class="tt">P n = "n is even"</span>:</p>
+<pre><code>base : "0 is even"                    ✓
+step : (n) → "n even" → "n+1 even"     ✗  IMPOSSIBLE (even + 1 is odd)</code></pre>
+<p>You cannot build <span class="tt">step</span>, so induction never starts — there is no <span class="tt">f</span>, so "<span class="tt">f 1</span> has nothing to map to" never even arises. This is the theory refusing to prove the false statement "every number is even." The three views coincide:</p>
+<pre><code>E = Σ(n)."n even" ≅ evens   has a GAP over every odd n
+a section needs a point over EVERY n (incl. n=1)   → impossible
+no section ⟺ no (n)→"n even" ⟺ no step ⟺ the statement is false</code></pre>
+
+<h2>6. Recursion is degenerate induction</h2>
+<p>Recursion is induction with a <em>constant</em> motive (the target doesn't vary with <span class="tt">n</span>):</p>
+<pre><code>induction:  (P : ℕ→Type) → P 0 → ((n)→P n→P(suc n)) → (n)→P n
+recursion:  set P n := X:      X   → ((n)→X→X)        → ℕ→X</code></pre>
+<p>So a plain function <span class="tt">ℕ → X</span> is induction where <span class="tt">P n</span> is constant. And <strong>"recursion without uniqueness" is not another world — it is the weaker property, weakly initial</strong> (∃ a map out) versus initial (∃! a map out). We define <span class="tt">ℕ</span> as the <em>initial</em> algebra precisely so uniqueness comes for free, which is exactly what upgrades recursion to induction.</p>
+<table>
+  <thead><tr><th></th><th>property</th><th>gives</th></tr></thead>
+  <tbody>
+    <tr><td><strong>weakly initial</strong></td><td>∃ hom out</td><td>recursion (no guaranteed uniqueness)</td></tr>
+    <tr><td><strong>initial</strong></td><td>∃! hom out</td><td>recursion + uniqueness = induction</td></tr>
+  </tbody>
+</table>
+<p>These come apart: weakly-initial-but-not-initial algebras exist, and there are models with the recursor but not induction. So "recursion alone" is a real, inhabited, strictly weaker notion — which is why the "!" is in the definition of an inductive type on purpose.</p>
+
+<h2>Open thread: coinduction (the dual)</h2>
+<div class="aside">
+  <strong>To be expanded on request.</strong> Everything here dualizes. Inductive types = <em>initial algebras</em> (least fixed points, built by constructors, consumed by recursion/induction). <strong>Coinductive types = terminal coalgebras</strong> (greatest fixed points, produced by "unfolding"/corecursion, observed by destructors). Example: streams (infinite lists) are the terminal coalgebra of <span class="tt">F(X) = A × X</span> — you never finish building one, you only observe <span class="tt">head</span>/<span class="tt">tail</span>. The uniqueness dualizes too: <em>terminal</em> = ∃! map <em>into</em> it, and the coinductive "equality" is bisimulation. Ask and we will spell out the induction↔coinduction mirror in full.
+</div>
+
+<div class="teacher">
+  <strong>Ask your teacher</strong> to expand any section — especially the coinduction dual, or a second worked induction (e.g. lists), or the exact statement of η for a type you care about.
+</div>

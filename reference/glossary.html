@@ -59,6 +59,9 @@ element of Σ = ONE dot (a,x)        element of Π = a SECTION (a function)
     <tr><td><strong>Fibre</strong></td><td>The type <span class="tt">P a</span> sitting over the point <span class="tt">a</span>. A whole type, not a single element.</td><td>0005</td></tr>
     <tr><td><strong>Σ / total space</strong> <span class="tt">Σ(a:A). P a</span></td><td>All fibres glued into one space. An element is a <em>pair</em> <span class="tt">(a, x)</span>: a base point plus one point in its fibre. The "exists": witness + evidence.</td><td>0005</td></tr>
     <tr><td><strong>Π / section</strong> <span class="tt">Π(a:A). P a</span></td><td>A dependent function <span class="tt">f</span> with <span class="tt">f a : P a</span>: one point in every fibre. The "for all". Written <span class="tt">(a:A) → P a</span>.</td><td>0005</td></tr>
+    <tr><td><strong>Recursion vs induction</strong></td><td>Recursion builds a map into a fixed type (non-dependent); induction builds a section (dependent). Induction = recursion + uniqueness. See <a href="recursion-induction-uniqueness.html">Recursion, Induction &amp; Uniqueness</a>.</td><td>ref</td></tr>
+    <tr><td><strong>Weakly initial vs initial</strong></td><td>Weakly initial: ∃ a map out (recursion). Initial: ∃! a map out (recursion + uniqueness = induction). "Recursion without uniqueness" is the weakly-initial corner.</td><td>ref</td></tr>
+    <tr><td><strong>Single-valued vs η</strong></td><td>Single-valued: one output per input (every function; well-defined). η: only one function obeys the equations (needs induction). Different "uniques".</td><td>ref</td></tr>
   </tbody>
 </table>
 

@@ -6,6 +6,10 @@
 - Topology: "vague memory" — has heard of continuous deformation, not much more. → Build the spatial picture; don't assume paths/homotopy/π₁.
 - Category theory: knows the basics. → Groupoid, functor, "structure-preserving" framing is a fast path. Use it.
 
+## Captured side-thread: uniqueness / recursion / induction (2026-07-22)
+Folded a long conversation arc into `reference/recursion-induction-uniqueness.html`: contractibility = ∃! = "the"; what uniqueness buys across math (function/relation, definite description, unique parse, matrix inverse, universal property); levels of uniqueness (single-valued vs η; weakly initial vs initial; prop-valued property); what breaks without it (isIso(id_S¹) ≃ ℤ, four costs, attack-surface = identity type); the ℕ total-space argument (exists→forall via recursion + uniqueness); why even numbers fail (no step); recursion = degenerate induction. Glossary got rows (recursion-vs-induction, weakly-initial-vs-initial, single-valued-vs-η). Linked from index.
+**Open follow-up the learner flagged: expand the COINDUCTION dual** (terminal coalgebra, greatest fixed point, corecursion/unfold, streams, bisimulation). Currently a stub at the bottom of that doc. Build when asked.
+
 ## Teaching preferences (from global user CLAUDE.md — apply to lessons too)
 - Plain language. No em-dashes. Never the word "load-bearing." Short sentences, simple words.
 - Be a sparring partner: when the learner proposes a framing, push back before agreeing.
