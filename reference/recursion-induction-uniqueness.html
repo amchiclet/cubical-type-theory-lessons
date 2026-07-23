@@ -44,6 +44,13 @@
   A function can be perfectly <em>single-valued</em> (Level 1, well-defined) while recursion still can't prove it is the <em>unique</em> solution to its equations (Level 2, η). Example: <span class="tt">f 0 = 0, f(suc n) = f n + 2</span> defines <span class="tt">2n</span> (single-valued, fine), but proving "no other function fits those equations" needs induction. Well-definedness ≠ η.
 </div>
 
+<div class="key">
+  <span class="label">"Unique" means per-equations, not one-function-total</span>
+  <span class="tt">2n</span> (<span class="tt">f 0=0, f(suc n)=f n+2</span>) and <span class="tt">3n</span> (<span class="tt">g 0=0, g(suc n)=g n+3</span>) are different functions <span class="tt">ℕ→ℕ</span>, but they obey <em>different</em> equations. That is the <strong>existence</strong> axis (many recursion data → many functions), <em>not</em> a uniqueness failure: each is the unique solution of <em>its own</em> equations, so η holds for both. Uniqueness is only at stake when two functions obey the <em>same</em> equations.
+  <br><br>
+  <strong>Categorically:</strong> the recursion data <span class="tt">(base, step)</span> <em>is</em> a target algebra — an <strong>object</strong>. <span class="tt">A₂ = (ℕ, 0, +2)</span> and <span class="tt">A₃ = (ℕ, 0, +3)</span> are two <em>different objects</em> (same carrier <span class="tt">ℕ</span>, different structure map — an algebra is the whole triple). The functions <span class="tt">2n</span>, <span class="tt">3n</span> are the unique <strong>morphisms</strong> out of the initial algebra <span class="tt">ℕ</span> to <span class="tt">A₂</span>, <span class="tt">A₃</span>. So: different equations = different target objects = different unique morphisms. <strong>Uniqueness = one morphism per object (initiality); existence = many objects → many morphisms out of <span class="tt">ℕ</span>.</strong>
+</div>
+
 <h2>3. What breaks without uniqueness (the equivalence case)</h2>
 <p>If "is an equivalence" carried data instead of being a proposition, the junk is real. On the circle, certify <span class="tt">id : S¹ → S¹</span> is an iso:</p>
 <pre><code>isIso(id) = Σ(g). (g = id) × (g = id)   -- both conditions say g = id
