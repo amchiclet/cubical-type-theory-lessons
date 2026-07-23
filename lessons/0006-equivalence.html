@@ -1,0 +1,145 @@
+<meta charset="utf-8">
+<title>Lesson 6 — Equivalence: the Right Notion of "Same"</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 6</span>
+  <span><a href="../index.html">Home</a> · <a href="0005-path-algebra.html">◀ Lesson 5</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Equivalence: the Right Notion of "Same"</h1>
+<p class="subtitle">"Has an inverse" is almost the right definition. The fix is small but crucial: being an equivalence must be a <em>property</em>, not extra data. Univalence depends on getting this exactly right.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can say why plain "isomorphism" needs repair in HoTT (it is not a mere proposition), give the clean repair (contractible fibres), and see why the fixed-up <span class="tt">≃</span> is exactly what <a href="0002-why-this-matters.html">the dictionary from Lesson 2</a> was, and what univalence will need.
+</div>
+
+<h2>The intuitive idea: isomorphism</h2>
+<p>You already know what "the same" should mean for two types: a function back and forth that undo each other.</p>
+
+<pre><code>-- f is an isomorphism (a "quasi-inverse") if there is g going back, with:
+f : A -> B      g : B -> A
+g ∘ f = id      -- go over and back on A: home
+f ∘ g = id      -- go back and over on B: home</code></pre>
+
+<p>This is the honest intuition, and it is exactly the "dictionary" idea: <span class="tt">f</span> and <span class="tt">g</span> translate between <span class="tt">A</span> and <span class="tt">B</span> without losing anything. Nothing wrong with it as a picture. The trouble is in how you <em>package</em> it.</p>
+
+<h2>The catch: "has an inverse" is not a property</h2>
+<p>Write out "f has a quasi-inverse" as a type:</p>
+
+<pre><code>isIso f  =  Σ (g : B -> A). (g ∘ f = id) × (f ∘ g = id)</code></pre>
+
+<p>Here is the surprise: for a fixed <span class="tt">f</span>, this type is <strong>not a mere proposition</strong>. It can have many <em>distinct</em> inhabitants: different inverse-plus-homotopy packages that are not equal to each other. So "f has an inverse", packaged this way, is <em>data</em>, not a yes/no fact.</p>
+
+<div class="key">
+  <span class="label">Why that is a problem</span>
+  We want to define <span class="tt">A ≃ B = Σ (f : A → B). (f is an equivalence)</span>. If "f is an equivalence" were not a proposition, then two equivalences with the <em>same</em> underlying function could still differ, by their coherence data. That is junk: an equivalence should be <em>determined by its function</em>. We need "is an equivalence" to be a genuine property (a <a href="0003-h-levels.html">mere proposition</a>), so that an equivalence is its function and nothing more.
+</div>
+
+<div class="aside">
+  Honesty flag: that <span class="tt">isIso f</span> is not a proposition is a real theorem, not a slogan. The type of quasi-inverses of a function is as complicated as the loops in the type (for the identity on <span class="tt">A</span>, roughly <span class="tt">(x : A) → x = x</span>), which is not yes/no. Proof: <a href="https://homotopytypetheory.org/book/">HoTT Book</a> §4.1.
+</div>
+
+<h2>The fix: contractible fibres</h2>
+<p>The cleanest repair. First, the <strong>fibre</strong> of <span class="tt">f</span> over a point <span class="tt">b : B</span> is its preimages:</p>
+
+<pre><code>fibre f b  =  Σ (a : A). (f a = b)      -- "the points of A that f sends to b"</code></pre>
+
+<p>Then define:</p>
+
+<pre><code>isEquiv f  =  (b : B) -> isContr (fibre f b)
+              "every b has exactly ONE preimage, up to a path"</code></pre>
+
+<pre><code>equivalence:  every point of B has exactly one preimage
+
+   A            B
+   a₁ ────────▶ b₁      fibre f b₁ = { a₁ }     contractible ✓
+   a₂ ────────▶ b₂      fibre f b₂ = { a₂ }     contractible ✓
+
+NOT an equivalence:
+   a₁ ─┐
+   a₂ ─┴──────▶ b        fibre f b = { a₁, a₂ }  two preimages ✗
+                 b'      fibre f b' = { }         no preimage  ✗</code></pre>
+
+<p>
+This is manifestly a <strong>proposition</strong>: <span class="tt">isContr</span> is a proposition (<a href="0003-h-levels.html">Lesson 3</a>), and a <span class="tt">Π</span> of propositions is a proposition. So "is an equivalence" is now a genuine yes/no. And it is still logically the same as having an inverse: "exactly one preimage everywhere" is precisely what lets you define the inverse <span class="tt">g</span> (send each <span class="tt">b</span> to its unique preimage). Best of both: the iso idea, packaged as a property.
+</p>
+
+<div class="aside">
+  There are three standard good definitions, all propositions and all logically equivalent to "has a quasi-inverse": <strong>contractible fibres</strong> (above, the most visual); <strong>bi-invertible</strong> — a <em>separate</em> left inverse and right inverse, <span class="tt">(Σ g. g∘f = id) × (Σ h. f∘h = id)</span>, the easiest to check is a proposition; and <strong>half-adjoint equivalence</strong> — one inverse with the two homotopies plus a coherence law linking them (the <a href="https://homotopytypetheory.org/book/">HoTT Book</a>'s default, §4.2). Pick whichever; they define the same <span class="tt">≃</span>.
+</div>
+
+<h2>Why a property and not data? (the "why", concretely)</h2>
+<p><strong>What the extra data looks like.</strong> On the circle, certify that <span class="tt">id : S¹ → S¹</span> is an iso: give <span class="tt">g = id</span> and homotopies <span class="tt">η, ε : id ∘ id = id</span>. A homotopy <span class="tt">id = id</span> is (by funext) a choice of loop <span class="tt">x = x</span> at every point — and on <span class="tt">S¹</span> you can pick "wind around <span class="tt">n</span> times" for any integer <span class="tt">n</span>. So there is a <strong>ℤ's worth of distinct witnesses</strong> that <span class="tt">id</span> is an iso: not yes/no, a whole ℤ of coherence choices. (For a set like <span class="tt">Bool</span> this collapses to nothing, which is why the problem only surfaces for higher types.)</p>
+
+<p><strong>Why that junk hurts</strong>, four concrete costs:</p>
+<ul>
+  <li><strong>You can't say "the inverse."</strong> It would depend on which witness you picked. Uniqueness earns the definite article.</li>
+  <li><strong>Coherence tracking.</strong> Every use of the equivalence would carry its witness and prove things respect it — setoid hell one floor up. A property carries nothing.</li>
+  <li><strong>An equivalence wouldn't be its function.</strong> Two "equivalences" with the same <span class="tt">f</span> but different windings would count as different. Absurd for something meaning "<span class="tt">f</span> is invertible."</li>
+  <li><strong>Univalence would miscount.</strong> <span class="tt">A ≃ A</span> would gain that spurious ℤ, so it couldn't match <span class="tt">A = A</span>, and <span class="tt">(A = B) ≃ (A ≃ B)</span> would fail.</li>
+</ul>
+
+<div class="key">
+  <span class="label">What "well-behaved" means, concretely</span>
+  Because <span class="tt">isEquiv f</span> is a proposition, <span class="tt">Σ (f). isEquiv f</span> is the <strong>subtype</strong> of invertible functions: an equivalence is just a function (that happens to be invertible), and two equivalences are equal exactly when their functions are. This is the same subtype mechanic as <a href="0003-h-levels.html">Lesson 3</a>'s <span class="tt">Σ (n:ℕ). n ≤ 10</span> = "just a number" — the proof component drops out of every comparison because it is a prop. That is the "attack surface": with data, comparing <span class="tt">(f,w₁) = (g,w₂)</span> needs <span class="tt">f = g</span> <em>and</em> <span class="tt">w₁ = w₂</span>; with a prop, the witnesses auto-agree and it collapses to <span class="tt">f = g</span>. Fewer moving parts, nothing to go wrong.
+</div>
+
+<div class="aside">
+  The category-theory reading: "the fibre is contractible" says "there exists a <em>unique</em> preimage" — a universal property. Uniqueness (contractibility) is prized for exactly the reason universal properties are: canonical, choice-free, transportable.
+</div>
+
+<h2>What an equivalence is, and why it is the right "same"</h2>
+<pre><code>A ≃ B  =  Σ (f : A -> B). isEquiv f       -- isEquiv f is a PROPOSITION</code></pre>
+<p>
+So an equivalence is <em>a function that is an equivalence</em>, and being one adds no data. Two equivalences are equal exactly when their functions are: an equivalence is its function. That is the well-behaved notion of "same" for types. It is the precise version of the Lesson 2 dictionary, and it is what the next lesson pairs with identity:
+</p>
+<div class="key">
+  <span class="label">The bridge to univalence</span>
+  Univalence will say <span class="tt">(A =<sub>𝒰</sub> B) ≃ (A ≃ B)</span> — identity of types <em>is</em> equivalence of types. That statement only makes sense because <span class="tt">≃</span> is this careful, propositional notion. Had we used the naive iso (not a proposition), the two sides would not match and univalence would be malformed. The care taken here is exactly what lets univalence be stated at all.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Why is the naive "f has a two-sided inverse" a poor <em>definition</em> of equivalence in HoTT?</p>
+  <button class="opt" data-key="A">it does not force the two types to be finite</button>
+  <button class="opt" data-key="B">it is not a mere proposition, so it carries data</button>
+  <button class="opt" data-key="C">it cannot be written down without univalence</button>
+  <button class="opt" data-key="D">it stops the function from having any inverse</button>
+  <div class="explain">For a fixed <span class="tt">f</span>, "has a quasi-inverse" can have many distinct inhabitants, so it is data, not a yes/no property. We want "is an equivalence" to be a proposition, so an equivalence is determined by its function alone.</div>
+</div>
+
+<div class="quiz" data-answer="C">
+  <p class="q">In the contractible-fibres definition, <span class="tt">f</span> is an equivalence exactly when:</p>
+  <button class="opt" data-key="A">some chosen point of B has one preimage</button>
+  <button class="opt" data-key="B">the domain and codomain are both contractible</button>
+  <button class="opt" data-key="C">every point of B has one preimage up to a path</button>
+  <button class="opt" data-key="D">the function equals its own two-sided inverse</button>
+  <div class="explain"><span class="tt">isEquiv f = (b : B) → isContr (fibre f b)</span>: every <span class="tt">b</span> has a contractible fibre, i.e. exactly one preimage up to a path. Being a <span class="tt">Π</span> of propositions, this is itself a proposition.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain why HoTT replaces "has an inverse" with a fancier definition of equivalence, and what the replacement guarantees. Three sentences.</p>
+  <div class="answer">
+    The naive "has a two-sided inverse" (quasi-inverse) is logically fine but is not a mere proposition: for a given <span class="tt">f</span> it can carry extra higher structure, so <span class="tt">A ≃ B</span> built from it would carry junk. HoTT instead defines "f is an equivalence" by a condition that <em>is</em> a proposition — for instance, every fibre of <span class="tt">f</span> is contractible (each <span class="tt">b</span> has exactly one preimage up to a path) — which is still logically equivalent to having an inverse. Because it is a proposition, "being an equivalence" is a genuine yes/no property, an equivalence is determined by its function, and the statement of univalence <span class="tt">(A = B) ≃ (A ≃ B)</span> comes out well-formed.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  Egbert Rijke, <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>, the chapters on contractible maps and equivalences (the contractible-fibres route). For the comparison of all the definitions and the proof that quasi-inverses are not a proposition, the <a href="https://homotopytypetheory.org/book/">HoTT Book</a> Chapter 4.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads from here: "show me how contractible fibres gives back the inverse <span class="tt">g</span>," "walk through why quasi-inverses of the identity are the loops," or "which of the three definitions is easiest to use in a proof." Push back too: if "not a proposition" still feels abstract, ask and we will make it concrete.
+</div>
+
+<div class="nav-links">
+  <span><a href="0005-path-algebra.html">◀ Lesson 5 — Path Algebra</a></span>
+  <span>Next up: <em>Lesson 7 — Univalence</em></span>
+</div>
