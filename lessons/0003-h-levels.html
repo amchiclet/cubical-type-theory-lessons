@@ -16,6 +16,19 @@
   Given a type, you can name which rung it sits on, say what that buys you, and explain why the universe of sets sits exactly one rung <em>above</em> the sets it contains. This is the vocabulary every HoTT proof leans on: "assume <span class="tt">A</span> is a set," "<span class="tt">P</span> is a proposition."
 </div>
 
+<h2>Why classify at all?</h2>
+<p>Before the definitions, here is what each rung <em>buys</em>. Every rung is a promise that makes work disappear:</p>
+<table>
+  <thead><tr><th>Rung</th><th>The promise</th><th>What it buys you</th></tr></thead>
+  <tbody>
+    <tr><td><strong>contractible</strong></td><td>"exactly one, up to a path" — <em>unique existence</em>, <span class="tt">∃!</span></td><td>the right to say "<strong>the</strong>": the inverse, the parse, the answer. No choices to track. (It is also the secret engine of path induction — Lesson 5.)</td></tr>
+    <tr><td><strong>proposition</strong></td><td>"at most one" — proofs are irrelevant</td><td>any two proofs are equal <em>for free</em>; bundles like <span class="tt">Σ (n:ℕ). n ≤ 10</span> behave like plain subsets</td></tr>
+    <tr><td><strong>set</strong></td><td>"equality is yes/no"</td><td>the world ordinary maths (and your old type theory) always lived in — reason with plain equality, ignore higher paths</td></tr>
+    <tr><td><strong>groupoid and up</strong></td><td>equality carries real structure</td><td>where the new phenomena live: <span class="tt">Bool = Bool</span> with two distinct proofs, the universe itself</td></tr>
+  </tbody>
+</table>
+<p>So the ruler is a <strong>budget</strong>: it tells you the most path structure a type can carry, so you only ever track that much. Knowing the rung is knowing how hard your proofs need to work. Now the definitions.</p>
+
 <h2>The ladder, from the bottom</h2>
 <p>Each rung is defined by how trivial its equality is. Read these as "how much structure is left."</p>
 
@@ -48,7 +61,7 @@ hLevel (suc n) A = (x y : A) -> hLevel n (x = y)</code></pre>
   <tbody>
     <tr><td>0</td><td>contractible</td><td>exactly one point, up to a path</td><td>the unit type <span class="tt">⊤</span>, any singleton</td></tr>
     <tr><td>1</td><td>proposition</td><td>at most one point (any two equal)</td><td>the empty type <span class="tt">⊥</span>, <span class="tt">n ≤ m</span></td></tr>
-    <tr><td>2</td><td>set</td><td>equality is trivial (UIP holds here)</td><td><span class="tt">Bool</span>, <span class="tt">Binary</span>, <span class="tt">ℕ</span>, <span class="tt">ℤ</span></td></tr>
+    <tr><td>2</td><td>set</td><td>equality is trivial (UIP holds here)</td><td><span class="tt">Bool</span>, <span class="tt">Binary</span>, <span class="tt">ℕ</span>, <span class="tt">ℤ</span>, <span class="tt">ℚ</span> (Lesson 8)</td></tr>
     <tr><td>3</td><td>groupoid</td><td>paths can differ, 2-paths trivial</td><td>the universe of sets</td></tr>
     <tr><td>…</td><td>…</td><td>…</td><td>higher spaces, most types</td></tr>
   </tbody>
@@ -56,6 +69,10 @@ hLevel (suc n) A = (x y : A) -> hLevel n (x = y)</code></pre>
 
 <div class="aside">
   Levels are <strong>cumulative</strong>: a type at rung <span class="tt">n</span> is also at every rung above it. A set is trivially a groupoid too. The rung of a type is the <em>lowest</em> one it satisfies.
+</div>
+
+<div class="aside">
+  <strong>A foreshadow.</strong> Raw fraction pairs <span class="tt">ℤ × ℤ⁺</span> are a set — but their yes/no equality is <em>too fine</em>: <span class="tt">(1,2) ≠ (2,4)</span> even though <span class="tt">1/2</span> and <span class="tt">2/4</span> ought to be equal. Lesson 8 fixes this by <em>declaring</em> the missing paths, producing <span class="tt">ℚ</span>: still a set, but with the equality you actually wanted. Being a set is a ceiling on path structure, not a guarantee the equality is the right one.
 </div>
 
 <h2>Anchor 1: "set" is where the maths you know lives</h2>
@@ -149,5 +166,5 @@ So knowing <span class="tt">≤</span> is a proposition is exactly what lets you
 
 <div class="nav-links">
   <span><a href="0002-why-this-matters.html">◀ Lesson 2 — Why This Matters</a></span>
-  <span>Next up: <em>Lesson 4 — the two equalities</em></span>
+  <span>Next up: <a href="0004-two-equalities.html">Lesson 4 · The Two Equalities</a></span>
 </div>

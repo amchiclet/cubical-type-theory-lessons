@@ -110,7 +110,7 @@ So every type is at least a groupoid: points as objects, paths as invertible arr
 </div>
 
 <div class="aside">
-  A fair objection: "but in the type theory I know, any two proofs of <span class="tt">a = b</span> are themselves equal. Isn't the tower trivial?" That extra assumption is called <em>uniqueness of identity proofs</em> (UIP), or axiom K. HoTT deliberately drops it. Without K the tower can be genuinely non-trivial, and that is what lets types model real spaces like the circle. When a type theory keeps K, every type is forced down to a "set" with a boring tower. We will make "how tall is the tower" precise next lesson.
+  A fair objection: "but in the type theory I know, any two proofs of <span class="tt">a = b</span> are themselves equal. Isn't the tower trivial?" That extra assumption is called <em>uniqueness of identity proofs</em> (UIP). HoTT deliberately drops it. Without UIP the tower can be genuinely non-trivial, and that is what lets types model real spaces like the circle. When a type theory keeps UIP, every type is forced down to a "set" with a boring tower. We will make "how tall is the tower" precise in <a href="0003-h-levels.html">Lesson 3</a>.
 </div>
 
 <h2>Check yourself</h2>
@@ -135,12 +135,12 @@ So every type is at least a groupoid: points as objects, paths as invertible arr
 </div>
 
 <div class="quiz" data-answer="A">
-  <p class="q">What does dropping axiom K (uniqueness of identity proofs) buy you?</p>
+  <p class="q">What does dropping UIP (uniqueness of identity proofs) buy you?</p>
   <button class="opt" data-key="A">the path tower can be non-trivial, so types model real spaces</button>
   <button class="opt" data-key="B">every type is forced to become a mere truth value now</button>
   <button class="opt" data-key="C">the identity type stops existing inside the theory at all</button>
   <button class="opt" data-key="D">function types can no longer be formed between two types</button>
-  <div class="explain">K collapses every higher path, making all towers boring. Dropping it lets <span class="tt">a = b</span> have several distinct, unequal proofs, which is what encodes genuine spatial structure (like the circle's loop).</div>
+  <div class="explain">UIP collapses every higher path, making all towers boring. Dropping it lets <span class="tt">a = b</span> have several distinct, unequal proofs, which is what encodes genuine spatial structure (like the circle's loop).</div>
 </div>
 
 <h3>Say it in your own words</h3>

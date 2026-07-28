@@ -1,0 +1,154 @@
+<meta charset="utf-8">
+<title>Lesson 8 — Higher Inductive Types</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 8</span>
+  <span><a href="../index.html">Home</a> · <a href="0007-univalence.html">◀ Lesson 7</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Higher Inductive Types</h1>
+<p class="subtitle">Ordinary inductive types declare <em>points</em>. Higher inductive types also declare <em>paths</em>. That one extension pays off the oldest IOU in this course — quotients without setoid hell — and hands us the first type whose path structure is genuinely non-trivial.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can say what a path constructor is (and what it is <em>not</em>), define a function out of a HIT by handling every constructor, and follow a real proof that the circle's <span class="tt">loop</span> is a different path from <span class="tt">refl</span> — the first theorem that a type has a hole.
+</div>
+
+<h2>Why you'd want this (the motivation first)</h2>
+<p>Two itches, both familiar:</p>
+<ul>
+  <li><strong>Quotients.</strong> <a href="0002-why-this-matters.html">Lesson 2</a> promised "quotients without setoid hell": rationals, multisets, syntax modulo renaming — types where some elements <em>should be equal</em> but ordinary inductive types give you no way to say so. You end up carrying an equivalence relation everywhere and re-proving that every function respects it.</li>
+  <li><strong>Real path structure.</strong> The tower from <a href="0001-types-as-spaces.html">Lesson 1</a> and the groupoid universe from <a href="0007-univalence.html">Lesson 7</a> say types <em>can</em> have non-trivial paths. But every type you can build so far (<span class="tt">Bool</span>, <span class="tt">ℕ</span>, pairs, functions) is a set. Where do the interesting spaces actually come from?</li>
+</ul>
+<p>One answer to both: <strong>let a type's definition declare paths, not just points.</strong> Want two elements identified? Declare a path between them (quotients). Want a hole? Declare a loop (spaces).</p>
+
+<h2>The smallest example: the circle</h2>
+<pre><code>data S¹ : Type where
+  base : S¹                 -- a point constructor
+  loop : base = base        -- a PATH constructor
+
+        ┌────────┐
+        │  loop  ▼
+        ●  base            one point, one declared self-path
+        ▲────────┘</code></pre>
+
+<p>Defining a HIT asks you to <em>prove nothing</em> — like any inductive type, you just list constructors, and the type is <strong>freely generated</strong> by them. The groupoid algebra (<span class="tt">loop ∙ loop</span>, <span class="tt">sym loop</span>, <span class="tt">refl</span>) comes for free from the identity type, so <span class="tt">base = base</span> now contains <span class="tt">…, sym loop, refl, loop, loop ∙ loop, …</span></p>
+
+<div class="key">
+  <span class="label">What a path constructor is NOT</span>
+  <span class="tt">loop</span> is a constructor <strong>of <span class="tt">S¹</span></strong> whose <em>type happens to be</em> an identity type. It is <em>not</em> a new constructor of the identity type — that still has exactly one, <span class="tt">refl</span> (<a href="0005-path-algebra.html">Lesson 5</a>). Compare: <span class="tt">length xs : ℕ</span> produces a natural number without being a constructor of <span class="tt">ℕ</span>. Which inhabitants an identity type <em>ends up with</em> depends on the type's own definition: for <span class="tt">Bool</span> you declared no paths, so its identity types are trivial; for <span class="tt">S¹</span> you declared <span class="tt">loop</span>, so <span class="tt">base = base</span> is rich. Nothing injects from outside; <span class="tt">S¹</span>'s own signature put the path there.
+</div>
+
+<h2>Using a HIT: one obligation per constructor</h2>
+<p>To define <span class="tt">f : S¹ → X</span>, handle <em>every</em> constructor — and for a path constructor, you owe a <em>path</em>:</p>
+<pre><code>S¹-rec : (x : X) → (ℓ : x = x) → (S¹ → X)
+   base ↦ x           -- a point of X
+   loop ↦ ℓ           -- a path x = x in X   ("where does the loop go?")
+
+-- e.g. the map that winds twice:   base ↦ base,  loop ↦ loop ∙ loop</code></pre>
+<p>This is the same "one case per constructor" rule as ever — the new part is just that a path constructor's case is a path. Note the division of labour: <strong><span class="tt">S¹</span>-recursion eliminates the HIT</strong> (cases for <span class="tt">base</span> and <span class="tt">loop</span>); <strong>J and its tools eliminate paths</strong> (<span class="tt">transport</span>, <span class="tt">ap</span> apply to <span class="tt">loop</span> like any path). Two different eliminators, and the proof below uses both.</p>
+
+<h2>The theorem: <span class="tt">loop ≠ refl</span> (the circle has a hole)</h2>
+<p>Both <span class="tt">loop</span> and <span class="tt">refl</span> inhabit <span class="tt">base = base</span>. Are they the same path? If they were, the circle would be a point. Here is the proof they are not — watch the two eliminators cooperate:</p>
+
+<pre><code>-- 1. Build a family over S¹ by S¹-RECURSION (into the universe):
+Cover : S¹ → Type
+Cover base = ℤ                    -- the fibre over base is the integers
+Cover loop = ua succ              -- loop must go to a PATH ℤ = ℤ in the universe;
+                                  -- univalence manufactures it from succ : ℤ ≃ ℤ
+
+-- 2. Read the path with J's tool, TRANSPORT (+ the ua-β rule from Lesson 7):
+transport Cover loop = succ       -- transporting along loop is "+1"
+transport Cover refl = id         -- transporting along refl does nothing
+
+-- 3. Suppose loop = refl. Transport respects equal paths, so:
+succ = id  :  ℤ → ℤ
+succ 0 = id 0   ⟹   1 = 0        -- contradiction in ℤ.
+
+∴  loop ≠ refl</code></pre>
+
+<pre><code>the picture:  Cover wraps a line of integers around the circle
+
+   fibre ℤ:   … -1   0   1   2 …          going around loop once
+                   \  |  /                 climbs one step:  n ↦ n+1
+                    (base)                 refl stays put:   n ↦ n
+                  ●──loop─↺</code></pre>
+
+<p>Notice what each piece did: <strong><span class="tt">S¹</span>-recursion</strong> built <span class="tt">Cover</span> (a case for each constructor), <strong>univalence</strong> turned the successor equivalence into the path that <span class="tt">loop</span> maps to, and <strong><span class="tt">transport</span></strong> read the two paths back as different functions. The circle's non-trivial structure was <em>declared</em> in one line and <em>detected</em> by transport. (The stretch version of this argument computes the whole path space: <span class="tt">(base = base) ≃ ℤ</span> — every loop is a winding number. Ask if you want it walked through.)</p>
+
+<h2>The practical face: quotients (fractions, and what setoid hell actually is)</h2>
+<p>The same mechanism — declare a path — is how you build quotients. The best example is one you have known since school: <strong>fractions</strong>. <span class="tt">1/2</span> and <span class="tt">2/4</span> <em>should be equal</em>, but as pairs <span class="tt">(1,2)</span> and <span class="tt">(2,4)</span> they are different data.</p>
+
+<h3>The world without paths: setoid hell, spelled out</h3>
+<p>Without HITs you keep the raw pairs and carry the "real" equality as a side relation:</p>
+<pre><code>Frac = ℤ × ℤ⁺              a/b ~ c/d   iff   a·d = c·b</code></pre>
+<p>The theme of what follows: <strong><span class="tt">~</span> is a second-class equality</strong>, and everything that is free for <span class="tt">=</span> becomes manual labour for <span class="tt">~</span>.</p>
+<table>
+  <thead><tr><th>Cost</th><th>What it looks like</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A congruence proof per operation</strong></td><td><span class="tt">add</span>, <span class="tt">mul</span>, <span class="tt">neg</span>, <span class="tt">inv</span>, … each owes a lemma <span class="tt">a ~ a' → b ~ b' → add a b ~ add a' b'</span>. N operations, N hand proofs, forever.</td></tr>
+    <tr><td><strong>The <span class="tt">=</span>-toolkit doesn't apply</strong></td><td><span class="tt">transport</span>, <span class="tt">ap</span>, J — the free-substitution engine of <a href="0002-why-this-matters.html">Lesson 2</a> and <a href="0005-path-algebra.html">Lesson 5</a> — work on <span class="tt">=</span>, not on your bespoke <span class="tt">~</span>. With real equality, <span class="tt">P(1/2) → P(2/4)</span> is free for <em>every</em> P; with <span class="tt">~</span> you transfer one manually-proven property at a time. <em>Setoid hell is living without transport for your intended equality.</em></td></tr>
+    <tr><td><strong>It infects every type former</strong></td><td>A list of fractions needs a lifted <span class="tt">List-~</span>; pairs need a pair relation; setoid-functions must bundle a respects-proof. The relation is dragged through every container and interface.</td></tr>
+    <tr><td><strong>Abstraction breaks silently</strong></td><td><span class="tt">numerator (a, b) = a</span> typechecks fine — yet <span class="tt">numerator(1/2) = 1</span> and <span class="tt">numerator(2/4) = 2</span>, so it distinguishes "equal" values. Nothing stops you; the discipline is by convention only.</td></tr>
+  </tbody>
+</table>
+
+<h3>The HIT: promote <span class="tt">~</span> to a genuine <span class="tt">=</span></h3>
+<pre><code>data ℚ : Type where
+  _/_    : ℤ → ℤ⁺ → ℚ
+  scale  : (a : ℤ)(b : ℤ⁺)(k : ℤ⁺) → a / b = (k·a) / (k·b)    -- 1/2 = 2/4, by decree</code></pre>
+<p>Now <span class="tt">1/2 = 2/4</span> is a real path, so the whole <span class="tt">=</span>-toolkit applies: transport carries <em>any</em> property across for free, no congruence lemmas, no lifted relations, no conventions. The cost concentrates in exactly one place — a function out of <span class="tt">ℚ</span> owes a case for <span class="tt">scale</span>, a proof that it respects the identification. And look what that buys:</p>
+<div class="key">
+  <span class="label">The typechecker now enforces well-definedness</span>
+  Try to define <span class="tt">numerator : ℚ → ℤ</span>. You owe the <span class="tt">scale</span> case: a proof that <span class="tt">numerator(1/2) = numerator(2/4)</span>, i.e. <span class="tt">1 = 2</span>. There isn't one — so <span class="tt">numerator</span> is <strong>unwritable</strong>. The ill-defined function that the setoid world accepted silently is <em>rejected by the machine</em>. The per-path obligation is not bookkeeping; it is well-definedness, enforced.
+</div>
+<p>Other quotients follow the same recipe (integers as differences <span class="tt">a ⊝ b</span>, multisets, syntax modulo renaming). The code-level walkthrough is in <a href="../reference/hit-paths-in-code.html">HIT Paths in Code</a>.</p>
+
+<div class="aside">
+  <strong>The honest catch, one more time.</strong> In book-HoTT, HITs and <span class="tt">ua</span> are axiomatic, so <span class="tt">transport Cover loop</span> is <em>stuck</em> — the proof above typechecks but nothing runs. In cubical, paths are real functions out of the interval and all of this <em>computes</em>. That is the destination of the next lessons.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="C">
+  <p class="q">What exactly is <span class="tt">loop</span>?</p>
+  <button class="opt" data-key="A">a second constructor of the identity type</button>
+  <button class="opt" data-key="B">a proof that base equals a different point</button>
+  <button class="opt" data-key="C">a constructor of S¹ whose type is an identity type</button>
+  <button class="opt" data-key="D">a notation for refl at the point base</button>
+  <div class="explain">The identity type's only constructor is still <span class="tt">refl</span>. <span class="tt">loop</span> is declared in <span class="tt">S¹</span>'s own signature; it is a new <em>inhabitant</em> of <span class="tt">base = base</span>, not a new constructor of <span class="tt">=</span> — and provably not <span class="tt">refl</span>.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">In the proof of <span class="tt">loop ≠ refl</span>, what does <span class="tt">transport Cover</span> do with the two paths?</p>
+  <button class="opt" data-key="A">it shows both of them reduce to refl on ℤ</button>
+  <button class="opt" data-key="B">it reads them as different functions, succ and id</button>
+  <button class="opt" data-key="C">it proves the fibre over base must be empty</button>
+  <button class="opt" data-key="D">it maps both paths onto the same integer zero</button>
+  <div class="explain"><span class="tt">transport Cover loop = succ</span> (by ua-β) while <span class="tt">transport Cover refl = id</span>. If the paths were equal the functions would be too, giving <span class="tt">1 = 0</span>. Different behaviours under transport ⟹ different paths.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain to a colleague what a higher inductive type adds to ordinary inductive types, and how one proves the circle's loop is not trivial. Three sentences.</p>
+  <div class="answer">
+    A higher inductive type lets a definition declare <em>path</em> constructors alongside point constructors, so you can build types where chosen elements are identified (quotients) or where a self-path is a genuine loop (the circle) — and eliminating out of it costs one case per constructor, a path for a path. The identity type itself is unchanged: <span class="tt">refl</span> is still its only constructor; <span class="tt">loop</span> is a constructor of <span class="tt">S¹</span> that happens to inhabit <span class="tt">base = base</span>. To show <span class="tt">loop ≠ refl</span>, build a family <span class="tt">Cover</span> over the circle sending <span class="tt">loop</span> to <span class="tt">ua succ</span>; transport reads <span class="tt">loop</span> as successor and <span class="tt">refl</span> as identity, so equality of the paths would force <span class="tt">1 = 0</span>.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  The <a href="https://homotopytypetheory.org/book/">HoTT Book</a>, Chapter 6 (Higher Inductive Types) — §6.1–6.4 cover the circle and its recursion/induction principles; Chapter 6's quotient sections cover the practical side. For the cubical, code-first take, the <a href="https://agda.readthedocs.io/en/latest/language/cubical.html">Cubical Agda docs</a> on HITs.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Strong threads: "walk me through the full <span class="tt">(base = base) ≃ ℤ</span> computation," "show me the induction (dependent) principle for S¹," or "build the rationals as a quotient HIT." Any of these deepens exactly this lesson.
+</div>
+
+<div class="nav-links">
+  <span><a href="0007-univalence.html">◀ Lesson 7 — Univalence</a></span>
+  <span>Next up: <em>Lesson 9 — Funext, and why axioms don't compute</em></span>
+</div>

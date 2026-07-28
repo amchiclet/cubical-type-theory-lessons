@@ -1,0 +1,118 @@
+<meta charset="utf-8">
+<title>Lesson 7 — Univalence</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 7</span>
+  <span><a href="../index.html">Home</a> · <a href="0006-equivalence.html">◀ Lesson 6</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Univalence</h1>
+<p class="subtitle">The one axiom the course was built toward: identity of types <em>is</em> equivalence of types. Everything you have learned — paths, transport, the propositional <span class="tt">≃</span> — was assembling the pieces of this sentence.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can state univalence precisely, say why it is an <em>axiom</em> in book-HoTT and what it computes to, and name what it buys. Thanks to the earlier lessons, this is a consolidation, not a new mountain.
+</div>
+
+<h2>The statement</h2>
+<p>There is always a canonical map from a path to an equivalence, definable by path induction (<a href="0005-path-algebra.html">J</a>): send <span class="tt">refl</span> to the identity equivalence.</p>
+
+<pre><code>idtoequiv : (A = B) -> (A ≃ B)      -- from J:  idtoequiv refl = id-equiv
+                                    -- "a path already contains a dictionary"</code></pre>
+
+<p><strong>Univalence is the axiom that this map is an equivalence.</strong> Equivalently:</p>
+
+<pre><code>(A =_𝒰 B)  ≃  (A ≃ B)               -- identity of types IS equivalence of types
+
+ua : (A ≃ B) -> (A = B)             -- the inverse direction: the NEW content
+                                    -- turn an equivalence into a path</code></pre>
+
+<p>
+The easy direction (<span class="tt">idtoequiv</span>) was always there — a path lets you transport, which gives an equivalence. The content of univalence is the <em>reverse</em>: <span class="tt">ua</span> manufactures a path out of any equivalence, and univalence promises the two directions are inverse. That is the precise form of "<a href="0002-why-this-matters.html">the path is the dictionary</a>" from Lesson 2.
+</p>
+
+<pre><code>              idtoequiv  (free, from J)
+   A = B   ─────────────────────────▶   A ≃ B
+   (path)  ◀─────────────────────────   (dictionary)
+              ua  (the axiom)
+
+   univalence = "these two arrows are inverse"  — round trips are the identity</code></pre>
+
+<h2>What it computes to (the usable content)</h2>
+<p>The reason univalence is worth anything is its computation rule: transporting along a <span class="tt">ua</span>-path just runs the equivalence.</p>
+<pre><code>transport (λ X -> X) (ua e)  =  e        -- the ua-β rule: "the dictionary, executed"
+
+-- e.g.  transport (λ X -> X) (ua not) true  =  false
+--       transport GroupStr (ua e) : GroupStr Bool -> GroupStr Binary   (the Lesson 2 swap)</code></pre>
+<p>
+So a path in the universe stores exactly an equivalence, and transport reads it. This is the machinery behind <a href="0002-why-this-matters.html">the Bool/Binary payoff</a>: prove a property once, transport it across <span class="tt">ua e</span> for free.
+</p>
+
+<h2>Why it is an axiom in book-HoTT (and why cubical exists)</h2>
+<p>
+<span class="tt">idtoequiv</span> is definable, but the claim "<span class="tt">idtoequiv</span> is an equivalence" is <strong>independent</strong> of bare type theory — you can neither prove nor refute it (this is exactly the <a href="0002-why-this-matters.html"><span class="tt">Binary = Bool</span> independence</a> from Lesson 2). So book-HoTT <em>postulates</em> it. And a postulate has no computation rule:
+</p>
+<div class="key">
+  <span class="label">The catch, and the fix</span>
+  As an axiom, <span class="tt">ua</span> does not compute: <span class="tt">transport (λ X.X) (ua e) true</span> typechecks but gets <em>stuck</em> (canonicity breaks — the <a href="0004-two-equalities.html">Lesson 4</a> checkable-vs-computable split). <strong>Cubical type theory makes univalence a theorem that runs</strong>, by building paths from the interval so that <span class="tt">ua</span> has real reduction rules. That is the entire reason cubical exists, and the destination of this course (Lessons 10–11).
+</div>
+
+<h2>What univalence buys</h2>
+<table>
+  <thead><tr><th>Consequence</th><th>What it says</th></tr></thead>
+  <tbody>
+    <tr><td><strong>The universe is a groupoid</strong></td><td><span class="tt">A =<sub>𝒰</sub> A</span> has one proof per self-equivalence of <span class="tt">A</span>, so the universe is not a <a href="0003-h-levels.html">set</a> — it has real path structure (<span class="tt">Bool = Bool</span> has <span class="tt">refl</span> and <span class="tt">ua not</span>).</td></tr>
+    <tr><td><strong>Transport across equivalences (SIP)</strong></td><td>Prove a property or a whole structure for one type, get it for any equivalent type — the structure identity principle. The Lesson 2 payoff, now justified.</td></tr>
+    <tr><td><strong>Function extensionality</strong></td><td>Univalence <em>implies</em> funext (equal-if-pointwise-equal). One axiom subsumes the other (<a href="0004-two-equalities.html">Lesson 4</a>'s owed extensionality).</td></tr>
+    <tr><td><strong>Equivalence induction</strong></td><td>To prove a claim for all equivalences <span class="tt">e : A ≃ B</span>, prove it for <span class="tt">id</span> — because <span class="tt">Σ(B). A ≃ B</span> is contractible. The analog of J, for equivalences.</td></tr>
+  </tbody>
+</table>
+
+<div class="aside">
+  <strong>Why the careful <span class="tt">≃</span> was necessary.</strong> Univalence pairs <span class="tt">A = B</span> with <span class="tt">A ≃ B</span>, so the two must match structurally. That is exactly why <a href="0006-equivalence.html">Lesson 6</a> insisted "is an equivalence" be a <em>proposition</em>: with the naive <span class="tt">isIso</span>, <span class="tt">A ≅ B</span> carries spurious baggage <span class="tt">A = B</span> cannot hold, and the two sides would not match. See <a href="../reference/recursion-induction-uniqueness.html">Recursion, Induction &amp; Uniqueness</a> for the full argument.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">What does univalence assert about <span class="tt">idtoequiv : (A = B) → (A ≃ B)</span>?</p>
+  <button class="opt" data-key="A">that it is the only map of that type</button>
+  <button class="opt" data-key="B">that it is itself an equivalence</button>
+  <button class="opt" data-key="C">that it holds only when A is B</button>
+  <button class="opt" data-key="D">that it turns every type into sets</button>
+  <div class="explain"><span class="tt">idtoequiv</span> is always definable (from J). Univalence is the assertion that this canonical map is an <em>equivalence</em>, so <span class="tt">(A = B) ≃ (A ≃ B)</span>. Its inverse is <span class="tt">ua</span>.</div>
+</div>
+
+<div class="quiz" data-answer="C">
+  <p class="q">Why is univalence an <em>axiom</em> in book-HoTT rather than a theorem?</p>
+  <button class="opt" data-key="A">because idtoequiv cannot be written down</button>
+  <button class="opt" data-key="B">because it makes typechecking undecidable</button>
+  <button class="opt" data-key="C">because "it's an equivalence" is independent there</button>
+  <button class="opt" data-key="D">because equivalences need it to exist first</button>
+  <div class="explain">In bare type theory you can neither prove nor refute that <span class="tt">idtoequiv</span> is an equivalence (same independence as <span class="tt">Binary = Bool</span>), so it is postulated. As an axiom it does not compute; cubical makes it a computing theorem.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">State univalence, say why it is an axiom in book-HoTT, and name one thing it lets you do. Three sentences.</p>
+  <div class="answer">
+    Univalence says the canonical map <span class="tt">idtoequiv : (A = B) → (A ≃ B)</span> is an equivalence, so identity of types and equivalence of types coincide, and its inverse <span class="tt">ua</span> turns an equivalence into a path with <span class="tt">transport (λX.X) (ua e) = e</span>. It is an axiom in book-HoTT because <span class="tt">idtoequiv</span> is definable but "it is an equivalence" is independent of bare type theory, and as an axiom it does not compute — cubical makes it a theorem that runs. It lets you transport any structure and its proofs across an equivalence for free, makes the universe a groupoid, and implies function extensionality.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  Egbert Rijke, <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a>, the univalence chapter. The <a href="https://homotopytypetheory.org/book/">HoTT Book</a> §2.10 states it; and for a short authoritative overview, <a href="https://www.andrew.cmu.edu/user/awodey/preprints/NoticesAMS.pdf">Awodey–Pelayo–Warren, "Voevodsky's Univalence Axiom" (Notices of the AMS)</a>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads: "walk me through univalence ⟹ funext," "show me the universe-is-a-groupoid argument for Bool concretely," or "what exactly gets stuck when ua doesn't compute." Any is a strong next step.
+</div>
+
+<div class="nav-links">
+  <span><a href="0006-equivalence.html">◀ Lesson 6 — Equivalence</a></span>
+  <span>Next up: <a href="0008-higher-inductive-types.html">Lesson 8 · Higher Inductive Types</a></span>
+</div>
