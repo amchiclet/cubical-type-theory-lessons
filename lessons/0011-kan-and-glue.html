@@ -1,0 +1,109 @@
+<meta charset="utf-8">
+<title>Lesson 11 — Kan Operations and Glue</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 11</span>
+  <span><a href="../index.html">Home</a> · <a href="0010-the-interval.html">◀ Lesson 10</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Kan Operations and Glue</h1>
+<p class="subtitle">The interval gave paths contents. Two machines — <span class="tt">transport</span> and <span class="tt">hcomp</span> — make them <em>move</em>, and one type former — <span class="tt">Glue</span> — turns an equivalence into a real path. At the end of this lesson, univalence is a theorem that runs.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can name the two Kan operations and say what each does, explain how <span class="tt">Glue</span> builds the path <span class="tt">ua e</span>, and follow <span class="tt">transport (λX.X) (ua not) true</span> all the way to <span class="tt">false</span> — the exact term that jammed in Lesson 9, now reducing to a value.
+</div>
+
+<h2>What's still missing, precisely</h2>
+<p><a href="0010-the-interval.html">Lesson 10</a> lets you <em>write</em> paths. But J's powers need more:</p>
+<ul>
+  <li>to <strong>move along</strong> a path (transport, the engine of every payoff), and</li>
+  <li>to <strong>compose</strong> paths (<span class="tt">p ∙ q</span> — two lambdas out of <span class="tt">I</span> don't concatenate by themselves), and</li>
+  <li>to build a universe path out of an equivalence (<span class="tt">ua</span>) — what type sits <em>between</em> <span class="tt">Bool</span> and <span class="tt">Binary</span> at time <span class="tt">i</span>?</li>
+</ul>
+
+<h2>Machine 1: <span class="tt">transport</span>, computed by the shape of the type</h2>
+<p>Cubical makes transport a <em>program</em>: it recurses on the type former of the path's fibres. Each type former says how to carry its own data:</p>
+<pre><code>transport over a pair type      = transport each component
+transport over a function type  = transport the input backwards, the output forwards
+transport over ℕ, Bool, …       = identity (nothing varies)
+transport over a Glue type      = run the equivalence           ← the punchline, below</code></pre>
+<p>No axiom anywhere: transport <em>unfolds</em>, case by case, like any recursive function. (This structural unfolding is exactly the "identity mirrors structure" pattern from <a href="0005-path-algebra.html">Lesson 5</a>, turned into an algorithm.)</p>
+
+<h2>Machine 2: <span class="tt">hcomp</span> — composition is box-filling</h2>
+<p>How do you compose <span class="tt">p : a = b</span> with <span class="tt">q : b = c</span>? Draw the open box and ask for its lid:</p>
+<pre><code>        a ·············· c      ← the LID: the composite  p ∙ q  (what we want)
+        │                │
+   refl │                │ q       hcomp = "every open box has a lid."
+        │                │         give it the three walls; it returns the lid,
+        a ────── p ────── b        and the filling in between.</code></pre>
+<p><span class="tt">hcomp</span> (homogeneous composition) is the primitive that fills such boxes, in any dimension. Path composition, associativity, inverses, and all the higher coherence of the <a href="0001-types-as-spaces.html">Lesson 1</a> tower are instances of box-filling. Types equipped with transport + hcomp are called <strong>Kan types</strong> — "Kan" is the classical name for spaces where every open box can be filled — and in cubical, <em>every</em> type is Kan by construction.</p>
+
+<h2>Machine 3: <span class="tt">Glue</span> — the type between Bool and Binary</h2>
+<p>To define <span class="tt">ua e : A = B</span> we need a path in the universe: a function <span class="tt">λ i → ?ᵢ</span> with <span class="tt">?₀ ≡ A</span> and <span class="tt">?₁ ≡ B</span>. What is the type in the middle? <span class="tt">Glue</span> manufactures it: a type that <em>is B, with A glued onto one face along the equivalence e</em>:</p>
+<pre><code>ua e = λ i → Glue B [ (i = i0) ↦ (A, e) ,  (i = i1) ↦ (B, id) ]
+
+        i0                    i1
+        A ── glued along e ──▶ B        at i0 the Glue type is A (via e),
+                                        at i1 it is just B — endpoints hold
+                                        judgmentally, so this IS a path A = B.</code></pre>
+<p>And the computation rule for transporting over a Glue type is: <strong>go through the equivalence</strong>. That single rule is what was missing all course:</p>
+
+<pre><code>transport (λ X → X) (ua not) true
+  = transport over a Glue type              -- unfold ua
+  = not true                                 -- Glue's rule: run the equivalence
+  = false                                    -- DONE. a value. no jam.</code></pre>
+
+<div class="key">
+  <span class="label">Univalence, upgraded from axiom to theorem</span>
+  With <span class="tt">Glue</span>, the map <span class="tt">ua : (A ≃ B) → (A = B)</span> is a <em>definition</em>, and one can <em>prove</em> it is inverse to <span class="tt">idtoequiv</span> — univalence becomes a theorem of the system. And <strong>canonicity is restored</strong>: every closed <span class="tt">Bool</span> computes to <span class="tt">true</span> or <span class="tt">false</span> again, univalence included (proved for this theory by Huber). The Lesson 9 disease is cured, not worked around.
+</div>
+
+<div class="aside">
+  <strong>Honesty flags.</strong> (1) The full reduction rules for <span class="tt">hcomp</span> and <span class="tt">Glue</span> are genuinely technical — this lesson is the faithful conceptual layer; the definitive source is the CCHM paper below. (2) The trade recorded in <a href="0005-path-algebra.html">Lesson 5</a> stands: in cubical, J's own reduction on <span class="tt">refl</span> holds only up to a path, not judgmentally. Cubical buys "everything computes" at that small price.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">What is <span class="tt">hcomp</span>, in one phrase?</p>
+  <button class="opt" data-key="A">the rule that reduces every path to refl</button>
+  <button class="opt" data-key="B">the primitive that fills open boxes with lids</button>
+  <button class="opt" data-key="C">the eliminator for the interval primitive I</button>
+  <button class="opt" data-key="D">the proof that all types have decidable paths</button>
+  <div class="explain">Composition, inverses, and the higher coherence laws are all "give the walls, get the lid" — box-filling. Types with transport + hcomp are Kan types, and in cubical every type is one.</div>
+</div>
+
+<div class="quiz" data-answer="C">
+  <p class="q">What does <span class="tt">Glue</span> contribute that the interval alone could not?</p>
+  <button class="opt" data-key="A">a way to compose two paths end to end</button>
+  <button class="opt" data-key="B">a proof that the universe is a groupoid</button>
+  <button class="opt" data-key="C">the type sitting between A and B inside ua e</button>
+  <button class="opt" data-key="D">a rule making every function an equivalence</button>
+  <div class="explain">A universe path needs an actual type at each <span class="tt">i</span>. <span class="tt">Glue B [(i=i0)↦(A,e), …]</span> is that type — B with A glued along e — and its transport rule ("run the equivalence") is what makes <span class="tt">ua</span> compute.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">A colleague asks: "so how exactly does cubical make univalence compute?" Answer in three sentences.</p>
+  <div class="answer">
+    Cubical adds two Kan operations — transport, which is computed by recursion on the type former, and hcomp, which fills open boxes and gives path composition and all the higher coherences. For univalence it adds the Glue type former, which builds the type interpolating between A and B along an equivalence, so <span class="tt">ua e = λi → Glue …</span> is a genuine definition whose endpoints are A and B judgmentally. Transporting over a Glue type computes by running the equivalence, so <span class="tt">transport (λX.X) (ua not) true</span> reduces to <span class="tt">false</span>, univalence is a theorem rather than a postulate, and canonicity holds again.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  <a href="https://arxiv.org/abs/1611.02108">Cohen, Coquand, Huber, Mörtberg — <em>Cubical Type Theory: a constructive interpretation of the univalence axiom</em></a> (the CCHM paper): §4 for composition, §6 for Glue and univalence. Gentler: the <a href="https://agda.readthedocs.io/en/latest/language/cubical.html">Cubical Agda docs</a> on transport, hcomp, and Glue.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads: "draw the hcomp box for p ∙ q and fill it step by step," "what exactly is inside a Glue type's elements," or "how does transport over a Σ-type unfold." Pick one and we will slow all the way down.
+</div>
+
+<div class="nav-links">
+  <span><a href="0010-the-interval.html">◀ Lesson 10 — The Interval</a></span>
+  <span>Next up: <a href="0012-the-payoff-running.html">Lesson 12 · The Payoff, Running</a></span>
+</div>

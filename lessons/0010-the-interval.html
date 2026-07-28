@@ -1,0 +1,111 @@
+<meta charset="utf-8">
+<title>Lesson 10 — The Interval: Paths You Can Run</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 10</span>
+  <span><a href="../index.html">Home</a> · <a href="0009-funext-and-stuck-axioms.html">◀ Lesson 9</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>The Interval: Paths You Can Run</h1>
+<p class="subtitle">Cubical's one move: stop treating a path as an opaque proof, and make it a <em>function out of a line</em>. Everything that was stuck starts computing — starting with funext, which becomes a one-liner.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can say what the interval <span class="tt">I</span> is, read <span class="tt">λ i → …</span> as a path, and follow the single most satisfying definition in this course: <strong>funext, proved in one line that computes</strong>. The axiom from Lesson 9 becomes a program.
+</div>
+
+<h2>The redesign: a path is a function from a line</h2>
+<p>Lesson 9 ended with the diagnosis: axioms jam because a book-HoTT path is a black box — there is nothing inside it for evaluation to act on. Cubical opens the box. Introduce a primitive <strong>interval</strong>:</p>
+
+<pre><code>I    a formal line segment          i0 ●─────────────● i1
+     with two endpoints i0, i1      and points i "in between" — formal, not numbers</code></pre>
+
+<p>and <em>define</em>: a path in <span class="tt">A</span> is a function <span class="tt">I → A</span>. Writing <span class="tt">p i</span> for the point of <span class="tt">A</span> at position <span class="tt">i</span>:</p>
+
+<pre><code>p : a = b       means        p : I → A     with   p i0 ≡ a    and    p i1 ≡ b
+                                                   (endpoints hold JUDGMENTALLY)
+
+refl        = λ i → a                -- the constant function: stay at a
+ap f p      = λ i → f (p i)          -- push the path through f. A DEFINITION now.
+sym p       = λ i → p (1 - i)        -- run the line backwards</code></pre>
+
+<p>Two things just happened. First, a path has <em>contents</em>: it is a lambda, and lambdas compute. Second, operations that needed J (<span class="tt">ap</span>, <span class="tt">sym</span>) became one-line function manipulations. (<span class="tt">I</span> is a primitive, not an ordinary type — you cannot pattern-match on it or ask <span class="tt">i = i0</span>; you can only apply paths to it and abstract over it. That discipline is what keeps endpoints straight.)</p>
+
+<h2>The showcase: funext in one line</h2>
+<p>Lesson 9's unprovable principle. Watch:</p>
+
+<pre><code>given    h : (x : A) → f x = g x          -- pointwise: for each x, a path h x : I → B
+
+wanted   f = g                            -- one path between the functions
+
+funext h = λ i → λ x → h x i              -- DONE. and it computes.</code></pre>
+
+<p>Read it slowly, because it is almost embarrassing: for each position <span class="tt">i</span> on the line, produce the function <span class="tt">λ x → h x i</span> — "every point's own path, sampled at time <span class="tt">i</span>." At <span class="tt">i0</span> that is <span class="tt">λ x → f x</span>, at <span class="tt">i1</span> it is <span class="tt">λ x → g x</span>. The endpoints check <em>judgmentally</em>. The unprovable axiom was a <strong>swap of two lambda arguments</strong>, once paths became functions.</p>
+
+<pre><code>the picture: a path of functions IS a function into paths
+
+     f x₁ ────────── g x₁        each row: one point's path  h x
+     f x₂ ────────── g x₂        the whole square, read column-by-column:
+     f x₃ ────────── g x₃        at each time i, a full function  λx. h x i
+      │                │
+     i0    time i →   i1         funext = read the rows as columns</code></pre>
+
+<h2>Squares: higher paths get contents too</h2>
+<p>A path between paths is a function of <em>two</em> interval variables — literally a square. The tower from <a href="0001-types-as-spaces.html">Lesson 1</a> becomes concrete geometry: <span class="tt">n</span>-dimensional paths are functions <span class="tt">Iⁿ → A</span>, i.e. <span class="tt">n</span>-cubes. That is where the name "cubical" comes from.</p>
+<pre><code>q : p₁ = p₂     (paths between paths)         a ── p₁ ── b
+q : I → I → A                                 │           │      a square:
+q i j,  with the four edges fixed             │     q     │      2 interval variables
+                                              a ── p₂ ── b</code></pre>
+
+<h2>What is NOT solved yet (the honest IOU)</h2>
+<p>The interval alone gives you paths you can <em>write</em> and <em>apply</em>. Two powers are still missing, and they are exactly next lesson's subject:</p>
+<ul>
+  <li><strong>transport</strong> — given <span class="tt">p : A = B</span>, actually carrying an <span class="tt">A</span> to a <span class="tt">B</span>. Being a function <span class="tt">I → Type</span> does not by itself say how to move <em>along</em> it.</li>
+  <li><strong>ua</strong> — manufacturing a universe path from an equivalence. <span class="tt">λ i → ?</span> — what type do you even write in the middle, between <span class="tt">Bool</span> and <span class="tt">Binary</span>? That needs a new type former (<span class="tt">Glue</span>).</li>
+</ul>
+<p>So: funext is fully earned as of this lesson; univalence and a computing transport are earned next.</p>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="B">
+  <p class="q">In cubical type theory, what <em>is</em> a path <span class="tt">p : a = b</span>?</p>
+  <button class="opt" data-key="A">an opaque primitive proof with eliminator J</button>
+  <button class="opt" data-key="B">a function from the interval, endpoints fixed</button>
+  <button class="opt" data-key="C">a pair holding both a and b as components</button>
+  <button class="opt" data-key="D">a tactic that rewrites a into b on demand</button>
+  <div class="explain">A path is <span class="tt">p : I → A</span> with <span class="tt">p i0 ≡ a</span> and <span class="tt">p i1 ≡ b</span> holding judgmentally. Because it is a lambda, it has contents that evaluation can act on — that is the whole redesign.</div>
+</div>
+
+<div class="quiz" data-answer="C">
+  <p class="q">Why does <span class="tt">funext h = λ i → λ x → h x i</span> actually work?</p>
+  <button class="opt" data-key="A">because the two functions share every definition</button>
+  <button class="opt" data-key="B">because the interval makes all functions equal</button>
+  <button class="opt" data-key="C">because at i0 and i1 it is judgmentally f and g</button>
+  <button class="opt" data-key="D">because h is assumed to be an equivalence too</button>
+  <div class="explain">At <span class="tt">i0</span> the body is <span class="tt">λ x → h x i0 ≡ λ x → f x ≡ f</span>, and likewise <span class="tt">g</span> at <span class="tt">i1</span>. The endpoint conditions hold by computation, so the lambda IS a path from f to g — a definition, not an axiom.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain cubical's core move and why it makes funext trivial. Three sentences.</p>
+  <div class="answer">
+    Cubical replaces the opaque identity type with paths that are literally functions out of a primitive interval <span class="tt">I</span>, with the endpoint conditions holding judgmentally — so a path is a lambda, and lambdas compute. Given pointwise paths <span class="tt">h x : f x = g x</span>, the term <span class="tt">λ i → λ x → h x i</span> samples every point's path at time <span class="tt">i</span>, and at the endpoints it is judgmentally <span class="tt">f</span> and <span class="tt">g</span> — so it simply <em>is</em> a path <span class="tt">f = g</span>. What was an unprovable axiom in book-HoTT becomes an argument swap, and it reduces like any program.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  The <a href="https://agda.readthedocs.io/en/latest/language/cubical.html">Cubical Agda documentation</a> — the sections on the interval and path types match this lesson one-for-one. For the lecture version, <a href="https://www.youtube.com/watch?v=QBxtIxsFh7U">Mörtberg's EPIT lecture on the interval and path types</a>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads: "what are the min/max/reversal operations on I (connections)?", "why can't I pattern-match on the interval?", or "show me a square built by hand." Any of these deepens the geometry.
+</div>
+
+<div class="nav-links">
+  <span><a href="0009-funext-and-stuck-axioms.html">◀ Lesson 9 — Funext</a></span>
+  <span>Next up: <a href="0011-kan-and-glue.html">Lesson 11 · Kan Operations and Glue</a></span>
+</div>

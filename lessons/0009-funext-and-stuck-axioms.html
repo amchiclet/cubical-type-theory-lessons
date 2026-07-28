@@ -1,0 +1,97 @@
+<meta charset="utf-8">
+<title>Lesson 9 — Funext, and Why Axioms Don't Compute</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 9</span>
+  <span><a href="../index.html">Home</a> · <a href="0008-higher-inductive-types.html">◀ Lesson 8</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>Funext, and Why Axioms Don't Compute</h1>
+<p class="subtitle">A short lesson with one job: put your finger on a concrete term that typechecks and then <em>jams</em>. This is the problem the rest of the course solves.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can state function extensionality, say why bare type theory can neither prove nor refute it, and point at the exact spot where an axiom-built term stops reducing. After this, "cubical makes it compute" stops being a slogan.
+</div>
+
+<h2>Two functions that are obviously equal — and unprovably so</h2>
+<pre><code>double n = n + n
+twice  n = 2 * n
+
+h : (n : ℕ) → double n = twice n     -- provable, by induction. they agree EVERYWHERE.
+
+double = twice                        -- can you conclude THIS?</code></pre>
+<p>
+<strong>Function extensionality (funext)</strong> is the principle that closes that gap: if <span class="tt">f x = g x</span> for every <span class="tt">x</span>, then <span class="tt">f = g</span>. And in bare intensional type theory it is <em>not provable</em> — and, per the pattern you know from <a href="0002-why-this-matters.html">Lesson 2</a>, not refutable either. It is <strong>independent</strong>: the bare rules compare functions by their definitions, stay silent about pointwise agreement, and leave the question open. (Same status <span class="tt">Binary = Bool</span> had.)
+</p>
+<p>Book-HoTT closes the gap in one of two ways, and both are the same move at bottom:</p>
+<ul>
+  <li>postulate <span class="tt">funext</span> as an <strong>axiom</strong>, or</li>
+  <li>postulate <a href="0007-univalence.html">univalence</a>, which <em>implies</em> funext.</li>
+</ul>
+
+<h2>The price tag: an axiom is a constant with no reduction rule</h2>
+<p>Recall the two promises from <a href="0004-two-equalities.html">Lesson 4</a>: <em>checkable</em> (the typechecker accepts it) and <em>computable</em> (a closed term reduces to a value). Axioms keep the first and break the second. Here is the jam, concretely:</p>
+
+<pre><code>p = ua not : Bool = Bool              -- a path built from the axiom
+
+b = transport (λ X → X) p true        -- typechecks fine.  b : Bool.
+
+evaluate b:
+   transport (λ X → X) (ua not) true
+   = transport (λ X → X) (ua not) true     -- ...nothing fires. `ua` is a postulate:
+   = transport (λ X → X) (ua not) true     -- no rule rewrites it. evaluation HALTS HERE.
+
+b is a closed term of type Bool that is neither true nor false.   ← canonicity broken</code></pre>
+
+<p>The same jam happens with funext: a proof built by transporting along <span class="tt">funext h</span> typechecks, but never reduces to <span class="tt">refl</span>-shaped evidence — it stays wrapped around the opaque constant. <strong>Canonicity</strong> — "every closed <span class="tt">Bool</span> is <span class="tt">true</span> or <span class="tt">false</span>, every closed <span class="tt">ℕ</span> is a numeral" — fails the moment one axiom enters a term.</p>
+
+<div class="key">
+  <span class="label">Why this matters beyond aesthetics</span>
+  Every payoff this course promised runs through transport along <span class="tt">ua</span>- or <span class="tt">funext</span>-paths: the <a href="0002-why-this-matters.html">Bool/Binary swap</a>, the <a href="0008-higher-inductive-types.html">ℚ quotient and the loop proof</a>. In book-HoTT all of it <em>typechecks and then jams</em>. You can reason on paper; you cannot press run. The fix is not another axiom — it is a redesign of what a path <em>is</em>, so that <span class="tt">ua</span> and <span class="tt">funext</span> become definable terms with reduction rules. That redesign is the next lesson.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="C">
+  <p class="q">In bare intensional type theory, function extensionality is:</p>
+  <button class="opt" data-key="A">provable, by induction on both functions</button>
+  <button class="opt" data-key="B">refutable, using a counterexample pair</button>
+  <button class="opt" data-key="C">independent — not provable, not refutable</button>
+  <button class="opt" data-key="D">equivalent to assuming types are all sets</button>
+  <div class="explain">The bare rules are silent: they neither derive <span class="tt">f = g</span> from pointwise agreement nor rule it out. Same independent status as <span class="tt">Binary = Bool</span>. Book-HoTT settles it by postulate (funext directly, or univalence which implies it).</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">Exactly why does <span class="tt">transport (λX. X) (ua not) true</span> get stuck in book-HoTT?</p>
+  <button class="opt" data-key="A">its type is wrong, so the checker rejects it</button>
+  <button class="opt" data-key="B">ua is a postulate, so no reduction rule fires</button>
+  <button class="opt" data-key="C">transport is not defined on universe paths</button>
+  <button class="opt" data-key="D">Bool lacks the structure to be transported</button>
+  <div class="explain">The term typechecks — that is the point. But evaluation must rewrite <span class="tt">ua not</span> to proceed, and a postulated constant has no computation rule. The closed <span class="tt">Bool</span> term is neither <span class="tt">true</span> nor <span class="tt">false</span>: canonicity is broken.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">Explain to a colleague what funext says, why book-HoTT has to postulate it, and what goes wrong when it is a postulate. Three sentences.</p>
+  <div class="answer">
+    Funext says two functions that agree at every input are equal, and bare intensional type theory can neither prove nor refute this — it is independent, so book-HoTT postulates it (or postulates univalence, which implies it). A postulate is a constant with no reduction rule, so any term built from it typechecks but jams during evaluation: <span class="tt">transport (λX.X) (ua not) true</span> is a closed <span class="tt">Bool</span> that is neither <span class="tt">true</span> nor <span class="tt">false</span>, which is a failure of canonicity. That means every transport-across-equivalence payoff works on paper but does not run, and fixing it requires redefining what a path is rather than adding more axioms.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  The <a href="https://homotopytypetheory.org/book/">HoTT Book</a> §2.9 (funext stated as part of the path structure of function types) and §4.9 (funext from univalence). Rijke's <a href="https://arxiv.org/abs/2212.11082"><em>Introduction to Homotopy Type Theory</em></a> covers funext in the univalence chapters.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads: "walk me through why univalence implies funext," "show me a funext-specific stuck term in full," or "why can't we just add a reduction rule for the axiom directly?" That last one is a genuinely deep question — ask it.
+</div>
+
+<div class="nav-links">
+  <span><a href="0008-higher-inductive-types.html">◀ Lesson 8 — Higher Inductive Types</a></span>
+  <span>Next up: <a href="0010-the-interval.html">Lesson 10 · The Interval</a></span>
+</div>

@@ -1,0 +1,107 @@
+<meta charset="utf-8">
+<title>Lesson 12 — The Payoff, Running</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/quiz.js"></script>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Lesson 12</span>
+  <span><a href="../index.html">Home</a> · <a href="0011-kan-and-glue.html">◀ Lesson 11</a> · <a href="../reference/glossary.html">Glossary</a></span>
+</header>
+
+<h1>The Payoff, Running</h1>
+<p class="subtitle">Lesson 2 made promises. Lessons 3–11 built the machine. This lesson presses run: the Bool/Binary swap executes, fraction arithmetic computes across the quotient, and the course's IOUs are settled.</p>
+
+<div class="key">
+  <span class="label">The win for this lesson</span>
+  You can trace each Lesson 2 promise to the machinery that pays it, and you know what it means that the proofs <em>normalize</em>: transported programs produce values, quotient arithmetic evaluates, and nothing jams. This is the "so what" of the whole course, cashed.
+</div>
+
+<h2>Promise 1: the Bool/Binary swap — now it evaluates</h2>
+<p>The Lesson 2 scenario, replayed on the finished machine:</p>
+<pre><code>e : Bool ≃ Binary                    -- built by hand, once (to / from / inverse proofs)
+p = ua e : Bool = Binary             -- a REAL path now: λ i → Glue …  (Lesson 11)
+
+binaryMeet = transport Meet p boolMeet     -- the one-line structure port (Lesson 2)
+
+binaryMeet.op one one                       -- press run:
+  = transport unfolds structurally over the record   (pairs → componentwise, functions →
+    inputs back / outputs forward, Glue → run e)     (Lesson 11's transport machine)
+  = to (and (from one) (from one))
+  = to (and true true)  =  to true  =  one           -- a VALUE. it ran.</code></pre>
+<p>In book-HoTT that call jammed on the opaque <span class="tt">ua</span>. Now <span class="tt">ua e</span> is a Glue-path, transport unfolds through the record type former by type former, hits the Glue rule, runs the dictionary, and delivers <span class="tt">one</span>. The proofs travelled too: <span class="tt">binaryMeet.idem</span> is a real, usable proof term for Binary. <em>Prove once, transport anywhere, and execute</em> — the full Lesson 2 sentence, with all three verbs true.</p>
+
+<h2>Promise 2: fractions — arithmetic across the quotient</h2>
+<p>The <a href="0008-higher-inductive-types.html">Lesson 8</a> quotient, doing its day job:</p>
+<pre><code>_+ℚ_ : ℚ → ℚ → ℚ
+(a / b) +ℚ (c / d) = (a·d + c·b) / (b·d)      -- defined on representatives
+… scale case: a proof that +ℚ respects 1/2 = 2/4 …   -- the one obligation
+
+1/2 +ℚ 1/3                                     -- press run:
+  = (1·3 + 1·2) / (2·3)  =  5/6                -- computes on the representatives
+
+1/2 +ℚ 1/3  =  2/4 +ℚ 1/3                      -- and the QUOTIENT is honest:
+  -- both sides evaluate; the scale-path makes them EQUAL, and transport
+  -- along that path is usable in later proofs — no setoid bookkeeping anywhere.</code></pre>
+<p>This is what "quotients without setoid hell" means at runtime: you compute on representatives like a programmer, the declared paths guarantee the answers glue together like a mathematician, and the typechecker enforced (via the <span class="tt">scale</span> case) that no function ever depended on the representative. All three roles — computing, identifying, enforcing — active at once.</p>
+
+<h2>Promise 3: the structure identity principle, industrial-strength</h2>
+<p>The <span class="tt">Meet</span> record was a toy. The general form is the <strong>structure identity principle (SIP)</strong>: for a whole class of structures (monoids, groups, orders, …), <em>equivalence of underlying types + preservation of structure = identity of structures</em>. The cubical Agda library ships this as a reusable theorem: hand it your structure, get transport-of-everything for free — proofs, programs, the lot, all computing. Representation independence is not a discipline anymore; it is a library function.</p>
+
+<h2>The ledger, closed</h2>
+<table>
+  <thead><tr><th>Promised (Lesson 2)</th><th>Earned by</th><th>Runs because</th></tr></thead>
+  <tbody>
+    <tr><td>swap equivalent types, carry proofs free</td><td>univalence (L7) as a theorem (L11)</td><td>Glue-transport runs the equivalence</td></tr>
+    <tr><td>funext: pointwise-equal ⟹ equal</td><td>one-liner on the interval (L10)</td><td>it is a lambda; endpoints judgmental</td></tr>
+    <tr><td>quotients without setoid hell</td><td>HITs (L8) + computing transport (L11)</td><td>arithmetic on representatives evaluates</td></tr>
+    <tr><td>"no property distinguishes equivalent types"</td><td>a theorem, for every P (L7)</td><td>SIP, packaged in the library</td></tr>
+    <tr><td>everything above actually executes</td><td>canonicity restored (L11)</td><td>no axioms left in any term</td></tr>
+  </tbody>
+</table>
+
+<div class="aside">
+  <strong>How far this scales</strong>, as a closing story: Brunerie proved (in HoTT) that a certain homotopy group of the 3-sphere is <span class="tt">ℤ/nℤ</span> for a specific <span class="tt">n</span> his proof constructed but did not name — and because cubical computes, "just evaluate <span class="tt">n</span>" became a meaningful plan. The number (it is 2) took years and heavy optimization to actually normalize, and later refinements got it computable in practice. The point of the story: in this system, even <em>deep topology proofs</em> are programs with return values. That is the same property your <span class="tt">binaryMeet.op one one = one</span> just used, at research scale.
+</div>
+
+<h2>Check yourself</h2>
+<p>Answer from memory first. The click gives immediate feedback.</p>
+
+<div class="quiz" data-answer="C">
+  <p class="q">Why does <span class="tt">binaryMeet.op one one</span> reach the value <span class="tt">one</span> in cubical but not in book-HoTT?</p>
+  <button class="opt" data-key="A">cubical's typechecker accepts more terms overall</button>
+  <button class="opt" data-key="B">cubical erases the proofs before running programs</button>
+  <button class="opt" data-key="C">ua e is a Glue-path there, so transport can unfold it</button>
+  <button class="opt" data-key="D">book-HoTT lacks records, so Meet cannot be formed</button>
+  <div class="explain">Both systems typecheck the term. In book-HoTT <span class="tt">ua</span> is a postulate and evaluation jams on it; in cubical <span class="tt">ua e</span> is a definition (a Glue-path) and transport's Glue rule runs the equivalence, so the term normalizes to <span class="tt">one</span>.</div>
+</div>
+
+<div class="quiz" data-answer="B">
+  <p class="q">At runtime, what does "quotients without setoid hell" amount to for ℚ?</p>
+  <button class="opt" data-key="A">fractions are normalized to lowest terms eagerly</button>
+  <button class="opt" data-key="B">compute on representatives; declared paths glue results</button>
+  <button class="opt" data-key="C">the relation ~ is checked at each function call</button>
+  <button class="opt" data-key="D">equality of fractions becomes decidable by fiat</button>
+  <div class="explain">Arithmetic is defined and evaluated on representative pairs; the <span class="tt">scale</span> paths make equal fractions genuinely equal, and the per-function <span class="tt">scale</span> obligation already guaranteed no answer depends on the representative. No relation-passing, no congruence lemmas at use sites.</div>
+</div>
+
+<h3>Say it in your own words</h3>
+<div class="reveal">
+  <p class="prompt">The course in three sentences: what did HoTT promise, what did book-HoTT lack, and what did cubical add?</p>
+  <div class="answer">
+    HoTT reads equality as structured paths, and univalence makes identity of types coincide with equivalence — so proofs and programs transport across representations for free, and HITs give honest quotients. Book-HoTT delivers all of that as postulates, so the transported terms typecheck but jam: canonicity fails and nothing runs. Cubical redefines paths as functions out of an interval and adds transport, hcomp, and Glue, making funext and univalence computing theorems — so the same payoffs normalize to values, from <span class="tt">binaryMeet.op one one = one</span> to fraction arithmetic across the quotient.
+  </div>
+</div>
+
+<div class="source">
+  <span class="label">Primary source — read this next</span>
+  <a href="https://1lab.dev/">The 1Lab</a> — a readable, cross-linked formalization where every claim in this lesson exists as running cubical code (look up "structure identity principle" and the quotient constructions). For SIP itself: Angiuli, Cavallo, Mörtberg, Zeuner, <em>Internalizing Representation Independence with Univalence</em>.
+</div>
+
+<div class="teacher">
+  <strong>I'm your teacher for this — ask me anything.</strong> Good threads: "walk the transport unfolding of <span class="tt">binaryMeet</span> in full detail," "define ℚ's multiplication and its scale case with me," or "tell the Brunerie story properly." And if you want the bonus lesson — Higher Observational Type Theory, the third generation — say the word.
+</div>
+
+<div class="nav-links">
+  <span><a href="0011-kan-and-glue.html">◀ Lesson 11 — Kan Operations and Glue</a></span>
+  <span><em>End of the main arc. Bonus: Higher Observational Type Theory (on request).</em></span>
+</div>
