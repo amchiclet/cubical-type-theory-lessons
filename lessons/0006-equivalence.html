@@ -47,6 +47,23 @@ f ∘ g = id      -- go back and over on B: home</code></pre>
 
 <pre><code>fibre f b  =  Σ (a : A). (f a = b)      -- "the points of A that f sends to b"</code></pre>
 
+<p>
+That fibre is not a new gadget: it is the ordinary dependent sum <span class="tt">Σ (a : A). P(a)</span> for one particular family. Reading it with every fixed thing named:
+</p>
+
+<pre><code>fix   A B : Type          -- the two types (given)
+fix   f : A → B           -- the function we are studying (given)
+fix   b : B               -- the base point we stand over (given)
+
+let   P := λ(a:A). (f a = b)    -- P(a) = "the proofs that a lands on b"
+
+fibre f b  =  Σ (a : A). P(a)  =  Σ (a : A). (f a = b)
+              └ there is some a, packaged with a proof of P(a) ┘</code></pre>
+
+<p>
+So <span class="tt">f</span> and <span class="tt">b</span> are <em>fixed</em> inputs; only <span class="tt">a</span> is quantified, and it is a <span class="tt">Σ</span> ("there is some <span class="tt">a</span>, and here it is") not a <span class="tt">Π</span> ("for all <span class="tt">a</span>"). A point of the fibre is a pair <span class="tt">(a, p)</span>: a preimage together with its proof. For the full walkthrough of how to read these part-English, part-math definitions (the fixed / <span class="tt">Σ</span> / <span class="tt">Π</span> roles, the closed-form desugaring, and why <span class="tt">Σ(a:A) P(a)</span> is pairs = total space = "there exists" all at once), see <a href="../reference/reading-definitions.html">Reading these definitions</a>.
+</p>
+
 <p>Then define:</p>
 
 <pre><code>isEquiv f  =  (b : B) -> isContr (fibre f b)

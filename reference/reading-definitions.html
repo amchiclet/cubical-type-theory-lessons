@@ -1,0 +1,139 @@
+<meta charset="utf-8">
+<title>Reading these definitions — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Reference</span>
+  <span><a href="../index.html">Home</a> · <a href="glossary.html">Glossary</a></span>
+</header>
+
+<h1>Reading these definitions</h1>
+<p class="subtitle">How to read the part-English, part-math definitions in this course. Every name is either <em>fixed</em> or <em>quantified</em>, and the notation almost never says which. Worked all the way through on the fibre.</p>
+
+<div class="key">
+  <span class="label">The through-line</span>
+  <strong>Each name in a definition plays one role: <em>fixed</em> (an input you supply), <em>exists</em> (<span class="tt">Σ</span>, a witness handed back), or <em>for all</em> (<span class="tt">Π</span>, a mapping you must provide).</strong> Which role a letter plays is a <em>choice</em>, not a property of the letter. The same letter can be fixed in one definition and quantified in another.
+</div>
+
+<h2>1. The three roles</h2>
+<p>In any definition, each name is playing one of these. The symbol tells you which, once you know the code:</p>
+
+<table>
+  <thead><tr><th>how it appears</th><th>role</th><th>English words</th><th>what it builds</th></tr></thead>
+  <tbody>
+    <tr><td>free (given from outside)</td><td><strong>fixed / parameter</strong></td><td>"fix ___", "given ___", "for this particular ___"</td><td>nothing, it is an input</td></tr>
+    <tr><td><span class="tt">λ(x:A). …</span></td><td><strong>abstracted</strong> (a fixed input, made explicit)</td><td>"the rule that, given <span class="tt">x</span>, returns…"</td><td>a <strong>function</strong></td></tr>
+    <tr><td><span class="tt">Σ(x:A). …</span></td><td><strong>quantified, exists</strong></td><td>"there is some <span class="tt">x</span>", "a pair whose first part is <span class="tt">x</span>"</td><td>a <strong>pair</strong> <span class="tt">(x, …)</span></td></tr>
+    <tr><td><span class="tt">Π(x:A). …</span></td><td><strong>quantified, for-all</strong></td><td>"for every <span class="tt">x</span>", "for all <span class="tt">x</span>"</td><td>a <strong>function</strong> <span class="tt">x ↦ …</span></td></tr>
+  </tbody>
+</table>
+
+<p>
+A free variable and a <span class="tt">λ</span> are the same idea (an input you supply); the <span class="tt">λ</span> just writes the "given" down explicitly instead of leaving it in the surrounding context. The real fork is <strong>input</strong> (fixed / <span class="tt">λ</span>) versus <strong>quantified</strong> (<span class="tt">Σ</span> exists, <span class="tt">Π</span> for-all).
+</p>
+
+<h2>2. The fibre, with no free variables</h2>
+<p>Here is the fibre of a function written as a fully closed definition. Every name is introduced by a binder, so nothing floats free:</p>
+
+<pre><code>Fibre  :=  λ (A : Type).
+           λ (B : Type).
+           λ (f : A → B).
+           λ (b : B).
+              Σ (a : A). (f a = b)</code></pre>
+
+<p><span class="tt">Fibre A B f b</span> is what we elsewhere write <span class="tt">fibre f b</span> or <span class="tt">fib_f(b)</span>. Read it aloud, naming every role:</p>
+
+<div class="key">
+  <span class="label">In English, every role named</span>
+  <strong>Given</strong> a type <span class="tt">A</span>, <strong>given</strong> a type <span class="tt">B</span>, <strong>given</strong> a function <span class="tt">f : A → B</span>, <strong>given</strong> a point <span class="tt">b : B</span>: the fibre is the type of pairs <span class="tt">(a, p)</span> where <strong>there is some</strong> <span class="tt">a : A</span> and <span class="tt">p</span> proves <span class="tt">f a = b</span>.
+</div>
+
+<pre><code>A : Type      FIXED   (λ-input)   "given a type A"
+B : Type      FIXED   (λ-input)   "given a type B"
+f : A → B     FIXED   (λ-input)   "given the function we study"   ← the subscript in fib_f
+b : B         FIXED   (λ-input)   "given the base point"          ← the argument in parens
+a : A         EXISTS  (Σ)         "there is some a"               ← the ONLY quantified name
+p : f a = b   the proof carried alongside a inside the pair</code></pre>
+
+<p>Four "given"s and one "there is some." The notation hides all four "given"s. That missing English is what makes these definitions feel half-written.</p>
+
+<h2>3. Why <span class="tt">a</span> is "there is some" and not "for all" or "an input"</h2>
+<p>The fibre exists to <em>collect the preimages of <span class="tt">b</span></em>. Its elements should <em>be</em> preimages, so each element must package one preimage with its proof. That package is a pair, so <span class="tt">Σ</span>.</p>
+
+<ul>
+  <li><strong>Not <span class="tt">Π</span>:</strong> <span class="tt">Π(a:A). (f a = b)</span> reads "for every <span class="tt">a</span>, <span class="tt">f a = b</span>", i.e. "<span class="tt">f</span> is constant at <span class="tt">b</span>". A single, usually false claim about all of <span class="tt">A</span>, not a collection of preimages.</li>
+  <li><strong>Not <span class="tt">λ</span>:</strong> <span class="tt">λ(a:A). (f a = b)</span> is the <em>family of questions</em> (<span class="tt">A → Type</span>), one per <span class="tt">a</span>. It waits for you to hand in an <span class="tt">a</span>. But the fibre hands <span class="tt">a</span>s back; it does not demand one.</li>
+</ul>
+
+<p>A concrete case where <span class="tt">Σ</span> and <span class="tt">Π</span> disagree, with <span class="tt">f = id : Bool → Bool</span> and <span class="tt">b = true</span>:</p>
+
+<pre><code>Σ (a : Bool). (a = true)   =   { (true, refl) }        inhabited: true lands on true   ✓ the fibre
+Π (a : Bool). (a = true)   =   "true=true AND false=true"  =  empty: false ≠ true      ✗ not the fibre</code></pre>
+
+<p>Same <span class="tt">f</span> and <span class="tt">b</span>, opposite answers. Only <span class="tt">Σ</span> gives the fibre.</p>
+
+<h2>4. Why <span class="tt">f</span> and <span class="tt">b</span> are fixed, not special</h2>
+<p><span class="tt">f</span> is fixed for one reason only: we <em>chose</em> to define "the fibre <em>of a given function</em>." Nothing about <span class="tt">f</span> forces this. You can quantify it like anything else, and get a different (legal) object:</p>
+
+<pre><code>Σ (f : A → B). Σ (a : A). (f a = b)     "there is some function f, and some a, with f a = b"
+Π (f : A → B). …                          "for every function f, …"</code></pre>
+
+<p><span class="tt">f</span> and <span class="tt">b</span> are peers: both are standing parameters you already hold. <span class="tt">a</span> is the one you go looking for. Nothing makes <span class="tt">f</span> special except the decision to hold it constant.</p>
+
+<h2>5. One <span class="tt">Σ</span>, three names</h2>
+<p>The fibre is not a special gadget. It is the ordinary dependent sum <span class="tt">Σ(a:A). P(a)</span> for one particular family:</p>
+
+<pre><code>let  P := λ(a:A). (f a = b)          -- P(a) = "the proofs that a lands on b"
+
+Fibre A B f b  =  Σ (a : A). P(a)  =  Σ (a : A). (f a = b)</code></pre>
+
+<p>There is only ever <em>one</em> <span class="tt">Σ</span>, and it always means the same thing. It just wears three names, all describing the identical type:</p>
+
+<table>
+  <thead><tr><th>name</th><th>reading</th><th>where it is used</th></tr></thead>
+  <tbody>
+    <tr><td><strong>dependent pair</strong></td><td>the type of pairs <span class="tt">(a, y)</span> with <span class="tt">a:A</span>, <span class="tt">y:P(a)</span></td><td>the mechanical definition</td></tr>
+    <tr><td><strong>total space</strong></td><td>glue the fibre <span class="tt">P(a)</span> sitting over each point <span class="tt">a</span> into one space above <span class="tt">A</span></td><td>the geometric picture</td></tr>
+    <tr><td><strong>there exists</strong> (proof-relevant)</td><td>"there is an <span class="tt">a</span>, and here is which one, with a proof of <span class="tt">P(a)</span>"</td><td>the logical reading</td></tr>
+  </tbody>
+</table>
+
+<p>These are not rivals to pick between. The pairs <em>are</em> the points of the total space, and the total space <em>is</em> the witnessed existence. A point upstairs needs to say which column it is in (a base point <span class="tt">a</span>) and which point in that column (<span class="tt">y : P(a)</span>), which is exactly the pair <span class="tt">(a, y)</span>:</p>
+
+<pre><code>        P(a₁)      P(a₂)      P(a₃)
+         •                     •
+         •          •          •      ← each dot is a point  y : P(a)
+   A ────a₁─────────a₂─────────a₃────  ← base points a : A
+
+a point of the total space   =   a pair (a, y),  a:A, y:P(a)
+Σ(a:A) P(a)                  =   collection of those pairs   =   the total space
+fst : Σ(a:A)P(a) → A         =   send each dot down to its column a</code></pre>
+
+<p>"Total space" is just the name for the collection of pairs <em>when you picture <span class="tt">P</span> as fibres stacked over a base</em>. Drop the picture and it is a bag of pairs; add the picture and it is a bundle. Nothing changed but the drawing.</p>
+
+<h2>6. Why the fibre <em>feels</em> like a subset, not a bundle</h2>
+<p>It depends on what kind of family <span class="tt">P</span> is:</p>
+
+<ul>
+  <li><strong><span class="tt">P(a)</span> is a proposition</strong> (empty or one point): the stacks have height 0 or 1, so <span class="tt">Σ(a:A) P(a)</span> reads as "the <span class="tt">a</span>s where <span class="tt">P</span> holds, each with its one proof" = <strong>filtering <span class="tt">A</span> to a subset</strong>.</li>
+  <li><strong><span class="tt">P(a)</span> is a general type</strong> (tall stacks): <span class="tt">Σ(a:A) P(a)</span> is a genuine <strong>bundle</strong> with real structure in each fibre.</li>
+</ul>
+
+<p>The fibre's family is <span class="tt">P(a) = (f a = b)</span>, an identity type. When <span class="tt">A</span> and <span class="tt">B</span> are <a href="../lessons/0003-h-levels.html">sets</a>, <span class="tt">f a = b</span> is a proposition (empty, or a single point), so the fibre collapses to "the preimages of <span class="tt">b</span>" and feels like a subset. In general it is a real space: if <span class="tt">f a = b</span> holds in several distinct ways (paths <span class="tt">p ≠ q</span>), the stack over that <span class="tt">a</span> is taller than one, and the fibre is a bundle, not a subset. Same <span class="tt">Σ</span>, same pairs; the family just got taller.</p>
+
+<div class="aside">
+  <strong>The caveat on "there exists."</strong> <span class="tt">Σ</span> is the <em>proof-relevant</em> exists: it hands back <em>which</em> <span class="tt">a</span>, not just the bare fact. The classical "there exists, do not tell me which" is the truncation <span class="tt">‖ Σ(a:A) P(a) ‖</span>, which forgets the witness. So when a text reads <span class="tt">Σ</span> aloud as "there exists," it means the version that keeps the pair. That is why "collection of pairs" is the safe anchor and "there exists" is the lossy shorthand.
+</div>
+
+<h2>7. The pocket summary</h2>
+<pre><code>fixed / λ   =  "given this"        an input you supply
+Σ           =  "there is some"     a pair (witness + proof) handed back;  also "total space"
+Π           =  "for all"           a mapping you must provide
+
+Fibre A B f b  =  Σ (a:A). (f a = b)      with  P := λ(a:A). (f a = b)
+   A, B, f, b : fixed (given)      a : exists (Σ)      p : the proof in the pair
+   Σ(a:A) P(a) is one type with three names: pairs = total space = (proof-relevant) exists</code></pre>
+
+<div class="teacher">
+  <strong>Ask your teacher</strong> to read any other definition in the course this way: name each variable's role (fixed / <span class="tt">Σ</span> / <span class="tt">Π</span>), desugar it to a closed term, and say why each binder is the one it is. The fibre above is the template.
+</div>
