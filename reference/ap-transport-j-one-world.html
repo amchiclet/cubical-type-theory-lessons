@@ -33,6 +33,10 @@
   <strong>Everywhere below: a base type <span class="tt">A</span> with two points <span class="tt">a</span>, <span class="tt">b</span> and a path <span class="tt">p : a = b</span>, and a <em>bundle</em> standing over <span class="tt">A</span> (a type sitting over each base point, projecting down by <span class="tt">π</span>).</strong> <span class="tt">ap</span>, <span class="tt">transport</span>, and <span class="tt">J</span> are three moves in this one world. The base and the path <span class="tt">p</span> never change. What changes is <em>which bundle</em> stands over the base, and <em>what the path does</em> to it.
 </div>
 
+<div class="aside">
+  <strong>The word "bundle," introduced properly.</strong> On this page a bundle is nothing new: it is a <em>type family</em> <span class="tt">P : A → Type</span> (Lesson 5), drawn geometrically. Fibres <span class="tt">P a</span> stand over the base <span class="tt">A</span>; gluing them gives the total space <span class="tt">Σ(a:A). P a</span>; <span class="tt">fst</span> projects back down; a dependent function <span class="tt">(a:A) → P a</span> is a <em>section</em> (one chosen point in every fibre). The name is borrowed from topology's fibre bundles. Beware a collision: Lessons 2 and 3 use "bundle" informally for a <em>record of fields</em> (a <span class="tt">Σ</span>-package like <span class="tt">Meet A</span>). Same word, different habit; here it always means family-over-a-base.
+</div>
+
 <h2>0. The world</h2>
 <p>Read this once and hold it fixed. A base <span class="tt">A</span> at the bottom; a path <span class="tt">p</span> from <span class="tt">a</span> to <span class="tt">b</span>; over each base point a fibre (a type). The whole thing above the base is a <em>total space</em>; <span class="tt">π</span> projects it back down.</p>
 
@@ -179,6 +183,66 @@
 <figcaption><span class="tt">J</span> lives in the <strong>based path space</strong>, the total space of <span class="tt">y ↦ (a = y)</span>. It is contractible to <span class="tt">(a, refl)</span>. Our <span class="tt">p</span> is the single point <span class="tt">(b, p)</span> up there. Fill the motive at the centre; contractibility spreads it to every fibre. That is why handling <span class="tt">refl</span> alone suffices.</figcaption>
 </figure>
 
+<h3>The motive is a second storey, and J is transport one storey up</h3>
+<p>The diagram above compresses one thing worth unfolding. The motive <span class="tt">C</span> assigns a <em>goal type</em> <span class="tt">C(y, q)</span> to every point <span class="tt">(y, q)</span> of the fan. So the full J picture is a <strong>two-storey building</strong>: the base at the bottom, the fan over it, and the motive standing over the fan. "Filling the motive at the centre" means exactly: hand over one element <span class="tt">d : C(a, refl)</span>, an inhabitant of the one goal box over the centre.</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 360" role="img" aria-label="Three storeys: the base A with path p at the bottom, the contractible fan of (y, q) points in the middle, and over each fan point a goal box C(y, q); the single filling d in the centre box is carried along the contraction to fill every other box.">
+  <!-- storey labels -->
+  <text class="d-lbl" x="34" y="82">motive</text>
+  <text class="d-lbl" x="34" y="214">fan</text>
+  <text class="d-lbl" x="34" y="317">base</text>
+  <!-- storey 2: goal boxes over each fan point -->
+  <rect class="d-fibre" x="86" y="60" width="88" height="34" rx="8"/>
+  <rect class="d-fibre" x="186" y="60" width="88" height="34" rx="8"/>
+  <rect class="d-fibre" x="286" y="60" width="88" height="34" rx="8"/>
+  <text class="d-mono" x="138" y="82" text-anchor="middle">C(a,refl)</text>
+  <text class="d-mono" x="230" y="82" text-anchor="middle">C(y₁,q₁)</text>
+  <text class="d-mono" x="330" y="82" text-anchor="middle">C(b,p)</text>
+  <!-- the one filling d -->
+  <circle class="d-actdot" cx="103" cy="82" r="4.5"/>
+  <text class="d-acclbl" x="96" y="70" text-anchor="end">d</text>
+  <!-- the carry along the contraction -->
+  <path class="d-act" d="M132 58 Q230 20 322 58" marker-end="url(#arrowM)"/>
+  <text class="d-acclbl" x="230" y="16" text-anchor="middle">carry d: transport C (contraction) d</text>
+  <!-- storey 1: the fan -->
+  <circle class="d-actdot" cx="130" cy="210" r="6"/>
+  <circle class="d-pt" cx="230" cy="210" r="4"/>
+  <circle class="d-pt" cx="330" cy="210" r="4"/>
+  <text class="d-mono" x="130" y="232" text-anchor="middle">(a,refl)</text>
+  <text class="d-mono" x="230" y="232" text-anchor="middle">(y₁,q₁)</text>
+  <text class="d-mono" x="330" y="232" text-anchor="middle">(b,p)</text>
+  <path class="d-faint" d="M224 208 L140 208" marker-end="url(#arrowM2)"/>
+  <path class="d-faint" d="M324 213 Q230 244 140 214" marker-end="url(#arrowM2)"/>
+  <text class="d-lbl" x="230" y="256" text-anchor="middle">contraction: every point slides to the centre</text>
+  <!-- risers: each fan point holds up its goal box -->
+  <path class="d-dash" d="M130 202 L130 98"/>
+  <path class="d-dash" d="M230 202 L230 98"/>
+  <path class="d-dash" d="M330 202 L330 98"/>
+  <!-- storey 0: the base -->
+  <rect class="d-base" x="30" y="300" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="317">A</text>
+  <circle class="d-pt" cx="130" cy="313" r="5"/>
+  <circle class="d-pt" cx="330" cy="313" r="5"/>
+  <text class="d-big" x="130" y="344" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="344" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 300 Q230 282 330 300"/>
+  <text class="d-acclbl" x="230" y="280" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowM" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="var(--accent)"/></marker>
+    <marker id="arrowM2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--rule)"/></marker>
+  </defs>
+</svg>
+<figcaption>The two-storey reading. Storey 1 is the contractible fan; storey 2 is the motive, one goal box per fan point. You inhabit exactly one box, <span class="tt">d : C(a, refl)</span>. J delivers <span class="tt">d</span> to every other box by <em>transporting it along the contraction path</em>, inside the bundle <span class="tt">C</span> over the fan.</figcaption>
+</figure>
+
+<p>So J is not a fourth kind of move. It is diagram 2 with the storeys renamed: the <em>base</em> is now the fan, the <em>path</em> is the contraction path, the <em>bundle</em> is the motive, and the cargo is your <span class="tt">d</span>:</p>
+
+<pre><code>J C d (y, q)  =  transport C (contraction path to (y,q)) d
+                 └ the fan is contractible, so this path always exists ┘</code></pre>
+
+<p>Two consequences fall out of the picture. First, the roles of the two special points: the centre <span class="tt">(a, refl)</span> is where you <em>pay</em> (the one filling), and your held path enters only as the point <span class="tt">(b, p)</span>, the <em>address</em> where you evaluate the resulting section. The input path contributes no evidence; it tells you where to cash out. Second, one case suffices for exactly one reason: contractibility means every address is reachable from the centre, so a single payment covers all deliveries.</p>
+
 <h2>Reading the three side by side</h2>
 <p>Same base, same <span class="tt">p</span>. Three bundles, three moves:</p>
 
@@ -198,6 +262,8 @@
   <span class="label">transport is <span class="tt">ap</span> aimed at the universe</span>
   A family <span class="tt">P : A → Type</span> is a function into the universe <span class="tt">U</span>. So <span class="tt">ap P p : P a = P b</span> is a <em>path in <span class="tt">U</span></em>: a path <strong>between types</strong>. Then <span class="tt">transport</span> is "turn that path of types into a function" (coerce along it). In one line: <span class="tt">transport P p = coerce (ap P p)</span>. Diagram 2 is diagram 1 run one floor up, in the space of types, then cashed in.
 </div>
+
+<p>One level-check before the picture, because it looks like a rule violation: how can there be a path <em>between</em> types when elements of <span class="tt">P a</span> and <span class="tt">P b</span> cannot even be compared? Because equality is always formed <em>inside</em> an ambient type: <span class="tt">x =_T y</span> needs one <span class="tt">T</span> containing both sides. For elements, no such <span class="tt">T</span> exists (<span class="tt">u</span> lives inside <span class="tt">P a</span>, <span class="tt">v</span> inside <span class="tt">P b</span>), so <span class="tt">u = v</span> is ill-formed. But <span class="tt">P a</span> and <span class="tt">P b</span> are themselves both <em>points of the universe</em>, so <span class="tt">P a =_U P b</span> is as well-formed as <span class="tt">2 = 3</span> in <span class="tt">ℕ</span>. The boundary is between the <em>insides</em> of the two types; the types themselves sit side by side in <span class="tt">U</span>. That is why elements cross fibres only by riding a path that lives one floor up.</p>
 
 <p>Drawn, it is literally diagram 1 with <span class="tt">B</span> replaced by the universe. The dots upstairs are now whole <em>types</em>, and the wake is a path between types:</p>
 
@@ -406,6 +472,8 @@ apd : (f : (x:A) → P x)   → (p : a = b) → transport P p (f a) = f b
 </svg>
 <figcaption>The based path space <span class="tt">Σ(y:S¹)(base = y)</span> is <em>still contractible</em> (unrolled, it is the helix again, and the helix is a line). <span class="tt">(base, loop)</span> does slide down to <span class="tt">(base, refl)</span>, but the slide <strong>moves the endpoint</strong> around the circle as it goes. A claim like <span class="tt">loop = refl</span> lives in the loop space, where the endpoint is <em>pinned</em>, and no pinned slide exists: <span class="tt">loop ≠ refl</span>. Same resolution as Lesson 5's <span class="tt">ua not</span>: J owns paths with one free endpoint, never loops.</figcaption>
 </figure>
+
+<p>And here the two-storey reading pays off with actual numbers. Take the motive <span class="tt">C(y, q) := Cover y</span> and fill the centre with <span class="tt">0 : ℤ</span>. The section J hands back is <span class="tt">encode</span> from <a href="../lessons/0008-higher-inductive-types.html">Lesson 8</a>, and evaluating it at different addresses of the fan gives <em>different</em> numbers: <span class="tt">(base, refl) ↦ 0</span>, <span class="tt">(base, loop) ↦ 1</span>, <span class="tt">(base, loop²) ↦ 2</span>. One payment of <span class="tt">0</span> at the centre, different cash-outs, because the carry to <span class="tt">(base, loop)</span> rides through <span class="tt">ua succ</span> once and arrives twisted. Contractibility guarantees every address is <em>reachable</em>; it never says the delivered values agree. That is how "prove it once at <span class="tt">refl</span>" coexists with <span class="tt">loop ≠ refl</span>.</p>
 
 <p>One last echo: the stack <span class="tt">(base, refl), (base, loop), (base, loop²), …</span> sitting over <span class="tt">base</span> in the J picture is exactly the <span class="tt">…, 0, 1, 2, …</span> stalk in the transport picture. That is <a href="../lessons/0005-path-algebra.html">encode-decode</a> drawn: the true fibre of paths and the <span class="tt">Code</span> fibre <span class="tt">ℤ</span> are the same ladder, and <span class="tt">π₁(S¹) = ℤ</span> is the statement that they match rung for rung.</p>
 
