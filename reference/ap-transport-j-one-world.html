@@ -160,7 +160,7 @@
   <path class="d-faint" d="M136 150 L226 122" marker-end="url(#arrowJ)"/>
   <path class="d-faint" d="M136 151 L326 150" marker-end="url(#arrowJ)"/>
   <path class="d-faint" d="M136 149 L396 122" marker-end="url(#arrowJ)"/>
-  <text class="d-lbl" x="250" y="180" text-anchor="middle">fill the motive C here, once — the collapse carries it to every (y, q)</text>
+  <text class="d-lbl" x="250" y="180" text-anchor="middle">fill the motive C here, once; the collapse carries it to every (y, q)</text>
   <!-- base (identical) -->
   <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
   <text class="d-big" x="404" y="267">A</text>
@@ -199,11 +199,215 @@
   A family <span class="tt">P : A → Type</span> is a function into the universe <span class="tt">U</span>. So <span class="tt">ap P p : P a = P b</span> is a <em>path in <span class="tt">U</span></em>: a path <strong>between types</strong>. Then <span class="tt">transport</span> is "turn that path of types into a function" (coerce along it). In one line: <span class="tt">transport P p = coerce (ap P p)</span>. Diagram 2 is diagram 1 run one floor up, in the space of types, then cashed in.
 </div>
 
+<p>Drawn, it is literally diagram 1 with <span class="tt">B</span> replaced by the universe. The dots upstairs are now whole <em>types</em>, and the wake is a path between types:</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="The universe U floats above the base A; the family P sends a and b up to the types P a and P b, and p traces the path ap P p between them, which coerce turns into the transport function.">
+  <!-- the universe slab -->
+  <rect class="d-fibre-const" x="30" y="70" width="400" height="46" rx="10"/>
+  <text class="d-big" x="404" y="98">U</text>
+  <text class="d-lbl" x="60" y="63">the universe: each point of U is a TYPE</text>
+  <!-- P picks types in U -->
+  <path class="d-dash" d="M130 250 L130 122" marker-end="url(#arrowU)"/>
+  <path class="d-dash" d="M330 250 L330 122" marker-end="url(#arrowU)"/>
+  <text class="d-lbl" x="120" y="200" text-anchor="end">P</text>
+  <text class="d-lbl" x="340" y="200">P</text>
+  <circle class="d-actdot" cx="130" cy="93" r="4.5"/>
+  <circle class="d-actdot" cx="330" cy="93" r="4.5"/>
+  <text class="d-mono" x="130" y="140" text-anchor="middle">P a</text>
+  <text class="d-mono" x="330" y="140" text-anchor="middle">P b</text>
+  <!-- wake ap P p in U -->
+  <path class="d-act" d="M130 93 Q230 76 330 93"/>
+  <text class="d-acclbl" x="230" y="72" text-anchor="middle">ap P p : P a = P b</text>
+  <!-- the cash-in -->
+  <text class="d-mono" x="230" y="170" text-anchor="middle">coerce (ap P p)  =  transport P p  :  P a → P b</text>
+  <!-- base (identical) -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowU" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--ink-soft)"/></marker>
+  </defs>
+</svg>
+<figcaption>Same layout as the <span class="tt">ap</span> diagram; only the slab changed from <span class="tt">B</span> to <span class="tt">U</span>. The wake <span class="tt">ap P p</span> is a path <em>between the types themselves</em>; <span class="tt">coerce</span> cashes it in as the function <span class="tt">P a → P b</span>, and that function is <span class="tt">transport</span>. (And <span class="tt">ua</span>, from <a href="../lessons/0007-univalence.html">Lesson 7</a>, is the tool that <em>manufactures</em> such wakes in <span class="tt">U</span> directly.)</figcaption>
+</figure>
+
 <div class="key">
   <span class="label">ap and transport are both <span class="tt">J</span></span>
   Diagram 3 is the engine. Feed <span class="tt">J</span> the motive "<span class="tt">P y</span>" with centre value "<span class="tt">u</span>" and you get <span class="tt">transport</span>; feed it the motive "<span class="tt">f a = f y</span>" with centre value "<span class="tt">refl</span>" and you get <span class="tt">ap f</span> (this is the table in <a href="../lessons/0005-path-algebra.html">Lesson 5</a>). Each of diagrams 1 and 2 is diagram 3 with the motive and the centre value filled in. The contraction to <span class="tt">(a, refl)</span> is what powers the wake in <span class="tt">B</span> and the lift across fibres alike.</div>
 
 <p>So the whole page collapses to one sentence: <strong>a path in the base acts on whatever stands over the base, and <span class="tt">J</span> is the reason any such action is determined by its value at <span class="tt">refl</span>.</strong> <span class="tt">ap</span> is that action on a constant bundle, <span class="tt">transport</span> on a varying one, and reading <span class="tt">P</span> into the universe turns the first into the second.</p>
+
+<h2>Making it fully parallel: carry vs track</h2>
+<p>There is an asymmetry in the signatures that deserves to be faced head on. <span class="tt">transport</span> <em>carries elements</em> (<span class="tt">P a → P b</span>); <span class="tt">ap</span> hands back <em>a path</em> (<span class="tt">f a = f b</span>). Why the mismatch?</p>
+
+<div class="key">
+  <span class="label">The reason is the dependence itself</span>
+  In the constant bundle, <span class="tt">f a</span> and <span class="tt">f b</span> live in the <strong>same type</strong> <span class="tt">B</span>, so they can be compared directly: the strongest thing to say is a path. In a varying bundle, <span class="tt">u : P a</span> and <span class="tt">v : P b</span> live in <strong>different types</strong>, so <span class="tt">u = v</span> is not even <em>well-formed</em>. "Same" cannot be stated. The only moves left are: go up to the universe (<span class="tt">ap P p : P a = P b</span>, a path between the types), or <em>carry</em> an element across and compare after arrival. <span class="tt">transport</span> is that carry.
+</div>
+
+<p>So each world offers two operations: <em>carry a bare element</em> across the path, or <em>track a function's images</em> along it. That is a two-by-two square, and two of its corners we have not named yet:</p>
+
+<table>
+  <thead><tr><th></th><th>carry a bare element</th><th>track a function's images</th></tr></thead>
+  <tbody>
+    <tr><td><strong>constant bundle</strong> <span class="tt">B</span></td><td><span class="tt">transport (λ_. B) p : B → B</span>: exists, but it is the <strong>identity</strong> (up to a path). Nothing varies, so carrying does nothing.</td><td><span class="tt">ap f p : f a = f b</span>: the wake. This is where the content lives.</td></tr>
+    <tr><td><strong>varying bundle</strong> <span class="tt">P</span></td><td><span class="tt">transport P p : P a → P b</span>: the lift. This is where the content lives.</td><td><span class="tt">apd f p : transport P p (f a) = f b</span>: <strong>the dependent <span class="tt">ap</span></strong>, spelled out below.</td></tr>
+  </tbody>
+</table>
+
+<p>The two named corners of Lesson 5 sit on the square's <em>interesting diagonal</em>. The boring corner (carrying over a constant bundle) is the identity, which is exactly <em>why</em> <span class="tt">ap</span>'s output is the wake instead: with nothing happening in the carry, all the information is in how the section moves. And the fourth corner is a genuine, standard operation:</p>
+
+<pre><code>ap  : (f : A → B)         → (p : a = b) → f a = f b
+apd : (f : (x:A) → P x)   → (p : a = b) → transport P p (f a) = f b
+                                            └── carry first ──┘  └ then compare ┘</code></pre>
+
+<p><span class="tt">apd</span> is <span class="tt">ap</span> for a <em>dependent</em> function (a section of the bundle). Its images <span class="tt">f a : P a</span> and <span class="tt">f b : P b</span> are in different fibres, so the naive conclusion <span class="tt">f a = f b</span> is ill-formed; the type of <span class="tt">apd</span> must <em>use transport in its own statement</em> to carry <span class="tt">f a</span> into <span class="tt">P b</span> before comparing. Drawn in the same world:</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="Two varying fibres P a and P b; a section f marks f a in P a and f b in P b; the lift carries f a across to a point of P b, and apd is the vertical comparison path from that carried point to f b inside the fibre P b.">
+  <!-- differing fibres -->
+  <rect class="d-fibre" x="112" y="95" width="36" height="150" rx="14"/>
+  <rect class="d-fibre" x="312" y="80" width="36" height="165" rx="14"/>
+  <text class="d-big" x="130" y="88" text-anchor="middle">P a</text>
+  <text class="d-big" x="330" y="73" text-anchor="middle">P b</text>
+  <!-- the section's images -->
+  <circle class="d-pt" cx="130" cy="160" r="5"/>
+  <text class="d-mono" x="118" y="157" text-anchor="end">f a</text>
+  <circle class="d-pt" cx="330" cy="115" r="5"/>
+  <text class="d-mono" x="344" y="112">f b</text>
+  <!-- the section arrows from the base -->
+  <path class="d-dash" d="M130 250 L130 170"/>
+  <path class="d-dash" d="M330 250 L330 125"/>
+  <text class="d-lbl" x="120" y="215" text-anchor="end">f</text>
+  <text class="d-lbl" x="340" y="215">f</text>
+  <!-- the carry -->
+  <circle class="d-actdot" cx="330" cy="175" r="5"/>
+  <path class="d-act" d="M135 160 Q230 145 325 173" marker-end="url(#arrowD)"/>
+  <text class="d-acclbl" x="215" y="135" text-anchor="middle">carry: transport P p (f a)</text>
+  <!-- the comparison inside P b -->
+  <path class="d-act" d="M330 168 L330 124" marker-end="url(#arrowD)"/>
+  <text class="d-acclbl" x="344" y="150">apd f p</text>
+  <!-- base (identical) -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowD" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<figcaption><span class="tt">apd</span>: carry <span class="tt">f a</span> across the lift (diagram 2's move), then compare with <span class="tt">f b</span> <em>inside</em> <span class="tt">P b</span> (diagram 1's kind of conclusion, now that both points share a fibre). Set <span class="tt">P</span> constant and the carry collapses to the identity, the two dots merge lanes, and <span class="tt">apd</span> becomes plain <span class="tt">ap</span>.</figcaption>
+</figure>
+
+<p>This same "carry first, then compare" shape is not new to you: it is the Σ-type row of Lesson 5's pattern table, <span class="tt">((a,u) = (b,v)) ≃ Σ(q : a = b). transport q u = v</span>. Comparing second components of a dependent pair has to transport for exactly the reason <span class="tt">apd</span> does: until you carry, the comparison is ill-formed.</p>
+
+<h2>Stress test: swap the base for S¹</h2>
+<p>The frame claims to be one world, so it should survive changing the base. Replace <span class="tt">A</span> by the circle (<a href="../lessons/0008-higher-inductive-types.html">Lesson 8</a>): now <span class="tt">a = b = base</span> and the path is <span class="tt">p = loop : base = base</span>, a path that comes back. Run the same three moves.</p>
+
+<h3><span class="tt">ap</span> over S¹: the wake is a loop</h3>
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="The base is now a circle with one point base and the loop going around it; f sends base up to f base in the slab B, and the wake of the loop is a closed loop at f base.">
+  <!-- constant slab B -->
+  <rect class="d-fibre-const" x="30" y="70" width="400" height="46" rx="10"/>
+  <text class="d-big" x="404" y="98">B</text>
+  <!-- f base and its wake, a closed loop -->
+  <path class="d-dash" d="M230 212 L230 122" marker-end="url(#arrowS)"/>
+  <text class="d-lbl" x="240" y="170">f</text>
+  <circle class="d-actdot" cx="230" cy="93" r="4.5"/>
+  <text class="d-mono" x="230" y="140" text-anchor="middle">f base</text>
+  <path class="d-act" d="M230 93 C 300 60, 300 120, 230 93"/>
+  <text class="d-acclbl" x="316" y="90">ap f loop : f base = f base</text>
+  <!-- base: the circle -->
+  <circle class="d-base" cx="230" cy="250" r="34"/>
+  <circle class="d-act" cx="230" cy="250" r="34"/>
+  <circle class="d-pt" cx="230" cy="216" r="5"/>
+  <text class="d-big" x="230" y="235" text-anchor="middle" dominant-baseline="hanging">base</text>
+  <text class="d-acclbl" x="180" y="255" text-anchor="end">loop</text>
+  <text class="d-big" x="290" y="255">S¹</text>
+  <defs>
+    <marker id="arrowS" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--ink-soft)"/></marker>
+  </defs>
+</svg>
+<figcaption>Both endpoints are the same point now, so the wake in <span class="tt">B</span> is a <em>closed loop</em> <span class="tt">ℓ : f base = f base</span>. Choosing that loop is exactly the second obligation of <span class="tt">S¹</span>-recursion in Lesson 8: "say where <span class="tt">base</span> goes, say where <span class="tt">loop</span> goes." <span class="tt">ap f loop</span> is where <span class="tt">loop</span> goes.</figcaption>
+</figure>
+
+<h3><span class="tt">transport</span> over S¹: the lift climbs (the helix)</h3>
+<figure class="world">
+<svg viewBox="0 0 460 320" role="img" aria-label="Over the circle's base point stands the fibre Cover base equals the integers, a stalk of dots; the lift of loop leaves level 0 and comes back at level 1, so going around once climbs one step.">
+  <!-- the fibre stalk: Z -->
+  <rect class="d-fibre" x="212" y="52" width="36" height="150" rx="14"/>
+  <text class="d-big" x="230" y="42" text-anchor="middle">Cover base = ℤ</text>
+  <circle class="d-pt" cx="230" cy="78" r="3.5"/>
+  <circle class="d-actdot" cx="230" cy="108" r="4.5"/>
+  <circle class="d-actdot" cx="230" cy="138" r="4.5"/>
+  <circle class="d-pt" cx="230" cy="168" r="3.5"/>
+  <text class="d-mono" x="204" y="82" text-anchor="end">2</text>
+  <text class="d-mono" x="204" y="112" text-anchor="end">1</text>
+  <text class="d-mono" x="204" y="142" text-anchor="end">0</text>
+  <text class="d-mono" x="204" y="172" text-anchor="end">-1</text>
+  <!-- the lift: leaves 0, returns at 1 -->
+  <path class="d-act" d="M236 138 C 340 138, 340 108, 237 108" marker-end="url(#arrowH)"/>
+  <text class="d-acclbl" x="330" y="130">lift of loop</text>
+  <text class="d-lbl" x="330" y="148">= succ  (loop ↦ ua succ)</text>
+  <!-- fainter: the same one level up -->
+  <path class="d-faint" d="M236 108 C 320 108, 320 82, 237 78"/>
+  <!-- base: the circle -->
+  <circle class="d-base" cx="230" cy="264" r="34"/>
+  <circle class="d-act" cx="230" cy="264" r="34"/>
+  <circle class="d-pt" cx="230" cy="230" r="5"/>
+  <text class="d-big" x="230" y="249" text-anchor="middle" dominant-baseline="hanging">base</text>
+  <text class="d-acclbl" x="180" y="269" text-anchor="end">loop</text>
+  <text class="d-big" x="290" y="269">S¹</text>
+  <defs>
+    <marker id="arrowH" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<figcaption>The fibre and the base point are the same at both ends, but the lift is <em>not</em> the identity: <span class="tt">transport Cover loop = succ</span>. Going around once climbs one level. Stack the trips and the total space is the <strong>helix</strong> winding over the circle. This is Lesson 8's <span class="tt">Cover</span>, and it is how transport <em>reads</em> which loop you took: <span class="tt">loopⁿ</span> lands on <span class="tt">n</span>.</figcaption>
+</figure>
+
+<h3><span class="tt">J</span> over S¹: the fan still collapses, and <span class="tt">loop</span> still isn't <span class="tt">refl</span></h3>
+<figure class="world">
+<svg viewBox="0 0 460 320" role="img" aria-label="Over the circle, the based path space stacks the points (base, refl), (base, loop), (base, loop squared) at different heights; faint arrows slide each one to the centre (base, refl).">
+  <!-- points of the based path space stacked over base -->
+  <circle class="d-actdot" cx="230" cy="178" r="6"/>
+  <text class="d-acclbl" x="216" y="182" text-anchor="end">(base, refl)</text>
+  <circle class="d-pt" cx="230" cy="128" r="4"/>
+  <text class="d-mono" x="216" y="132" text-anchor="end">(base, loop)</text>
+  <circle class="d-pt" cx="230" cy="78" r="4"/>
+  <text class="d-mono" x="216" y="82" text-anchor="end">(base, loop²)</text>
+  <circle class="d-pt" cx="330" cy="128" r="4"/>
+  <text class="d-mono" x="342" y="132">(y, q)</text>
+  <!-- contraction arrows into the centre -->
+  <path class="d-faint" d="M230 122 L230 186 M230 72 L230 116" />
+  <path class="d-faint" d="M230 122 L230 170" marker-end="url(#arrowF)"/>
+  <path class="d-faint" d="M326 132 L238 174" marker-end="url(#arrowF)"/>
+  <text class="d-lbl" x="330" y="90">every point slides to the centre,</text>
+  <text class="d-lbl" x="330" y="106">the sliding MOVES the endpoint</text>
+  <!-- base: the circle -->
+  <circle class="d-base" cx="230" cy="264" r="34"/>
+  <circle class="d-act" cx="230" cy="264" r="34"/>
+  <circle class="d-pt" cx="230" cy="230" r="5"/>
+  <text class="d-big" x="230" y="249" text-anchor="middle" dominant-baseline="hanging">base</text>
+  <text class="d-acclbl" x="180" y="269" text-anchor="end">loop</text>
+  <text class="d-big" x="290" y="269">S¹</text>
+  <defs>
+    <marker id="arrowF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--rule)"/></marker>
+  </defs>
+</svg>
+<figcaption>The based path space <span class="tt">Σ(y:S¹)(base = y)</span> is <em>still contractible</em> (unrolled, it is the helix again, and the helix is a line). <span class="tt">(base, loop)</span> does slide down to <span class="tt">(base, refl)</span>, but the slide <strong>moves the endpoint</strong> around the circle as it goes. A claim like <span class="tt">loop = refl</span> lives in the loop space, where the endpoint is <em>pinned</em>, and no pinned slide exists: <span class="tt">loop ≠ refl</span>. Same resolution as Lesson 5's <span class="tt">ua not</span>: J owns paths with one free endpoint, never loops.</figcaption>
+</figure>
+
+<p>One last echo: the stack <span class="tt">(base, refl), (base, loop), (base, loop²), …</span> sitting over <span class="tt">base</span> in the J picture is exactly the <span class="tt">…, 0, 1, 2, …</span> stalk in the transport picture. That is <a href="../lessons/0005-path-algebra.html">encode-decode</a> drawn: the true fibre of paths and the <span class="tt">Code</span> fibre <span class="tt">ℤ</span> are the same ladder, and <span class="tt">π₁(S¹) = ℤ</span> is the statement that they match rung for rung.</p>
 
 <div class="teacher">
   <strong>Ask your teacher</strong> to push any diagram further: "draw <span class="tt">ap P p</span> as a path <em>in the universe</em> and then coerce it," "show the contraction of the fan by hand," or "what does the <span class="tt">loop</span> of <span class="tt">S¹</span> do to each of these three pictures." For the notation itself (which names are fixed, which are <span class="tt">Σ</span>/<span class="tt">Π</span>), see <a href="reading-definitions.html">Reading these definitions</a>.
