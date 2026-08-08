@@ -243,6 +243,24 @@
 
 <p>Two consequences fall out of the picture. First, the roles of the two special points: the centre <span class="tt">(a, refl)</span> is where you <em>pay</em> (the one filling), and your held path enters only as the point <span class="tt">(b, p)</span>, the <em>address</em> where you evaluate the resulting section. The input path contributes no evidence; it tells you where to cash out. Second, one case suffices for exactly one reason: contractibility means every address is reachable from the centre, so a single payment covers all deliveries.</p>
 
+<h3>A worked cash-out: reversing the Lesson 2 path</h3>
+<p>Inputs and outputs only; J itself stays a black box. You hold the <a href="../lessons/0002-why-this-matters.html">Lesson 2</a> path and want its reverse:</p>
+
+<pre><code>you hold:   bb : Bool = Binary          (made by ua)
+you want:   ?? : Binary = Bool
+
+the J call — note what is NOT among the inputs:
+  input 1  (pinned start):  Bool
+  input 2  (motive):        C(Y, q) := (Y = Bool)      the goal at each address
+  input 3  (payment):       refl : Bool = Bool          one element, at the centre only
+
+  output (a section):       s : (Y : U) → (q : Bool = Y) → (Y = Bool)
+
+the cash-out — where (b, p) finally enters:
+  s Binary bb : Binary = Bool            ← this is  sym bb</code></pre>
+
+<p><span class="tt">(Binary, bb)</span> appears nowhere in the call. J builds the section without consulting your path; the section is a <em>function</em>, and <span class="tt">(Binary, bb)</span> is the <strong>argument you feed to the output</strong>. This is the ordinary shape of every universal theorem: prove <span class="tt">(n m : ℕ) → Even n → Even m → Even (n+m)</span> once, apply it at <span class="tt">4, 6</span> later. The specific numbers are irrelevant to the proof and essential to the use. One caution keeps the analogy honest: for numbers you <em>could</em> have proved the <span class="tt">4, 6</span> case directly, but for paths the universal route is the only door. There is no case analysis on your specific <span class="tt">bb</span>, because a path is not something you can pattern-match; the fan's contractibility substitutes for that, and it only ever speaks about all addresses at once.</p>
+
 <h2>Reading the three side by side</h2>
 <p>Same base, same <span class="tt">p</span>. Three bundles, three moves:</p>
 
