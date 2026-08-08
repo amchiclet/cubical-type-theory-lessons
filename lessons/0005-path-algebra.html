@@ -86,6 +86,10 @@ a = y  one constructor, refl does NOT recurse  ->  base only, NO step
 </table>
 <p>Read the <span class="tt">ap f</span> row: you tell J "at endpoint <span class="tt">y</span> I want a proof <span class="tt">f a = f y</span>," and "at <span class="tt">refl</span> the answer is <span class="tt">refl</span>." J extends that one choice to every path, handing back <span class="tt">f a = f b</span>. So if you can read J, you have already read <span class="tt">ap</span>, <span class="tt">transport</span>, and <span class="tt">sym</span>: they differ only in those two columns.</p>
 
+<div class="aside">
+  For a visual version of this: <a href="../reference/ap-transport-j-one-world.html">ap, transport, J: one world</a> draws the same base-and-bundle picture three times, one move each, and shows why <span class="tt">transport</span> is <span class="tt">ap</span> aimed at the universe and both fall out of <span class="tt">J</span>.
+</div>
+
 <h3>Then why doesn't <span class="tt">ua not</span> break it?</h3>
 <p>Because <span class="tt">ua not</span> is a <em>loop</em>: both of its endpoints are pinned to <span class="tt">Bool</span>. J's contractible space has one <em>free</em> endpoint, so a loop never enters it as a fresh point to flatten. Contractibility does give you <span class="tt">(Bool, refl) = (Bool, ua not)</span> in the total space <span class="tt">Σ (y). Bool = y</span>, but the path witnessing that moves <em>both</em> components: its first part is a nontrivial <span class="tt">Bool = Bool</span>. So the two facts live in different types and never collide:</p>
 

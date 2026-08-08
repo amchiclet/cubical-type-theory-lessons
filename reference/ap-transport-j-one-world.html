@@ -1,0 +1,210 @@
+<meta charset="utf-8">
+<title>ap, transport, J — one world — Cubical Type Theory course</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  /* SVG vocabulary shared by every diagram on this page, so all four draw the
+     same world. Colours come from the shared theme variables, so these print
+     light with the rest of the course. */
+  figure.world svg { width: 100%; height: auto; max-width: 30rem; }
+  .d-base   { fill: var(--code-bg);  stroke: var(--rule); stroke-width: 1.5; }
+  .d-fibre  { fill: var(--aside-bg); stroke: var(--rule); stroke-width: 1.5; }
+  .d-fibre-const { fill: var(--aside-bg); stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .d-pt     { fill: var(--ink); }
+  .d-act    { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+  .d-actdot { fill: var(--accent); }
+  .d-faint  { fill: none; stroke: var(--rule); stroke-width: 1.4; }
+  .d-dash   { fill: none; stroke: var(--ink-soft); stroke-width: 1.3; stroke-dasharray: 3 3; }
+  .d-lbl    { fill: var(--ink-soft); font: italic 13px Palatino, Georgia, serif; }
+  .d-big    { fill: var(--ink);      font: 700 14px Palatino, Georgia, serif; }
+  .d-acclbl { fill: var(--accent);   font: 700 13px Palatino, Georgia, serif; }
+  .d-mono   { fill: var(--ink-soft); font: 12px "SF Mono", Menlo, monospace; }
+</style>
+
+<header class="masthead">
+  <span class="course">Cubical Type Theory · Reference</span>
+  <span><a href="../index.html">Home</a> · <a href="glossary.html">Glossary</a></span>
+</header>
+
+<h1>ap, transport, J: one world</h1>
+<p class="subtitle">The same picture three times. A base space with a path, a bundle standing over it, and one move per operation. Only the bundle changes. A companion to <a href="../lessons/0005-path-algebra.html">Lesson 5</a>.</p>
+
+<div class="key">
+  <span class="label">The single frame</span>
+  <strong>Everywhere below: a base type <span class="tt">A</span> with two points <span class="tt">a</span>, <span class="tt">b</span> and a path <span class="tt">p : a = b</span>, and a <em>bundle</em> standing over <span class="tt">A</span> (a type sitting over each base point, projecting down by <span class="tt">π</span>).</strong> <span class="tt">ap</span>, <span class="tt">transport</span>, and <span class="tt">J</span> are three moves in this one world. The base and the path <span class="tt">p</span> never change. What changes is <em>which bundle</em> stands over the base, and <em>what the path does</em> to it.
+</div>
+
+<h2>0. The world</h2>
+<p>Read this once and hold it fixed. A base <span class="tt">A</span> at the bottom; a path <span class="tt">p</span> from <span class="tt">a</span> to <span class="tt">b</span>; over each base point a fibre (a type). The whole thing above the base is a <em>total space</em>; <span class="tt">π</span> projects it back down.</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="A base line A with points a and b joined by a path p, and a fibre standing over each of a and b, projecting down by pi.">
+  <!-- fibres over a and b -->
+  <rect class="d-fibre" x="112" y="95" width="36" height="150" rx="14"/>
+  <rect class="d-fibre" x="312" y="95" width="36" height="150" rx="14"/>
+  <text class="d-lbl" x="130" y="88" text-anchor="middle">fibre over a</text>
+  <text class="d-lbl" x="330" y="88" text-anchor="middle">fibre over b</text>
+  <circle class="d-pt" cx="130" cy="140" r="3.5"/>
+  <circle class="d-pt" cx="130" cy="185" r="3.5"/>
+  <circle class="d-pt" cx="330" cy="160" r="3.5"/>
+  <!-- projection pi -->
+  <path class="d-dash" d="M164 170 L206 240" marker-end="url(#arrowW)"/>
+  <text class="d-lbl" x="192" y="200">π</text>
+  <!-- base -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <!-- path p on the base -->
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowW" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--ink-soft)"/></marker>
+  </defs>
+</svg>
+<figcaption>The world. Base <span class="tt">A</span>, path <span class="tt">p : a = b</span>, a fibre over each point, projecting down by <span class="tt">π</span>. The next three diagrams keep this base and this <span class="tt">p</span> identical.</figcaption>
+</figure>
+
+<h2>1. <span class="tt">ap</span>: slide the path, read the wake</h2>
+<p><span class="tt">ap f : (a = b) → (f a = f b)</span>. Here the bundle is the <strong>constant</strong> one: the <em>same</em> type <span class="tt">B</span> sits over every base point (a slab, not varying stalks). A function <span class="tt">f : A → B</span> picks one point of <span class="tt">B</span> over each base point. Slide along <span class="tt">p</span> and the chosen point traces a path in <span class="tt">B</span>: that wake is <span class="tt">ap f p</span>.</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="A constant slab B floats above the base A; f sends a and b up to points f a and f b in B, and p traces the path ap f p between them.">
+  <!-- constant fibre slab B -->
+  <rect class="d-fibre-const" x="30" y="70" width="400" height="46" rx="10"/>
+  <text class="d-big" x="404" y="98">B</text>
+  <text class="d-lbl" x="60" y="63">same fibre B over every point (constant bundle)</text>
+  <!-- f picks points in B -->
+  <path class="d-dash" d="M130 250 L130 122" marker-end="url(#arrowA)"/>
+  <path class="d-dash" d="M330 250 L330 122" marker-end="url(#arrowA)"/>
+  <text class="d-lbl" x="120" y="200" text-anchor="end">f</text>
+  <text class="d-lbl" x="340" y="200">f</text>
+  <circle class="d-actdot" cx="130" cy="93" r="4.5"/>
+  <circle class="d-actdot" cx="330" cy="93" r="4.5"/>
+  <text class="d-mono" x="130" y="140" text-anchor="middle">f a</text>
+  <text class="d-mono" x="330" y="140" text-anchor="middle">f b</text>
+  <!-- wake ap f p in B -->
+  <path class="d-act" d="M130 93 Q230 76 330 93"/>
+  <text class="d-acclbl" x="230" y="72" text-anchor="middle">ap f p</text>
+  <!-- base (identical) -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--ink-soft)"/></marker>
+  </defs>
+</svg>
+<figcaption><span class="tt">ap</span> lives between <strong>two spaces</strong>, <span class="tt">A</span> and <span class="tt">B</span> (equivalently, the constant bundle <span class="tt">A × B</span>). A path downstairs becomes a path <em>in the fibre</em>: <span class="tt">p : a = b</span> ↦ <span class="tt">ap f p : f a = f b</span>. Points to points, paths to paths.</figcaption>
+</figure>
+
+<h2>2. <span class="tt">transport</span>: lift the path, carry a point</h2>
+<p><span class="tt">transport P p : P a → P b</span>. Now the bundle <em>genuinely varies</em>: the fibre <span class="tt">P a</span> over <span class="tt">a</span> and the fibre <span class="tt">P b</span> over <span class="tt">b</span> are different types. Take a point <span class="tt">u : P a</span>. The path <span class="tt">p</span> <strong>lifts</strong> horizontally to carry <span class="tt">u</span> across to a point of the neighbouring fibre <span class="tt">P b</span>.</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="Two different fibres P a and P b stand over a and b; a point u in P a is carried horizontally along the lift of p to transport p u in P b.">
+  <!-- differing fibres -->
+  <rect class="d-fibre" x="112" y="95" width="36" height="150" rx="14"/>
+  <rect class="d-fibre" x="312" y="80" width="36" height="165" rx="14"/>
+  <text class="d-big" x="130" y="88" text-anchor="middle">P a</text>
+  <text class="d-big" x="330" y="73" text-anchor="middle">P b</text>
+  <!-- contents hint (different in each) -->
+  <circle class="d-pt" cx="130" cy="205" r="3.5"/>
+  <circle class="d-pt" cx="330" cy="120" r="3.5"/>
+  <circle class="d-pt" cx="330" cy="205" r="3.5"/>
+  <!-- u and its transport -->
+  <circle class="d-actdot" cx="130" cy="150" r="5"/>
+  <circle class="d-actdot" cx="330" cy="150" r="5"/>
+  <text class="d-mono" x="118" y="147" text-anchor="end">u</text>
+  <text class="d-mono" x="342" y="147">transport p u</text>
+  <!-- horizontal lift of p -->
+  <path class="d-act" d="M135 150 Q230 132 325 150" marker-end="url(#arrowT)"/>
+  <text class="d-acclbl" x="230" y="128" text-anchor="middle">lift of p</text>
+  <!-- base (identical) -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <defs>
+    <marker id="arrowT" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<figcaption><span class="tt">transport</span> lives in <strong>one total space</strong> <span class="tt">Σ(x:A) P(x)</span>. A point starts in the fibre over <span class="tt">a</span>; the path lifts and delivers it to the fibre over <span class="tt">b</span>. Path downstairs ↦ a <em>function between fibres</em>.</figcaption>
+</figure>
+
+<h2>3. <span class="tt">J</span>: the bundle that collapses</h2>
+<p>Now the bundle is special: the fibre over each point <span class="tt">y</span> is <span class="tt">(a = y)</span>, the <em>paths from <span class="tt">a</span> to <span class="tt">y</span></em>. This total space <span class="tt">Σ(y:A)(a = y)</span> is <strong>contractible</strong>, pinched to one centre <span class="tt">(a, refl)</span> over <span class="tt">a</span>. Our path <span class="tt">p</span> is just one point of it: the pair <span class="tt">(b, p)</span>. To define anything over the whole bundle (a motive <span class="tt">C</span>), fill it at the centre; the collapse spreads it everywhere.</p>
+
+<figure class="world">
+<svg viewBox="0 0 460 300" role="img" aria-label="The based path space over A: a centre (a, refl) over a, with a fan of points (y, q) over other base points; filling the motive at the centre spreads to all of them.">
+  <!-- fan of (y, q) points over several base positions -->
+  <circle class="d-pt" cx="230" cy="120" r="4"/>
+  <circle class="d-pt" cx="330" cy="150" r="4"/>
+  <circle class="d-pt" cx="400" cy="120" r="4"/>
+  <text class="d-mono" x="230" y="110" text-anchor="middle">(y₁,q₁)</text>
+  <text class="d-mono" x="336" y="145">(b,p)</text>
+  <text class="d-mono" x="400" y="110" text-anchor="middle">(y₃,q₃)</text>
+  <!-- centre -->
+  <circle class="d-actdot" cx="130" cy="150" r="6"/>
+  <text class="d-acclbl" x="118" y="140" text-anchor="end">(a, refl)</text>
+  <!-- fan lines (the contraction) -->
+  <path class="d-faint" d="M136 150 L226 122" marker-end="url(#arrowJ)"/>
+  <path class="d-faint" d="M136 151 L326 150" marker-end="url(#arrowJ)"/>
+  <path class="d-faint" d="M136 149 L396 122" marker-end="url(#arrowJ)"/>
+  <text class="d-lbl" x="250" y="180" text-anchor="middle">fill the motive C here, once — the collapse carries it to every (y, q)</text>
+  <!-- base (identical) -->
+  <rect class="d-base" x="30" y="250" width="400" height="26" rx="6"/>
+  <text class="d-big" x="404" y="267">A</text>
+  <circle class="d-pt" cx="130" cy="263" r="5"/>
+  <circle class="d-pt" cx="330" cy="263" r="5"/>
+  <text class="d-big" x="130" y="294" text-anchor="middle">a</text>
+  <text class="d-big" x="330" y="294" text-anchor="middle">b</text>
+  <path class="d-act" d="M130 250 Q230 232 330 250"/>
+  <text class="d-acclbl" x="230" y="230" text-anchor="middle">p</text>
+  <!-- dashed riser: (b,p) sits over b -->
+  <path class="d-dash" d="M330 156 L330 244"/>
+  <defs>
+    <marker id="arrowJ" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--rule)"/></marker>
+  </defs>
+</svg>
+<figcaption><span class="tt">J</span> lives in the <strong>based path space</strong>, the total space of <span class="tt">y ↦ (a = y)</span>. It is contractible to <span class="tt">(a, refl)</span>. Our <span class="tt">p</span> is the single point <span class="tt">(b, p)</span> up there. Fill the motive at the centre; contractibility spreads it to every fibre. That is why handling <span class="tt">refl</span> alone suffices.</figcaption>
+</figure>
+
+<h2>Reading the three side by side</h2>
+<p>Same base, same <span class="tt">p</span>. Three bundles, three moves:</p>
+
+<table>
+  <thead><tr><th>move</th><th>bundle over <span class="tt">A</span></th><th>total space(s)</th><th>what <span class="tt">p</span> does</th><th>result</th></tr></thead>
+  <tbody>
+    <tr><td><span class="tt">ap f</span></td><td>constant: <span class="tt">B</span> over every point</td><td>two spaces <span class="tt">A</span>, <span class="tt">B</span> (bundle <span class="tt">A × B</span>)</td><td>traces the section's wake in <span class="tt">B</span></td><td>a path <span class="tt">f a = f b</span></td></tr>
+    <tr><td><span class="tt">transport P</span></td><td>varying: <span class="tt">P x</span> over <span class="tt">x</span></td><td>one total space <span class="tt">Σ(x:A) P x</span></td><td>lifts to carry a point across fibres</td><td>a function <span class="tt">P a → P b</span></td></tr>
+    <tr><td><span class="tt">J</span></td><td>the based paths: <span class="tt">(a = y)</span> over <span class="tt">y</span></td><td>one total space <span class="tt">Σ(y:A)(a = y)</span>, contractible</td><td><span class="tt">(b, p)</span> is one point of it; collapses to <span class="tt">(a, refl)</span></td><td>a section from one centre value</td></tr>
+  </tbody>
+</table>
+
+<h2>How they are secretly the same move</h2>
+<p>The diagrams are not just a family resemblance. Two exact facts glue them together.</p>
+
+<div class="key">
+  <span class="label">transport is <span class="tt">ap</span> aimed at the universe</span>
+  A family <span class="tt">P : A → Type</span> is a function into the universe <span class="tt">U</span>. So <span class="tt">ap P p : P a = P b</span> is a <em>path in <span class="tt">U</span></em>: a path <strong>between types</strong>. Then <span class="tt">transport</span> is "turn that path of types into a function" (coerce along it). In one line: <span class="tt">transport P p = coerce (ap P p)</span>. Diagram 2 is diagram 1 run one floor up, in the space of types, then cashed in.
+</div>
+
+<div class="key">
+  <span class="label">ap and transport are both <span class="tt">J</span></span>
+  Diagram 3 is the engine. Feed <span class="tt">J</span> the motive "<span class="tt">P y</span>" with centre value "<span class="tt">u</span>" and you get <span class="tt">transport</span>; feed it the motive "<span class="tt">f a = f y</span>" with centre value "<span class="tt">refl</span>" and you get <span class="tt">ap f</span> (this is the table in <a href="../lessons/0005-path-algebra.html">Lesson 5</a>). Each of diagrams 1 and 2 is diagram 3 with the motive and the centre value filled in. The contraction to <span class="tt">(a, refl)</span> is what powers the wake in <span class="tt">B</span> and the lift across fibres alike.</div>
+
+<p>So the whole page collapses to one sentence: <strong>a path in the base acts on whatever stands over the base, and <span class="tt">J</span> is the reason any such action is determined by its value at <span class="tt">refl</span>.</strong> <span class="tt">ap</span> is that action on a constant bundle, <span class="tt">transport</span> on a varying one, and reading <span class="tt">P</span> into the universe turns the first into the second.</p>
+
+<div class="teacher">
+  <strong>Ask your teacher</strong> to push any diagram further: "draw <span class="tt">ap P p</span> as a path <em>in the universe</em> and then coerce it," "show the contraction of the fan by hand," or "what does the <span class="tt">loop</span> of <span class="tt">S¹</span> do to each of these three pictures." For the notation itself (which names are fixed, which are <span class="tt">Σ</span>/<span class="tt">Π</span>), see <a href="reading-definitions.html">Reading these definitions</a>.
+</div>
