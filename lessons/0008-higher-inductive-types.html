@@ -69,6 +69,54 @@ succ 0 = id 0   ⟹   1 = 0        -- contradiction in ℤ.
 
 ∴  loop ≠ refl</code></pre>
 
+<h3>The same proof, unpacked slowly</h3>
+<p>That is compressed. Here is every step at half speed.</p>
+
+<p><strong>What <span class="tt">Cover : S¹ → Type</span> is.</strong> A function whose <em>outputs are types</em>. It is a type family (equivalently a bundle): over each point of the circle it stands a type. Nothing about it is exotic; only the codomain is unusual.</p>
+<pre><code>f     : S¹ → Bool      f base     = true   -- output: an element
+Cover : S¹ → Type      Cover base = ℤ      -- output: a TYPE</code></pre>
+
+<p><strong>What the two lines of the definition really are.</strong> <span class="tt">Cover</span> is built by <span class="tt">S¹</span>-recursion into <span class="tt">X := Type</span>, so the bill from the section above reads:</p>
+<pre><code>to build   Cover : S¹ → Type
+you owe:   a point   Z : Type        "where does base go?"    -> we pay  ℤ
+           a path    ℓ : Z = Z       "where does loop go?"    -> we pay  ua succ</code></pre>
+
+<div class="aside">
+  <strong>Notation warning.</strong> <span class="tt">Cover loop = ua succ</span> is standard shorthand, but taken literally <span class="tt">Cover loop</span> is not well-formed: <span class="tt">Cover</span> eats <em>points</em> of <span class="tt">S¹</span> and <span class="tt">loop</span> is a path. The precise statement uses <span class="tt">ap</span>, which is what sends paths to paths: <span class="tt">ap Cover loop = ua succ</span>. Read the shorthand as "the payment I chose for the <span class="tt">loop</span> line was <span class="tt">ua succ</span>". Because <span class="tt">Cover</span> lands in the universe, that payment is a path <em>between types</em>.
+</div>
+
+<p><strong>Where <span class="tt">ua succ</span> comes from.</strong> The bill demands a path <span class="tt">ℤ = ℤ</span>, and univalence is the machine that manufactures such paths:</p>
+<pre><code>succ    : ℤ ≃ ℤ              -- successor is an EQUIVALENCE (its inverse is pred)
+ua      : (ℤ ≃ ℤ) → (ℤ = ℤ)  -- univalence, Lesson 7
+ua succ : ℤ = ℤ              -- so this fits the loop line exactly</code></pre>
+<p>Note what <span class="tt">ℤ ≃ ℤ</span> means: not "these two numbers are equal", but <em>a way of matching the type <span class="tt">ℤ</span> with itself</em>, an invertible relabelling. There are many: <span class="tt">id</span>, <span class="tt">succ</span>, negation, "add k". <span class="tt">succ</span> qualifies because <span class="tt">pred</span> undoes it. Equivalences relate <strong>types</strong>, and they need not fix elements.</p>
+
+<p><strong>The signature of transport</strong>, instantiated here:</p>
+<pre><code>transport : (P : A → Type) → (p : x = y) → P x → P y
+
+transport Cover : (p : base = base) → Cover base → Cover base
+                                   -- i.e.      ℤ → ℤ</code></pre>
+<p>So <span class="tt">transport Cover p</span> is <strong>a function <span class="tt">ℤ → ℤ</span></strong>, one for each loop <span class="tt">p</span>. That is the object we compare. The two evaluations have different statuses, worth separating:</p>
+<pre><code>transport Cover refl ≡ id      -- RUNS: transport's own computation rule, free for any P
+transport Cover loop  = succ   -- READ OFF: from our chosen payment, via ua-β (Lesson 7)</code></pre>
+
+<p><strong>How step 3 connects to step 2.</strong> One general principle does it: <em>equal inputs give equal outputs</em> (that is just <span class="tt">ap</span>). Apply it to the function <span class="tt">transport Cover</span>, which turns paths into functions <span class="tt">ℤ → ℤ</span>:</p>
+<pre><code>assume        loop = refl
+apply ap:     transport Cover loop = transport Cover refl     -- equal in, equal out
+substitute:   succ = id                                       -- by step 2
+apply at 0:   succ 0 = id 0
+compute:      1 = 0                                           -- absurd: ℤ is a set
+∴             ¬(loop = refl)</code></pre>
+
+<div class="key">
+  <span class="label">The strategy, and why a boring Cover proves nothing</span>
+  <strong>To show two things differ, exhibit a function that tells them apart.</strong> Same move as <span class="tt">true ≠ false</span> in <a href="0005-path-algebra.html">Lesson 5</a>. Note the asymmetry: you were free to pay the <span class="tt">loop</span> line with <span class="tt">refl</span> instead, giving a perfectly legal family that sends both paths to <span class="tt">id</span>. That would prove <em>nothing</em>, exactly as defining a constant <span class="tt">f : ℤ → Bool</span> and observing <span class="tt">f 0 = f 1</span> does not prove <span class="tt">0 = 1</span>. A map where the two paths <em>agree</em> only shows that map is blind; a single map where they <em>differ</em> settles it. So the content of the proof is entirely in choosing a non-trivial payment, and univalence is what makes a non-trivial payment available.
+</div>
+
+<div class="aside">
+  <strong>This is a disproof, not a model.</strong> The argument does not build an alternative world where the paths happen to differ. It assumes <span class="tt">loop = refl</span> <em>inside</em> the theory and derives <span class="tt">1 = 0</span>, so it establishes the negation directly. Contrast <a href="0004-two-equalities.html">Lesson 4</a>'s funext, which is <em>independent</em>: there the claim is that no proof exists, established in the metatheory using models. Here <span class="tt">Cover</span> is not a world, it is a measuring instrument built in this one.
+</div>
+
 <pre><code>the picture:  Cover wraps a line of integers around the circle
 
    fibre ℤ:   … -1   0   1   2 …          going around loop once
